@@ -1,0 +1,168 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title> التخفيضات</ion-title> 
+  </ion-toolbar>
+</ion-header>
+
+<ion-content> 
+  <ion-card >
+  <ion-grid dir="rtl">
+    <ion-row class="ion-justify-content-start" *ngIf="discountInvo">
+      <ion-col size="9" class="ion-no-padding" >
+          <ion-grid dir="rtl">
+            <ion-row > 
+              <ion-col size="3">
+                <ion-label class="ion-padding"><strong> وصف التخفيض</strong></ion-label>
+                <ion-item class="custInput">
+                  <ion-input [(ngModel)]="discountInvo.descr" ></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="2">
+                <ion-label class="ion-padding"><strong> %  نسبة التخفيض</strong></ion-label>
+                <ion-item class="custInput">
+                  <ion-input [(ngModel)]="discountInvo.perc" ></ion-input>
+                </ion-item>
+              </ion-col>
+              
+              <ion-col size="3" >
+                <ion-label class="ion-padding"><strong>تاريخ البداية </strong></ion-label>
+                  <ion-item class="custInput" >
+                    <input style="width:100%"  [(ngModel)]="startingDate" type="date"  id="startingDate" name="startingDate" />
+                  </ion-item>   
+              </ion-col> 
+              <ion-col size="3" >
+                <ion-label class="ion-padding"><strong>تاريخ النهاية </strong></ion-label>
+                  <ion-item class="custInput" >
+                    <input style="width:100%"  [(ngModel)]="endDate" type="date"  id="startingDate" name="startingDate" />
+                  </ion-item>   
+              </ion-col>  
+            </ion-row> 
+          </ion-grid> 
+      </ion-col> 
+    </ion-row>
+  </ion-grid>
+</ion-card>
+<ion-grid  *ngIf="user_info && store_info" > 
+  <ion-row dir="rtl">
+    <ion-card-header><h4>ادخل الأصناف الخاضعة للتخفيض</h4></ion-card-header>
+    <ion-col size="12" class="ion-no-padding">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="7">
+            <!-- brand list -->
+            <ion-row *ngIf="brandList.length>0" class="cardContainer">
+              <ion-card>
+                <ion-segment (ionChange)="segmentChanged($event)" scrollable = "true" class="seg">
+                  <ion-segment-button *ngFor="let brand of brandList" [value]="brand.brand">
+                    {{brand.brand}}
+                  </ion-segment-button>
+                </ion-segment>
+                
+                <ion-grid class="items-container"> 
+                  <ion-row *ngIf="filteredItems.length>0">  
+                      <ion-col size="3" *ngFor="let item of filteredItems" class="cardImg">
+                        <div class="price-tag">{{+item.pay_price + (+item.tax/100 * +item.pay_price)}}</div>
+                        <ion-card (click)="addTolist(item)" >
+                          <img alt="" [src]="item.imgUrl"> 
+                        </ion-card>
+                        <div class="item-title">
+                          <p class="ion-text-center">
+                            {{ item.item_name }}
+                          </p>
+                        </div>
+                      </ion-col> 
+                  </ion-row> 
+                </ion-grid>
+              </ion-card>
+            </ion-row> 
+          </ion-col>
+          <ion-col size="5">
+            <ion-card class="items-container2"> 
+              <table class="table">
+                <tr>  
+                  <th></th>
+                  <th>الصنف</th> 
+                  <th>  السعر  </th> 
+                  <th>  فيمة التخفيض</th>
+                  <th>  الضريبة</th> 
+                  <th> السعر المخفض + الضريبة</th>
+                 
+                </tr>
+                <tr *ngFor="let item of itemList ; let i = index"   >
+                  <td>
+                    <ion-button fill="clear" size="small" (click)="deleteItem(i)">
+                      <ion-icon name="trash" color="danger"></ion-icon>
+                    </ion-button>
+                  </td>
+                  <td style=" max-width: 100px; overflow: hidden;white-space: normal;"> {{item.item_name}} </td>
+                  <td > {{item.pay_price}} </td> 
+                  <td>
+                    <ion-text >{{    (+discountInvo.perc/100 * +item.pay_price).toFixed(2)   }}</ion-text> 
+                  </td> 
+                  <td > {{ (+item.tax/100 * +item.pay_price).toFixed(2)}} </td>
+                  <td>
+                    <ion-text>{{ ((+item.pay_price - (+discountInvo.perc/100 * +item.pay_price)) + (+item.tax/100 * (+item.pay_price - (+discountInvo.perc/100 * +item.pay_price))) ).toFixed(2)    }}</ion-text>
+                     </td>
+                  
+                </tr>
+              </table>
+            </ion-card>
+           
+          </ion-col>
+
+
+          
+            <!-- totals -->
+          <!-- <ion-col size="3" class="ion-no-padding" *ngIf="discountInvo">
+            <ion-card class="items-container2">
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="12" class="ion-margin-top">
+                    <ion-label class="ion-padding"><strong>صافي المبلغ  :</strong>  <ion-text>{{discountInvo.tot_pr}} </ion-text></ion-label>
+                  
+                  </ion-col>
+                  
+                  <ion-col size="12" class="ion-margin-top">
+                    <ion-label class="ion-padding"><strong>الخصــم :</strong>  <ion-text>{{discountInvo.discount}} </ion-text></ion-label>
+                    
+                  </ion-col>
+
+                  <ion-col size="12"  class="ion-margin-top">
+                    <ion-label class="ion-padding"><strong>الضريبة : </strong>  <ion-text>{{discountInvo.taxTot}} </ion-text></ion-label>
+                    
+                  </ion-col>
+
+                 
+                  <ion-col size="12"   class="ion-margin-top">
+                    <ion-label class="ion-padding"><strong>  صافي المبلغ مع الضريبة  :</strong> <ion-text>{{taxAll}} </ion-text></ion-label>
+                    
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card>
+          </ion-col> -->
+        </ion-row>
+      </ion-grid>
+      </ion-col> 
+  </ion-row>
+
+</ion-grid>
+
+</ion-content>
+ <ion-footer>
+  <ion-grid dir="rtl">
+    <ion-row class="ion-justify-content-end" *ngIf="discountInvo">
+       
+  
+      <ion-col size="4" offset="4">
+        <ion-button   expand="block" routerDirection="root" color="primary" (click)="save()">
+          <ion-icon name="checkmark-sharp" color="light" slot="end"></ion-icon>
+          <ion-label class="ion-text-center"> حــفظ  </ion-label>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+ </ion-footer>

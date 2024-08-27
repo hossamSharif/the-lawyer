@@ -1,0 +1,24 @@
+change your app to capacitor app
+
+remove json-lock
+remove node module
+modify package.json 
+  a- change core  to @capacitor/core": "4.6.1",
+  b- remove "@capacitor/app": "^4.1.1",  "@capacitor/haptics": "^4.1.0", "@capacitor/keyboard": "^4.1.0",
+    "@capacitor/status-bar": "^4.1.1",
+  d- npm cache clear --force
+  c- npm install
+  add plugin
+  npm i @capacitor/app @capacitor/haptics @capacitor/keyboard @capacitor/status-bar
+
+
+1- ionic integrations enable capacitor 
+
+ionic capacitor add android 
+
+ionic capacitor build android
+
+ionic capacitor copy android
+cd android
+./gradlew assembleDebug  generate apk
+./gradlew installDebug  run app in connected device

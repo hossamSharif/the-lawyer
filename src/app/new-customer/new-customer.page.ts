@@ -1,6 +1,5 @@
 import { Component, OnInit ,ViewChild ,ElementRef ,Renderer2,Input} from '@angular/core';
- 
- 
+
 import { ServicesService } from "../stockService/services.service";
 import { Observable, Subscription } from 'rxjs';
 import { AlertController, Platform , LoadingController, ModalController, ToastController, MenuController } from '@ionic/angular';
@@ -29,12 +28,12 @@ export class NewCustomerPage implements OnInit {
    ionicForm2: FormGroup;
    isSubmitted = false;
    isSubmitted2 = false;
-  constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private renderer : Renderer2,private modalController: ModalController,private alertController: AlertController,private storage: Storage,private loadingController:LoadingController, private datePipe:DatePipe,private api:ServicesService,private toast :ToastController) { 
+  constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
     this.custTypeArr.push(
-      {id:1,name:"فرد"},
-      {id:2,name:"شركة"}
+      {id:0,name:"فرد"},
+      {id:1,name:"شركة"}
     )
-    this.selectedCustTye = {id:1,name:"فرد"}
+    this.selectedCustTye = {id:0,name:"فرد"}
 
     this.ionicForm2 = this.formBuilder.group({
       company_phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
@@ -71,7 +70,11 @@ export class NewCustomerPage implements OnInit {
 
   
   prepareInvo(){  
-    this.seledctedCustomer = {id:"" ,cust_ref : "" , cust_type:"",cust_name:"",cust_ident:"",phone:"",email:"",company_name:"",company_ident:"" ,company_regno:"",company_phone:"",company_represent:"",company_email:"", status:"" };
+    this.seledctedCustomer = {id:"" ,cust_ref : "" , cust_type:0,cust_name:"",cust_ident:"",phone:"",email:"",company_name:"",company_ident:"" ,company_regno:"",company_phone:"",company_represent:"",company_email:"", status:"" };
+    this.ionicForm.reset()
+    this.ionicForm2.reset()
+    this.isSubmitted = false
+    this.isSubmitted2 = false
     this.generateRandom()  
   }
 
@@ -192,6 +195,8 @@ export class NewCustomerPage implements OnInit {
         id:item.id,
         name:item.name
       } 
+
+      this.seledctedCustomer.cust_type = this.selectedCustTye.id
        
         //console.log( this.selectedItem); 
         this.didDissmisCustType()

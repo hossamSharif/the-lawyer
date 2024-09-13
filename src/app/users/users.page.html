@@ -26,13 +26,13 @@
     <ion-row class="ion-margin-top">
       <ion-col size="12">
         <ion-toolbar >
-          <ion-title class="fontLarge">العملاء</ion-title>
+          <ion-title class="fontLarge">المستخدمين</ion-title>
           <ion-buttons slot="end">
             <ion-searchbar class="custSearch"> </ion-searchbar>  
           </ion-buttons>
           <ion-button slot="end"  fill="outline" (click)="newCustomer()"  color="medium" class="custButton rad10">
             <ion-icon class="ico " color="dark" name="add-circle-outline"></ion-icon>
-               <ion-text color="dark"> عميل جديد   </ion-text>     
+               <ion-text color="dark"> مستخدم جديد   </ion-text>     
           </ion-button> 
         </ion-toolbar>
       </ion-col> 
@@ -54,53 +54,37 @@
                <table  class="table"  >
                
                  <tr>
-                  <th>   نوع العميل
+                  <th>   الإسم الكامل 
                   </th>  
-                  <th>
-                    الشركة/العميل   
-                  </th>  
+                  
                   <th >  الهاتف    
                   </th>
                   <th>    البريد     
                   </th>  
-                  <th>      رقم الهوية     
+                  <th>      اسم المستخدم       
                   </th>
-                  <th>      السجل التجاري    
-                  </th>
-                  <th>       العنوان الوطني    
+                  <th>      كلمة  المرور    
+                  </th>    المسمي الوظيفي 
+                  <th>    المستوي    
                   </th> 
-                  <!-- <th>       الرقم الضريبي    
-                  </th> -->
-                  <th>       الممثل    
-                  </th>
+                  
                   
                   <th><strong>تعديل</strong></th> 
                  </tr>
-                  <tr *ngFor="let cust of custArr ; let i = index"  (click)="getCustomerDetails(cust)">
-                    <td>
-                      <ion-text *ngIf="cust.cust_type == 0">  فرد    </ion-text>
-                      <ion-text *ngIf="cust.cust_type == 1">  شركة    </ion-text>
-                    </td>
-                  <td>
-                    <ion-text *ngIf="cust.cust_type == 0">   {{cust.cust_name}}   </ion-text>
-                    <ion-text *ngIf="cust.cust_type == 1">    {{cust.company_name}}   </ion-text>
-                  </td>
+                  <tr *ngFor="let user of userArr ; let i = index"  (click)="getUserDetails(user)">
+                    <td> <ion-text>   {{user.full_name}}   </ion-text></td>
+                    <td> <ion-text>   {{user.phone}}   </ion-text></td>
+                    <td> <ion-text>   {{user.email}}   </ion-text></td>
+                    <td> <ion-text>   {{user.user_name}}   </ion-text></td>
+                    <td> <ion-text>   {{user.password}}   </ion-text></td>
+                    <td> <ion-text>   {{user.job_title}}   </ion-text></td>
+                    <td> <ion-text>   {{user.leve}}   </ion-text></td>
+                   
                   
-                  <td>
-                    <ion-text *ngIf="cust.cust_type == 0">     {{cust.phone}} </ion-text>
-                    <ion-text *ngIf="cust.cust_type == 1">     {{cust.company_phone}} </ion-text>
-                  </td>
-                  <td>
-                    <ion-text *ngIf="cust.cust_type == 0">  {{cust.email}}     </ion-text>
-                    <ion-text *ngIf="cust.cust_type == 1">    {{cust.company_email}}   </ion-text>
-                  </td>
-                  <td><ion-text>   {{cust.cust_ident}}    </ion-text></td>
-                  <td><ion-text> {{cust.company_regno}}     </ion-text></td> 
-                  <td><ion-text>   {{cust.company_ident}}   </ion-text></td> 
-                  <td><ion-text>   {{cust.company_represent}}   </ion-text></td>
+                   
                    
                   <td>
-                    <ion-button (click)="getCustomerDetails(cust)" fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
+                    <ion-button (click)="getUserDetails(user)" fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
                   </td>
                   
                   </tr>
@@ -114,8 +98,7 @@
                   <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
                   <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
                   <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                   
                   
                  </tr>  
                 

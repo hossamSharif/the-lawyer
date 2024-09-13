@@ -12,7 +12,7 @@ import { Storage } from '@ionic/storage';
 
 
  export class ServicesService {
-  api = 'http://localhost/myaperpiPos/lawyerApi/myapi/api/'
+  api = 'http://localhost/lawyerApi/myapi/api/'
   // api :any =  'https://erp.hosamdev.com/myapi/api/'
   year : {id:any ,yearDesc:any ,yearStart :any,yearEnd:any}
   folderNo:any=''
@@ -22,6 +22,56 @@ import { Storage } from '@ionic/storage';
     //  this.api = 'https://erp.hosamdev.com/myapi'+ this.folderNo +'/api/'
      // this.setCurrentYear()
    }
+
+//laywer api 
+
+getTopUsers( ){ 
+  // let params = new HttpParams() 
+  // params=params.append('store_id' , store_id)
+  // params=params.append('yearId' , yearId)
+  // ,{params: params}
+  return this.http.get(this.api+'users/read.php')
+}
+
+  getTopCustomers( ){ 
+    // let params = new HttpParams() 
+    // params=params.append('store_id' , store_id)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'customer/readByStore.php')
+  }
+
+  saveCostumer(customer){
+    return this.http.post(this.api+'customer/create.php', 
+      customer
+     )
+  }
+  saveUser(user){
+    return this.http.post(this.api+'users/create.php', 
+      user
+     )
+  }
+
+
+  updateCustomer(cust){
+    return this.http.post(this.api+'customer/update.php', 
+     cust
+     )
+  }
+  
+  deleteCustomer(cust_id){
+    let params = new HttpParams()
+    params= params.append('cust_id' , cust_id )
+      return this.http.delete(this.api+'customer/delete.php', {params: params})
+    }
+
+  updateUser(cust){
+    return this.http.post(this.api+'users/update.php', 
+     cust
+     )
+  }
+
+  // end of laywer api
 
 
   
@@ -608,11 +658,7 @@ getTswiaByDate(store_id,from ,yearId){
      )
   }
 
-  saveCostumer(customer){
-    return this.http.post(this.api+'customer/create.php', 
-      customer
-     )
-  }
+ 
 
     saveDiscountInvo(payInvo){
     return this.http.post(this.api+'discount/create.php', 

@@ -8,6 +8,10 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'folder/practice',
+    loadChildren: () => import('./practice/practice.module').then( m => m.PracticePageModule)
+  },
+  {
     path: 'folder/login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
   },
@@ -117,7 +121,24 @@ const routes: Routes = [
   {
     path: 'folder/sessions',
     loadChildren: () => import('./sessions/sessions.module').then( m => m.SessionsPageModule)
+  },
+  {
+    path: 'folder/edit-customer',
+    loadChildren: () => import('./edit-customer/edit-customer.module').then( m => m.EditCustomerPageModule)
+  },
+  {
+    path: 'users',
+    loadChildren: () => import('./users/users.module').then( m => m.UsersPageModule)
+  },
+  {
+    path: 'edit-user',
+    loadChildren: () => import('./edit-user/edit-user.module').then( m => m.EditUserPageModule)
+  },
+  {
+    path: 'add-user',
+    loadChildren: () => import('./add-user/add-user.module').then( m => m.AddUserPageModule)
   }
+  
   
 ];
 

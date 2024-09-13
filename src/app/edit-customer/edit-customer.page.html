@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar translucent dir="rtl"  class="toolPadding">
-    <ion-title class="fontLarge"> عميل جديد </ion-title> 
+    <ion-title class="fontLarge">  تعديل بيانات عميل </ion-title> 
      <ion-buttons slot="end" class="ion-margin-end" (click)="close()"> 
       <div class="circleDev">
         <ion-button fill="clear">
@@ -85,7 +85,7 @@
 
 <!-- company  -->
 
-        <ion-grid  >
+        <ion-grid>
           <form [formGroup]="ionicForm2" (ngSubmit)="save2()" novalidate> 
           <ion-row *ngIf="selectedCustTye.id == 1">
             <ion-col size="4" class="ion-margin-top">

@@ -27,7 +27,8 @@ export class LoginPage implements OnInit {
   company : { id: any , phone: any, phone2  :any, address :any, logoUrl:any,engName:any,arName:any ,tradNo:any , vatNo:any};
 
   constructor(private platform:Platform,private api:ServicesService,private storage: Storage,private toast:ToastController ,private loadingController:LoadingController , private authenticationService: AuthServiceService) {
-     this.store_info = {id:1 ,store_ref:"sh" , store_name:"sooq sha'by" , location :"" } 
+    
+    this.store_info = {id:1 ,store_ref:"sh" , store_name:"sooq sha'by" , location :"" } 
     this.USER_INFO = {
       id: "" ,
       user_name: "",
@@ -37,6 +38,7 @@ export class LoginPage implements OnInit {
     }
    }
 
+  
 
    checkPlatform(){
     if (this.platform.is('desktop')) { 
@@ -49,9 +51,10 @@ export class LoginPage implements OnInit {
     }
 
 
+
   ngOnInit() {
-    this.checkPlatform()
-    this.getStore()
+    console.log('hello')
+    this.checkPlatform() 
     this.getCompany()
   }
 
@@ -68,17 +71,7 @@ export class LoginPage implements OnInit {
     console.log( this.store_info); 
   }
 
-  getStore(){
-    this.api.getStores().subscribe(data =>{
-       console.log(data)
-       let res = data
-       this.stores = res['data']
-      this.setStoreLocaly()
-      this.setCurrentStoreLocaly()
-     }, (err) => {
-     console.log(err);
-   })  
-  }
+   
 
   getCompany(){
     this.api.getCompany().subscribe(data =>{
@@ -90,24 +83,9 @@ export class LoginPage implements OnInit {
    })  
   }
 
-  setCurrentStoreLocaly(){
-    this.store_info = {id:"1" ,store_ref:"sh" , store_name:"sooq sha'by" , location :"" } 
-    this.USER_INFO.store_id = this.store_info.id
-    this.storage.set('STORE_INFO', this.store_info).then((response) => { 
-      this.storage.set('offline' , false).then((response) => { 
-
-      });
-    })
-
-  }
  
-  setStoreLocaly(){ 
-    this.storage.set('STORES', this.stores).then((response) => { 
-      this.storage.set('offline' , false).then((response) => { 
-
-      });
-    })
-  }
+ 
+   
 
   async presentToast(msg,color?) {
     const toast = await this.toast.create({

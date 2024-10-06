@@ -15,7 +15,7 @@ import { AuthServiceService } from './auth/auth-service.service';
 import {IonicStorageModule  } from '@ionic/storage-angular';
 import { SelectAllDirective } from './select-all.directive';
 import { CommonModule } from '@angular/common'; 
-import { QRCodeModule } from 'angularx-qrcode';
+//import { QRCodeModule } from 'angularx-qrcode';
 //import { ShareModule } from './shareModule/share-module/share-module.module';
 @NgModule({
   declarations: [AppComponent, SelectAllDirective],

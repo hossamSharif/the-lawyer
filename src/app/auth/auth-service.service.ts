@@ -63,7 +63,8 @@ export class AuthServiceService {
     //console.log('Loading dismissed with role:', role);
   }
 
-  ifLoggedIn() {
+ async  ifLoggedIn() {
+    await this.storage.create();
     this.storage.get('USER_INFO').then((response) => {
       if (response) {
         this.authState.next(true);

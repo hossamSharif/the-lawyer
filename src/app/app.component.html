@@ -1,10 +1,8 @@
 
 <ion-app   dir="rtl"> 
-  <ion-content>
-      
-    
-
-    <ion-split-pane contentId="side" *ngIf="isAuth == true" >   
+  <ion-content> 
+    <ion-split-pane contentId="side">   
+      <!-- *ngIf="isAuth == true"  -->
     <ion-menu contentId="side" side="start"  dir="rtl"   type="overlay"> 
         <ion-list id="inbox-list" dir="rtl" class="listBg h100">
           <ion-list-header>نظام مكاتب المحاماة  </ion-list-header>
@@ -71,7 +69,8 @@
         </ion-list> 
      
     </ion-menu>
-        <ion-router-outlet id="side" *ngIf="isAuth == true"> </ion-router-outlet> 
+    <!-- *ngIf="isAuth == true" -->
+        <ion-router-outlet id="side" > </ion-router-outlet> 
     </ion-split-pane> 
   </ion-content>   
   <!-- <ion-router-outlet *ngIf="isAuth == false"></ion-router-outlet> -->

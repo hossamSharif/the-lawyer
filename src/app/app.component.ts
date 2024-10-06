@@ -62,7 +62,7 @@ export class AppComponent {
  
   initializeApp() { 
    
-    this.auth();  
+   this.auth();  
   }
   
   async  getAppInfo(){
@@ -128,9 +128,9 @@ export class AppComponent {
     }
 
   
-async auth (){
-  await this.storage.create(); 
-  await this.authenticationService.authState.subscribe(state => {
+async auth (){ 
+   this.storage.create().then(() => {
+    this.authenticationService.authState.subscribe(state => {
     this.isAuth = this.authenticationService.isAuthenticated()
     if (state) { 
       this.getAppInfo()  
@@ -139,6 +139,8 @@ async auth (){
       this.router.navigate(['folder/login']);
     }
   });
+ })
+
  
 }
 

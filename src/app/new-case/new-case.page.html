@@ -1,16 +1,13 @@
 <ion-header>
   <ion-toolbar translucent dir="rtl"  class="toolPadding">
-    <ion-title class="fontLarge">قضية جديدة </ion-title>
-
-     <ion-buttons slot="end" class="ion-margin-end" (click)="close()">
-       
+    <ion-title class="fontLarge">قضية جديدة </ion-title> 
+     <ion-buttons slot="end" class="ion-margin-end" (click)="close()"> 
       <div class="circleDev">
         <ion-button fill="clear">
           <ion-icon name="close-outline"  class="ico" ></ion-icon>
         </ion-button>  
       </div>  
-    </ion-buttons>
-   
+    </ion-buttons> 
   </ion-toolbar>
 </ion-header>
 
@@ -23,39 +20,28 @@
     </ion-col> 
   </ion-row>
 
-  <ion-row>
-    <ion-segment dir="rtl" (ionChange)="segmentCHange($event)" [(ngModel)]="segVal" class="ion-margin-top">
-      <ion-segment-button value="basics">
-        <ion-label class="segLable">البيانات الأساسية</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="nagz">
-        <ion-label class="segLable">بيانات ناجز</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="sessions">
-        <ion-label class="segLable"> الجلسات  </ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="files">
-        <ion-label class="segLable">الملفات   </ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-row>
+ 
 
-  <ion-row  *ngIf="segVal == 'basics'">
+  <ion-row >
     <ion-card class="w100">
       <ion-card-content>
+       
         <ion-grid>
+        <!-- <form [formGroup]="ionicForm" (ngSubmit)="saveBasics()" novalidate> -->
           <ion-row>
             <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding" ><strong> عنوان القضية </strong></ion-label>
+              <ion-label class="ion-padding" ><strong> عنوان القضية </strong>   </ion-label>
+              <ion-note style="float:left" color="danger" *ngIf="isSubmitted == true && newCase.case_title == '' "> الحقل مطلوب</ion-note>
               <ion-item class="custInput"> 
-                <ion-input placeholder="اكتب عنوان هنا "></ion-input>
+                <ion-input  [(ngModel)]="newCase.case_title" placeholder="عنوان القضية" ></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong> العميل </strong></ion-label>
+              <ion-note style="float:left" *ngIf="isSubmitted == true && newCase.client_id == 0 "> الحقل مطلوب</ion-note>
               <ion-item class="custInput" (click)="presentPopover($event)">
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
-                <ion-label> {{selectedItem.name}}     </ion-label>
+                <ion-label> {{selectedCustomer.cust_name}}     </ion-label>
                 <!-- <ion-button fill="clear" (click)="refresh('item')" slot="end">
                   <ion-icon name="refresh" color="success"></ion-icon>
                 </ion-button> -->
@@ -81,7 +67,7 @@
                     </ion-list>
                      <ion-list *ngIf="searchResult.length>0">
                       <ion-item lines="none" button *ngFor="let item of searchResult" (click)="selectFromPop(item)">
-                        {{item.name}} 
+                        {{item.cust_name}} 
                       </ion-item>
                     </ion-list> 
                   </ion-content>
@@ -92,6 +78,7 @@
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong> نوع القضية </strong></ion-label>
+              <ion-note style="float:left" *ngIf="isSubmitted == true && newCase.case_type == '' "> الحقل مطلوب</ion-note>
               <ion-item class="custInput"  (click)="presentPopoverNotif($event)" >  
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
                 <ion-label> {{selectedType.name}}     </ion-label>
@@ -120,6 +107,8 @@
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>   صفة الموكل </strong></ion-label>
+              <ion-note style="float:left" *ngIf="isSubmitted == true && newCase.client_role == '' "> الحقل مطلوب</ion-note>
+
               <ion-item class="custInput"  (click)="presentPopoverAgent($event)" >  
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
                 <ion-label> {{selectedAgent.name}}     </ion-label>
@@ -148,6 +137,8 @@
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>   تصنيف الخدمة </strong></ion-label>
+              <ion-note style="float:left" *ngIf="isSubmitted == true && newCase.service_classification == '' "> الحقل مطلوب</ion-note>
+
               <ion-item class="custInput"  (click)="presentPopoverServ($event)" >  
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
                 <ion-label> {{selectedServ.name}}     </ion-label>
@@ -176,6 +167,8 @@
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>   الفرع </strong></ion-label>
+              <!-- <ion-note style="float:left" *ngIf="isSubmitted == true && newCase.branch == '' "> الحقل مطلوب</ion-note> -->
+
               <ion-item class="custInput"  (click)="presentPopoverBranches($event)" >  
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
                 <ion-label> {{selectedBranch.name}}     </ion-label>
@@ -236,32 +229,37 @@
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong> إسم الخصم  </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-input placeholder="  "></ion-input>
+                <ion-input  [(ngModel)]="newCase.opponent_name" placeholder="" ></ion-input>
+                <!-- <ion-note slot="error" *ngIf="isSubmitted == true && errorControl.opponent_name.errors?.required"> الحقل مطلوب</ion-note> -->
               </ion-item>
             </ion-col>
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong> رقم هوية الخصم </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-input placeholder="  "></ion-input>
+                <ion-input [(ngModel)]="newCase.opponent_id" placeholder="" ></ion-input>
+                <!-- <ion-note slot="error" *ngIf="isSubmitted == true && errorControl.opponent_id.errors?.required"> الحقل مطلوب</ion-note> -->
+
               </ion-item>
             </ion-col>
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong> إسم ممثل الخصم  </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-input placeholder="  "></ion-input>
+                <ion-input  [(ngModel)]="newCase.opponent_representative" placeholder="" ></ion-input>
+                <!-- <ion-note slot="error" *ngIf="isSubmitted == true && errorControl.opponent_representative.errors?.required"> الحقل مطلوب</ion-note> -->
+
               </ion-item>
             </ion-col>
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>    تاريخ فتح القضية  </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-datetime-button datetime="datetime"></ion-datetime-button>
+                <ion-datetime-button   datetime="datetime"></ion-datetime-button>
               </ion-item>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
-                  <ion-datetime id="datetime"></ion-datetime>
+                  <ion-datetime [(ngModel)]="newCase.case_open_date" presentation="date" id="datetime"></ion-datetime>
                 </ng-template>
               </ion-modal>
             </ion-col>
@@ -269,11 +267,11 @@
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>      الموعد النهائي    </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-datetime-button datetime="datetime"></ion-datetime-button>
+                <ion-datetime-button  datetime="datetime2"></ion-datetime-button>
               </ion-item>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
-                  <ion-datetime id="datetime"></ion-datetime>
+                  <ion-datetime [(ngModel)]="newCase.deadline" presentation="date" id="datetime2"></ion-datetime>
                 </ng-template>
               </ion-modal>
             </ion-col>
@@ -282,18 +280,20 @@
               <ion-label class="ion-padding"><strong> فريق العمل   </strong></ion-label>
               <ion-item class="custInput"  (click)="presentPopoverCustType($event)" >  
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
-                <ion-label *ngFor="let tm of selectedTeamArr"> 
-                  <ion-text >{{tm.name}}</ion-text>
+                <ion-label *ngFor="let tm of selectedLawyersTeamArr"> 
+                  <ion-text >{{tm.full_name}}</ion-text>
                 </ion-label>
+                <!-- <ion-note slot="error" *ngIf="isSubmitted == true && selectedLawyersTeamArr.length == 0"> الحقل مطلوب</ion-note> -->
+                
               </ion-item>
               <ion-popover  #popoverِCustomer [isOpen]="isOpenCustType" (didDismiss)="didDissmisCustType()">
                 <ng-template>
                   <ion-content  dir="rtl">  
-                    <ion-list class="ion-text-center"  *ngIf="custTypeArr.length>0">
-                     <ion-item button dir="rtl" lines="none" *ngFor="let log of custTypeArr ; let i = index"  (ionChange)="checkedTeam($event , log ,i)" >
-                      <ion-label>{{log.name}} </ion-label>
+                    <ion-list class="ion-text-center"  *ngIf="usersArr.length>0">
+                     <ion-item button dir="rtl" lines="none" *ngFor="let log of usersArr ; let i = index"  (ionChange)="checkedTeam($event , log ,i)" >
+                      <ion-label>{{log.full_name}} </ion-label>
                       <ion-checkbox  slot="start" [(ngModel)]="log.checked" > </ion-checkbox>
-                   </ion-item> 
+                    </ion-item> 
                     </ion-list> 
                   </ion-content>
                 </ng-template>
@@ -306,6 +306,7 @@
               <ion-item class="custInput"  (click)="presentPopoverInvoice($event)" >  
                 <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
                 <ion-label> {{selectedInvoice.name}}     </ion-label>
+                
               </ion-item>
               <ion-popover  #popoverِِِِInvoice [isOpen]="isOpenInvoice" (didDismiss)="didDissmisInvoice()">
                 <ng-template>
@@ -363,14 +364,14 @@
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>  قيمة ساعة العمل    </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-input placeholder="  "></ion-input>
+                <ion-input [(ngModel)]="newCase.work_hour_value" placeholder="  "></ion-input>
               </ion-item>
             </ion-col>
 
             <ion-col size="4" class="ion-margin-top">
               <ion-label class="ion-padding"><strong>    ساعة العمل المقدرة </strong></ion-label>
               <ion-item class="custInput"> 
-                <ion-input placeholder=""></ion-input>
+                <ion-input [(ngModel)]="newCase.estimated_work_hours" placeholder="" ></ion-input>
               </ion-item>
             </ion-col>
 
@@ -401,7 +402,142 @@
               </ion-popover>
             </ion-col>
           </ion-row>
+        <ion-item-divider></ion-item-divider>
+  <!-- najz data -->
+
+  <ion-row>
+           
+             
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding" ><strong> رقم القيد ناجز</strong></ion-label>
+          <ion-item class="custInput"> 
+            <ion-input [(ngModel)]="newCase.constraintId_najz" placeholder="" ></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding" ><strong> رقم القضية </strong></ion-label>
+          <ion-item class="custInput"> 
+            <ion-input [(ngModel)]="newCase.caseId_najz" placeholder="" ></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding" ><strong> رقم القضية بالأرشيف</strong></ion-label>
+          <ion-item class="custInput"> 
+            <ion-input [(ngModel)]="newCase.archive_id_najz" placeholder="" ></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding"><strong>    تاريخ  الدعوة في ناجز </strong></ion-label>
+          <ion-item class="custInput"> 
+            <ion-datetime-button datetime="datetime3"></ion-datetime-button>
+          </ion-item>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime [(ngModel)]="newCase.case_open_date_najz" presentation="date"  id="datetime3"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-col>
+        <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding"><strong> تصنيف القضية </strong></ion-label>
+          <ion-item class="custInput"  (click)="presentPopoverCategNagz($event)" >  
+            <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
+            <ion-label> {{selectedCategNagz.name}}     </ion-label>
+          </ion-item>
+          <ion-popover  #popoverCategNagz [isOpen]="isOpenCategNagz" (didDismiss)="didDissmisCategNagz()">
+            <ng-template>
+              <ion-content  dir="rtl">  
+                <ion-list class="ion-text-center"  *ngIf="caseCategArrNagz.length>0">
+                <ion-item button lines="none" *ngFor="let log of caseCategArrNagz" (click)="selectFromPopCategNagz(log)">
+                 <ion-grid>
+                   <ion-row class="ion-justify-content-center">
+                     <ion-col size="9"> 
+                         {{log.name}}    
+                     </ion-col>
+                     <!-- <ion-col size="3">
+                       <ion-text color = "primary">{{log.datee | dateAgo}}</ion-text>
+                     </ion-col> -->
+                   </ion-row>
+                 </ion-grid>
+               </ion-item> 
+                </ion-list> 
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-col>
+
+
+        <!-- <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding"><strong> نوع القضية </strong></ion-label>
+          <ion-item class="custInput"  (click)="presentPopoverCaseNagz($event)" >  
+            <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
+            <ion-label> {{selectedCaseNagz.name}}     </ion-label>
+          </ion-item>
+          <ion-popover  #popoverCaseNagz [isOpen]="isOpenCaseNagz" (didDismiss)="didDissmisCaseNagz()">
+            <ng-template>
+              <ion-content  dir="rtl">  
+                <ion-list class="ion-text-center"  *ngIf="caseTypeArrNagz.length>0">
+                 <ion-item button lines="none" *ngFor="let log of caseTypeArrNagz" (click)="selectFromPopCaseNagz(log)">
+                 <ion-grid >
+                   <ion-row class="ion-justify-content-center">
+                     <ion-col size="9"> 
+                         {{log.name}}    
+                     </ion-col> 
+                   </ion-row>
+                 </ion-grid>
+               </ion-item> 
+                </ion-list> 
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-col> -->
+
+        
+
+        <ion-col size="4" class="ion-margin-top">
+          <ion-label class="ion-padding"><strong> طلبات المدعي </strong></ion-label>
+          <ion-item class="custInput"> 
+            <ion-input [(ngModel)]="newCase.Plaintiff_Requests" placeholder=" " ></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="4" class="ion-margin-top">
+       <ion-label class="ion-padding"><strong> إرسال تقرير </strong></ion-label>
+         <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-item lines="none" dir="rtl">
+                <ion-label> رسالة نصية SMS </ion-label>  
+                <ion-checkbox  slot="start"> </ion-checkbox>
+              </ion-item>
+            </ion-col>
+
+            <ion-col>
+              <ion-item lines="none" dir="rtl">
+              <ion-label> البريد  </ion-label> 
+                <ion-checkbox slot="start"> </ion-checkbox>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+         </ion-grid>
+        </ion-col>
+
+        <ion-col size="12" class="ion-margin-top">
+          <ion-label class="ion-padding"><strong> موضوع الدعوة </strong></ion-label>
+          <ion-item class="custInput"> 
+              <ion-textarea [(ngModel)]="newCase.case_subject" placeholder="Type something here" [autoGrow]="true">
+
+              </ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  
+     </ion-row>
+    <!-- </form> -->
         </ion-grid>
+       
       </ion-card-content>
 
       <ion-card-header class="listHed">
@@ -413,423 +549,12 @@
     </ion-card>
   </ion-row>
 
-  <ion-row  *ngIf="segVal == 'nagz'">
-    <ion-card class="w100">
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding" ><strong> رقم القيد </strong></ion-label>
-              <ion-item class="custInput"> 
-                <ion-input placeholder=""></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding" ><strong> رقم القضية </strong></ion-label>
-              <ion-item class="custInput"> 
-                <ion-input placeholder=""></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding" ><strong> رقم القضية بالأرشيف</strong></ion-label>
-              <ion-item class="custInput"> 
-                <ion-input placeholder=""></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding"><strong>    تاريخ  الدعوة  </strong></ion-label>
-              <ion-item class="custInput"> 
-                <ion-datetime-button datetime="datetime"></ion-datetime-button>
-              </ion-item>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="datetime"></ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-col>
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding"><strong> تصنيف القضية </strong></ion-label>
-              <ion-item class="custInput"  (click)="presentPopoverCategNagz($event)" >  
-                <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
-                <ion-label> {{selectedCategNagz.name}}     </ion-label>
-              </ion-item>
-              <ion-popover  #popoverCategNagz [isOpen]="isOpenCategNagz" (didDismiss)="didDissmisCategNagz()">
-                <ng-template>
-                  <ion-content  dir="rtl">  
-                    <ion-list class="ion-text-center"  *ngIf="caseCategArrNagz.length>0">
-                     <ion-item button lines="none" *ngFor="let log of caseCategArrNagz" (click)="selectFromPopCategNagz(log)">
-                     <ion-grid>
-                       <ion-row class="ion-justify-content-center">
-                         <ion-col size="9"> 
-                             {{log.name}}    
-                         </ion-col>
-                         <!-- <ion-col size="3">
-                           <ion-text color = "primary">{{log.datee | dateAgo}}</ion-text>
-                         </ion-col> -->
-                       </ion-row>
-                     </ion-grid>
-                   </ion-item> 
-                    </ion-list> 
-                  </ion-content>
-                </ng-template>
-              </ion-popover>
-            </ion-col>
+  
 
+ 
 
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding"><strong> نوع القضية </strong></ion-label>
-              <ion-item class="custInput"  (click)="presentPopoverCaseNagz($event)" >  
-                <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
-                <ion-label> {{selectedCaseNagz.name}}     </ion-label>
-              </ion-item>
-              <ion-popover  #popoverCaseNagz [isOpen]="isOpenCaseNagz" (didDismiss)="didDissmisCaseNagz()">
-                <ng-template>
-                  <ion-content  dir="rtl">  
-                    <ion-list class="ion-text-center"  *ngIf="caseTypeArrNagz.length>0">
-                     <ion-item button lines="none" *ngFor="let log of caseTypeArrNagz" (click)="selectFromPopCaseNagz(log)">
-                     <ion-grid >
-                       <ion-row class="ion-justify-content-center">
-                         <ion-col size="9"> 
-                             {{log.name}}    
-                         </ion-col>
-                         <!-- <ion-col size="3">
-                           <ion-text color = "primary">{{log.datee | dateAgo}}</ion-text>
-                         </ion-col> -->
-                       </ion-row>
-                     </ion-grid>
-                   </ion-item> 
-                    </ion-list> 
-                  </ion-content>
-                </ng-template>
-              </ion-popover>
-            </ion-col>
-
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding"><strong>  أسانيد القضية </strong></ion-label>
-              <ion-item class="custInput"> 
-                <ion-input placeholder="  "></ion-input>
-              </ion-item>
-            </ion-col>
-
-            <ion-col size="4" class="ion-margin-top">
-              <ion-label class="ion-padding"><strong> طلبات المدعي </strong></ion-label>
-              <ion-item class="custInput"> 
-                <ion-input placeholder="  "></ion-input>
-              </ion-item>
-            </ion-col>
-
-            <ion-col size="4" class="ion-margin-top">
-           <ion-label class="ion-padding"><strong> إرسال تقرير </strong></ion-label>
-             <ion-grid>
-              <ion-row>
-                <ion-col>
-                  <ion-item lines="none" dir="rtl">
-                    <ion-label> رسالة نصية SMS </ion-label>  
-                    <ion-checkbox  slot="start"> </ion-checkbox>
-                  </ion-item>
-                </ion-col>
-
-                <ion-col>
-                  <ion-item lines="none" dir="rtl">
-                  <ion-label> البريد  </ion-label> 
-                    <ion-checkbox slot="start"> </ion-checkbox>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-             </ion-grid>
-            </ion-col>
-
-            <ion-col size="12" class="ion-margin-top">
-              <ion-label class="ion-padding"><strong> موضوع الدعوة </strong></ion-label>
-              <ion-item class="custInput"> 
-                  <ion-textarea placeholder="Type something here"[autoGrow]="true">
-
-                  </ion-textarea>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-
-      <ion-card-header class="listHed">
-        <ion-button   fill="outline" (click)="saveNagz()"  color="medium" class="custButton rad10">
-          <ion-icon class="ico " color="dark" name="add-circle-outline"></ion-icon>
-             <ion-text color="dark"> حفــظ   </ion-text>     
-        </ion-button> 
-      </ion-card-header>
-    </ion-card>
-  </ion-row>
-
-  <!-- sesions  -->
-
-
-  <ion-row  *ngIf="segVal == 'sessions'">
-    <ion-grid class="ion-margin-start ion-margin-bottom ion-margin-end">
-      <ion-row class="ion-margin-top">
-        <ion-card class="w100 ion-margin-top">
-          <ion-card-header class="listHed">
-            <ion-button class="rad10"  fill="outline"  color="medium">
-              <ion-icon color="dark"  slot="icon-only" name="filter"></ion-icon>
-            </ion-button>
-            <ion-button class="rad10"  fill="outline"  color="medium">
-              <ion-icon  slot="icon-only" color="dark" name="refresh"></ion-icon>
-            </ion-button>
-            <ion-button   fill="outline" (click)="newSession()"  color="medium" class="custButton rad10">
-              <ion-icon class="ico " color="dark" name="add-circle-outline"></ion-icon>
-                <ion-text color="dark">جلسة جديدة </ion-text>     
-            </ion-button>
-          </ion-card-header>
-          <ion-grid class="ion-no-padding"> 
-            <ion-row>
-              <ion-col size="12" class="ion-no-padding custCol">
-                <table  class="table"  >
-                  <tr>
-                    <th>
-                      عنوان الجلسة  
-                    </th> 
-                    <th>   الحضور
-                    </th> 
-                    <th>  العميل 
-                    </th>
-                    <th >تاريخ الجلسة   
-                    </th>
-                    <th>  ضابط الجلسة    
-                    </th> 
-                      
-                  
-                    <th><strong>تعديل</strong>  </th> 
-                    
-                  </tr>
-                  <tr>
-                    <td>
-                      <ion-text>            </ion-text>
-                      
-                    </td>
-                    <td>
-                      <ion-text>       </ion-text>
-                      
-                    </td>
-                  
-                  
-                    <td>
-                      <ion-text>          </ion-text>
-                    </td> 
-                    <td>
-                      <ion-text>           </ion-text> 
-                    </td>
-                    <td>
-                      <ion-text  >   12/12/2012        </ion-text>
-                      
-                    </td> 
-                  
-                  
-                  
-                    
-                    <td>
-                      <ion-button fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
-                    </td>
-                    
     
-                    </tr>
-                    <tr>
-                      <td>
-                        <ion-text>              </ion-text>
-                        
-                      </td>
-                      <td>
-                        <ion-text>       </ion-text>
-                        
-                      </td>
-                    
-                    
-                      <td>
-                        <ion-text>          </ion-text>
-                      </td> 
-                      <td>
-                        <ion-text>       </ion-text> 
-                      </td>
-                      <td>
-                        <ion-text  >            </ion-text>
-                        
-                      </td> 
-                    
-                    
-                    
-                      
-                      <td>
-                        <ion-button fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
-                      </td>
-                      
-      
-                      </tr> 
-                    
-                      
-    
-    
-                      
-    
-    
-    
-                  <!-- <tr>
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                    <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                    <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  </tr> -->
-                  
-                </table> 
-                </ion-col>
-            </ion-row>
-          </ion-grid> 
-    
-          <!-- <ion-card-header class="listHed">
-            <ion-button class="rad10"  fill="clear"   >
-              <ion-icon color="dark"   name="chevron-forward"></ion-icon>
-              <ion-text color="dark" >السابق</ion-text> 
-            </ion-button>
-            <ion-button class="rad10 fleft"  fill="clear"   > 
-              <ion-text color="dark"  >التالي</ion-text>
-              <ion-icon color="dark"   name="chevron-back"></ion-icon> 
-            </ion-button>
-          </ion-card-header> -->
-        </ion-card>
-      </ion-row>
-    </ion-grid>
-   </ion-row>
-
-   <!-- files -->
-   <ion-row  *ngIf="segVal == 'files'">
-    <ion-grid class="ion-margin-start ion-margin-bottom ion-margin-end">
-      <ion-row class="ion-margin-top">
-        <ion-card class="w100 ion-margin-top">
-          <ion-card-header class="listHed">
-            <ion-button class="rad10"  fill="outline"  color="medium">
-              <ion-icon color="dark"  slot="icon-only" name="filter"></ion-icon>
-            </ion-button>
-            <ion-button class="rad10"  fill="outline"  color="medium">
-              <ion-icon  slot="icon-only" color="dark" name="refresh"></ion-icon>
-            </ion-button>
-            <ion-button   fill="outline" (click)="newSession()"  color="medium" class="custButton rad10">
-              <ion-icon class="ico " color="dark" name="add-circle-outline"></ion-icon>
-                <ion-text color="dark"> إضافة ملف </ion-text>     
-            </ion-button>
-          </ion-card-header>
-          <ion-grid class="ion-no-padding"> 
-            <ion-row>
-              <ion-col size="12" class="ion-no-padding custCol">
-                <table  class="table"  >
-                  <tr>
-                    <th>
-                      وصف الملف  
-                    </th> 
-                    <th>نوع الملف    
-                    </th> 
-                    <th>تاريخ الإضافة   
-                    </th>
-                    
-                      
-                  
-                    <th><strong>تحميل</strong>  </th> 
-                    <th><strong>تعديل</strong>  </th> 
-                    
-                  </tr>
-                  <tr>
-                    <td>
-                      <ion-text>            </ion-text>
-                      
-                    </td>
-                    <td>
-                      <ion-text>       </ion-text>
-                      
-                    </td>
-                  
-                  
-                    <td>
-                      <ion-text>          </ion-text>
-                    </td> 
-                     
-                    <td>
-                      <ion-text  >   12/12/2012        </ion-text>
-                      
-                    </td> 
-                  
-                    <td>
-                      <ion-button fill="clear" ><ion-icon name="download" color="meduim"></ion-icon></ion-button>
-                    </td>
-                    <td>
-                      <ion-button fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
-                    </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <ion-text> </ion-text>
-                      </td>
-                      <td>
-                        <ion-text></ion-text>
-                      </td>
-                    
-                    
-                      <td>
-                        <ion-text>          </ion-text>
-                      </td> 
-                      <td>
-                        <ion-text>       </ion-text> 
-                      </td>
-                      <td>
-                        <ion-text  >            </ion-text>
-                        
-                      </td> 
-                    
-                    
-                    
-                      
-                      <td>
-                        <ion-button fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
-                      </td>
-                      
-      
-                      </tr> 
-                    
-                      
-    
-    
-                      
-    
-    
-    
-                  <!-- <tr>
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                    <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                    <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                    <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  </tr> -->
-                  
-                </table> 
-                </ion-col>
-            </ion-row>
-          </ion-grid> 
-    
-          <!-- <ion-card-header class="listHed">
-            <ion-button class="rad10"  fill="clear"   >
-              <ion-icon color="dark"   name="chevron-forward"></ion-icon>
-              <ion-text color="dark" >السابق</ion-text> 
-            </ion-button>
-            <ion-button class="rad10 fleft"  fill="clear"   > 
-              <ion-text color="dark"  >التالي</ion-text>
-              <ion-icon color="dark"   name="chevron-back"></ion-icon> 
-            </ion-button>
-          </ion-card-header> -->
-        </ion-card>
-      </ion-row>
-    </ion-grid>
-   </ion-row>
-
+ 
   </ion-grid>
 
 </ion-content>

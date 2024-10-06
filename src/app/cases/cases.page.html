@@ -47,121 +47,100 @@
         <ion-button class="rad10"  fill="outline"  color="medium">
           <ion-icon color="dark"  slot="icon-only" name="filter"></ion-icon>
         </ion-button>
-        <ion-button class="rad10"  fill="outline"  color="medium">
+        <ion-button class="rad10"  fill="outline"  color="medium" (click)="refresh()">
           <ion-icon  slot="icon-only" color="dark" name="refresh"></ion-icon>
         </ion-button>
       </ion-card-header>
       <ion-grid class="ion-no-padding"> 
         <ion-row>
           <ion-col size="12" class="ion-no-padding custCol">
-             <table  class="table"  >
-               <tr>
-                <th>
-                  عنوان القضية  
-                </th> 
-                <th>  نوع القضية
-                </th> 
-                <th>  العميل 
-                </th>
-                <th >حالة القضية
-                </th>
-                <th>    تاريخ فتح القضية
-                </th> 
-                  
-                <th><strong>تعديل</strong>  </th> 
-                
-               </tr>
-               <tr>
-                <td>
-                  <ion-text>   منازعة عي ورثة    </ion-text>
-                  
-                </td>
-                <td>
-                  <ion-text>مدنية      </ion-text>
-                  
-                </td>
+            <table  class="table"  >
+              <tr>
+               <th>
+                 عنوان القضية  
+               </th> 
+               <th>  نوع القضية
+               </th> 
+               <th>  العميل 
+               </th>
+               <th >حالة القضية
+               </th>
+               <th>    تاريخ فتح القضية
+               </th> 
+               <th>    الجلسات
+              </th> 
+              <th>    الملفات المرفقة 
+              </th> 
+                 
+               <th><strong>تعديل</strong>  </th> 
                
+              </tr>
                
-                <td>
-                  <ion-text>خالد الجهني       </ion-text>
+               <tr *ngFor="let case of caseArr"  >
+                 <td>
+                   <ion-text> {{case.case_title}} </ion-text> 
+                 </td>
+                 <td>
+                   <ion-text>{{case.case_type}} </ion-text> 
+                 </td>
+                 <td>
+                   <ion-text> {{case.client_name}}    </ion-text>
+                 </td> 
+                 <td>
+                   <ion-text *ngIf="case.case_status == 1">  جاري العمل       </ion-text> 
+                   <ion-text  *ngIf="case.case_status == 0"> مغلقة      </ion-text> 
+                 </td>
+                 <td>
+                   <ion-text  > {{case.case_open_date}}       </ion-text> 
+                 </td>
+                 
+                 <td>
+                  <ion-button fill="clear" (click)="getSessions(case)"><ion-icon name="people-outline" color="meduim" ></ion-icon></ion-button>
+                </td> 
+                 <td> 
+                  <ion-button fill="clear" (click)="getFiles(case)"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
                 </td> 
                 <td>
-                  <ion-text>جاري العمل        </ion-text> 
+                  <ion-button fill="clear" (click)="getCaseDetails(case)"><ion-icon name="create-outline" color="meduim"  ></ion-icon></ion-button>
                 </td>
-                <td>
-                  <ion-text  >   12/12/2012        </ion-text>
-                  
-                </td> 
-               
-               
-               
-                
-                <td>
-                  <ion-button fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
-                </td>
-                
-
-                </tr>
-                <tr>
-                  <td>
-                    <ion-text>   إعتداء بالضرب        </ion-text>
-                    
-                  </td>
-                  <td>
-                    <ion-text>جنائية      </ion-text>
-                    
-                  </td>
-                 
-                 
-                  <td>
-                    <ion-text>محمد الجهني       </ion-text>
-                  </td> 
-                  <td>
-                    <ion-text>مغلقة      </ion-text> 
-                  </td>
-                  <td>
-                    <ion-text  >   12/12/2012        </ion-text>
-                    
-                  </td> 
-                 
-                 
-                 
-                  
-                  <td>
-                    <ion-button fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
-                  </td>
-                  
-  
-                  </tr> 
-                
-                  
-
-
-                  
-
-
-
-               <!-- <tr>
-                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-               </tr> -->
               
-             </table> 
+                
+               </tr> 
+               
+                 
+
+                <tr *ngIf="loading == true">
+               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+               <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+              </tr>   
+            </table>
+            
+            
+            <ion-row class="ion-justify-content-center ion-margin-top" *ngIf="showEmpty == true"> 
+             <ion-col size="4" class="ion-text-center">  
+               <ion-label> 
+                 <ion-icon style="font-size: 30px;"  name="archive-outline"></ion-icon>
+              </ion-label>
+              <h4> لا توجد سجلات </h4> 
              </ion-col>
+           </ion-row>
+          </ion-col>
         </ion-row>
       </ion-grid> 
 
       <ion-card-header class="listHed">
-        <ion-button class="rad10"  fill="clear"   >
+        <ion-button class="rad10"  fill="clear">
           <ion-icon color="dark"   name="chevron-forward"></ion-icon>
           <ion-text color="dark" >السابق</ion-text> 
         </ion-button>
-        <ion-button class="rad10 fleft"  fill="clear"   > 
+        <ion-button class="rad10 fleft"  fill="clear"> 
           <ion-text color="dark"  >التالي</ion-text>
           <ion-icon color="dark"   name="chevron-back"></ion-icon> 
         </ion-button>

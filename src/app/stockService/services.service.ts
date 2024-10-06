@@ -25,6 +25,22 @@ import { Storage } from '@ionic/storage';
 
 //laywer api 
 
+uploadCaseFiles(file){
+  //console.log(file)
+  return this.http.post('https://dashboard.gvstech.net/myapi2/api/'+'upload.php', 
+   file
+   )
+}
+
+
+saveCaseLawyer( caseLawyer){  
+  caseLawyer = JSON.stringify(caseLawyer) 
+  return this.http.post(this.api+'caselawyers/createMulti.php',
+    caseLawyer
+  )
+}
+
+
 getTopUsers( ){ 
   // let params = new HttpParams() 
   // params=params.append('store_id' , store_id)
@@ -41,35 +57,120 @@ getTopUsers( ){
     return this.http.get(this.api+'customer/readByStore.php')
   }
 
+  getSessionsByCaseId(case_id ){ 
+    let params = new HttpParams() 
+    params=params.append('case_id' , case_id)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'sessions/getSessionsByCaseId.php' ,{params: params})
+  }
+  getCaseFilesByCaseId(case_id ){ 
+    let params = new HttpParams() 
+    params=params.append('case_id' , case_id)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'caseFiles/getCaseFilesByCaseId.php' ,{params: params})
+  }
+
+  getTopCases( ){ 
+    // let params = new HttpParams() 
+    // params=params.append('store_id' , store_id)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'cases/read.php')
+  }
+  getTopConsultation( ){ 
+    // let params = new HttpParams() 
+    // params=params.append('store_id' , store_id)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'consultations/read.php')
+  }
+
   saveCostumer(customer){
     return this.http.post(this.api+'customer/create.php', 
       customer
      )
   }
+
+  
+  saveSession(sesion){
+    return this.http.post(this.api+'sessions/create.php', 
+      sesion
+     )
+  }
+
+  saveCaseFile(caseFile){
+    return this.http.post(this.api+'caseFiles/create.php', 
+      caseFile
+     )
+  }
+
+  saveConsultaion(Consultaion){
+    return this.http.post(this.api+'consultations/create.php', 
+      Consultaion
+     )
+  }
+
+  saveCase(newCase){
+    return this.http.post(this.api+'cases/create.php', 
+      newCase
+     )
+  }
+
+  updateCase(newCase){
+    return this.http.post(this.api+'cases/update.php', 
+      newCase
+     )
+  }
+
+  updateConsultaion(Consultaion){
+    return this.http.post(this.api+'consultations/update.php', 
+      Consultaion
+     )
+  }
+
+  updateCaseFile(caseFile){
+    return this.http.post(this.api+'caseFiles/update.php', 
+      caseFile
+     )
+  }
+
+  updateSession(newCase){
+    return this.http.post(this.api+'sessions/update.php', 
+      newCase
+     )
+  }
+
   saveUser(user){
     return this.http.post(this.api+'users/create.php', 
       user
      )
   }
 
-
-  updateCustomer(cust){
-    return this.http.post(this.api+'customer/update.php', 
-     cust
-     )
-  }
-  
-  deleteCustomer(cust_id){
+  deleteCaseLawers(case_id){
     let params = new HttpParams()
-    params= params.append('cust_id' , cust_id )
-      return this.http.delete(this.api+'customer/delete.php', {params: params})
+    params= params.append('case_id' , case_id )
+      return this.http.delete(this.api+'caselawyers/deleteMulti.php', {params: params})
     }
 
-  updateUser(cust){
-    return this.http.post(this.api+'users/update.php', 
-     cust
-     )
-  }
+    updateCustomer(cust){
+      return this.http.post(this.api+'customer/update.php', 
+      cust
+      )
+    }
+  
+    deleteCustomer(cust_id){
+      let params = new HttpParams()
+      params= params.append('cust_id' , cust_id )
+        return this.http.delete(this.api+'customer/delete.php', {params: params})
+    }
+
+    updateUser(cust){
+      return this.http.post(this.api+'users/update.php', 
+      cust
+      )
+    }
 
   // end of laywer api
 

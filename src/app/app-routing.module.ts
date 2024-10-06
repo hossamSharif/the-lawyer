@@ -4,12 +4,12 @@ import { AuthGaurdService } from './auth/auth-gaurd.service';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'folder/login',
+    redirectTo: 'folder/dashboard',
     pathMatch: 'full'
   },
   {
-    path: 'folder/practice',
-    loadChildren: () => import('./practice/practice.module').then( m => m.PracticePageModule)
+    path: 'folder/dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then( m => m.DashboardPageModule)
   },
   {
     path: 'folder/login',
@@ -111,11 +111,11 @@ const routes: Routes = [
     loadChildren: () => import('./consultations/consultations.module').then( m => m.ConsultationsPageModule)
   },
   {
-    path: 'folder/new-consultation',
+    path: 'new-consultation',
     loadChildren: () => import('./new-consultation/new-consultation.module').then( m => m.NewConsultationPageModule)
   },
   {
-    path: 'folder/new-session',
+    path: 'new-session',
     loadChildren: () => import('./new-session/new-session.module').then( m => m.NewSessionPageModule)
   },
   {
@@ -127,7 +127,7 @@ const routes: Routes = [
     loadChildren: () => import('./edit-customer/edit-customer.module').then( m => m.EditCustomerPageModule)
   },
   {
-    path: 'users',
+    path: 'folder/users',
     loadChildren: () => import('./users/users.module').then( m => m.UsersPageModule)
   },
   {
@@ -137,7 +137,33 @@ const routes: Routes = [
   {
     path: 'add-user',
     loadChildren: () => import('./add-user/add-user.module').then( m => m.AddUserPageModule)
+  },
+  {
+    path: 'edit-case',
+    loadChildren: () => import('./edit-case/edit-case.module').then( m => m.EditCasePageModule)
+  },
+  {
+    path: 'edit-session',
+    loadChildren: () => import('./edit-session/edit-session.module').then( m => m.EditSessionPageModule)
+  },
+  {
+    path: 'files',
+    loadChildren: () => import('./files/files.module').then( m => m.FilesPageModule)
+  },
+  {
+    path: 'edit-consultation',
+    loadChildren: () => import('./edit-consultation/edit-consultation.module').then( m => m.EditConsultationPageModule)
+  },  {
+    path: 'new-casefile',
+    loadChildren: () => import('./new-casefile/new-casefile.module').then( m => m.NewCasefilePageModule)
+  },
+  {
+    path: 'edit-casefile',
+    loadChildren: () => import('./edit-casefile/edit-casefile.module').then( m => m.EditCasefilePageModule)
   }
+
+
+
   
   
 ];

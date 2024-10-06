@@ -3,7 +3,42 @@ import { FilterPipe } from './pipe';
 import { FilterPipe2 } from './pipe2';
 import { FilterPipe3  } from './pipe3';
 import { Location } from '@angular/common'; 
+import { ServicesService } from '../stockService/services.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LoadingController, ToastController } from '@ionic/angular';
+import { NavigationExtras, Route, Router } from '@angular/router';
 var ls = window.localStorage;
+
+export interface Case {
+  id: number;
+  case_title: string;
+  client_id: number;
+  case_type: string;
+  client_role: string;
+  service_classification: string;
+  branch: string;
+  court_name: string;
+  opponent_name: string;
+  opponent_id: number;
+  opponent_representative: string;
+  case_open_date: String;
+  deadline: String;
+  billing_type: string;
+  claim_type: string;
+  work_hour_value: number;
+  estimated_work_hours: number;
+  case_status: string;
+  constraintId_najz: string;
+  archive_id_najz: string;
+  caseId_najz: string;
+  case_classification_najz: string;
+  case_open_date_najz: String;
+  case_docs: string;
+  Plaintiff_Requests: string;
+  case_status_najz: string;
+  case_subject: string;
+}
+
 @Component({
   selector: 'app-new-case',
   templateUrl: './new-case.page.html',
@@ -11,9 +46,12 @@ var ls = window.localStorage;
 })
 
 
+// Example usage:
+
+
 export class NewCasePage implements OnInit {
-segVal:string = "basics"
-@ViewChild('popInput') popInput; 
+  segVal:string = "basics"
+  @ViewChild('popInput') popInput; 
   @ViewChild('popover') popover;
   @ViewChild('popoverNotif') popoverNotif;
   @ViewChild('popoverCase') popoverCase;
@@ -27,10 +65,13 @@ segVal:string = "basics"
   @ViewChild('popoverِِِِInvoice') popoverِِِِInvoice;
   @ViewChild('popoverِِِِServClass') popoverِِِِServClass;
 
-  isOpenCustType = false ;
+ loading:boolean = false
+ showEmpty:boolean = false
+ sessionsArray:any = []
+   isOpenCustType = false ;
    showCustType = false
-   custTypeArr :Array<any> =[]
-   selectedTeamArr :Array<any> =[]
+   usersArr :Array<any> =[]
+   selectedLawyersTeamArr :Array<any> =[]
    selectedCustTye : {id:any ,name:any};
 
 
@@ -74,25 +115,197 @@ segVal:string = "basics"
   searchTerm : any = ""
   aliasTerm :any =""
   searchResult :Array<any> =[]
-  items :Array<any> =[]
+  costumerArr :Array<any> =[]
   caseTypeArr :Array<any> =[]
   caseTypeArrNagz :Array<any> =[]
   caseCategArrNagz :Array<any> =[]
   caseStatusArr :Array<any> =[]
-  aliasResult :Array<any> =[]
+  aliasResult :Array<any> =[]  
   finalResult :Array<any> =[]
   notifArr : Array<any> =[]
   showNotif = false
   showCase = false
   showCaseNagz = false
   showCategNagz = false
-  selectedItem : {id:any ,name:any};
+  selectedCustomer : {id:any ,cust_name:any};
   selectedType : {id:any ,name:any };
   selectedCaseStatus : {id:any ,name:any };
   selectedCaseNagz : {id:any ,name:any };
   selectedCategNagz : {id:any ,name:any };
-  constructor(private _location :Location ) {
-    
+
+  //intial values of case interface 
+   newCase: Case =  {
+    id: null,
+    case_title: '',
+    client_id: 0,
+    case_type: '',
+    client_role: '',
+    service_classification: '',
+    branch: '',
+    court_name: '',
+    opponent_name: '',
+    opponent_id: 0,
+    opponent_representative: '',
+    case_open_date: new Date().toISOString(),
+    deadline: new Date().toISOString() ,
+    billing_type: '',
+    claim_type: '',
+    work_hour_value: 0,
+    estimated_work_hours: 0,
+    case_status: '',
+    constraintId_najz: '',
+    archive_id_najz: '',
+    caseId_najz: '',
+    case_classification_najz: '',
+    case_open_date_najz: new Date().toISOString(),
+    case_docs: '',
+    Plaintiff_Requests: '',
+    case_status_najz: '',
+    case_subject: ''
+  }
+
+  ionicForm: FormGroup;
+  isSubmitted = false;
+  constructor(private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+    this.ionicForm = this.formBuilder.group({
+    case_title: ['' , Validators.required],
+    // client_id:  ['' ] ,
+    // case_type: ['' ] ,
+    // client_role: ['' ] ,
+    // service_classification: ['' ] ,
+    // branch: ['' ] ,
+    // court_name: ['' ] ,
+    // opponent_name: ['' ] ,
+    // opponent_id: ['' ],
+    // opponent_representative: ['' ] ,
+    // case_open_date: new  Date,
+    // deadline: new Date,
+    // billing_type: ['' ] ,
+    // claim_type: ['' ] ,
+    // work_hour_value: 0,
+    // estimated_work_hours: 0,
+    // case_status: ['' ] ,
+    // constraintId_najz: ['' ] ,
+    // archive_id_najz: ['' ] ,
+    // caseId_najz: ['' ] ,
+    // case_classification_najz: ['' ] ,
+    // case_open_date_najz: new Date,
+    // case_docs: ['' ] ,
+    // Plaintiff_Requests: ['' ] ,
+    // case_status_najz: ['' ] ,
+    // case_subject: ['' ] 
+      // company_phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
+      // company_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
+      // company_email: ['', [ Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
+      // company_ident: ['',Validators.required],
+      // company_regno: ['',Validators.required] ,
+      // company_represent : ['' , Validators.required]  
+    })
+    this.getAppInfo()
+   
+  }
+
+  ngOnInit() {
+  }
+
+  close(){
+    this._location.back();
+  }
+
+
+  saveBasics() {
+    // let d: Date = this.payInvo.pay_date
+    // this.payInvo.sub_name = this.selectedAccount.sub_name
+    // this.payInvo.pay_date = this.datePipe.transform(d, 'yyyy-MM-dd')
+   
+    if (this.validate() == true) {
+      this.presentLoadingWithOptions('جاري حفظ البيانات ...')
+      console.log(this.newCase) 
+      this.saveInvo() 
+    }
+  }
+
+  getSessionsByCaseId() {
+    this.loading = true 
+    this.api.getSessionsByCaseId(this.newCase.id).subscribe(data =>{
+      console.log(data)
+      let res = data 
+      if(res['message'] != 'No Sessions Found'){
+        this.sessionsArray = res['data']
+      }else{
+        this.showEmpty = true
+      } 
+     
+    }, (err) => {
+      this.presentToast('خطا في الإتصال حاول مرة اخري' , 'danger')
+    } ,
+    ()=>{ 
+      this.loading = false
+  }
+  )  
+ }  
+
+
+ getCaseDetails(session){
+  let navigationExtras: NavigationExtras = {
+    queryParams: {
+      session: JSON.stringify(session),
+      case : this.newCase 
+    }
+  }; 
+  this.rout.navigate(['edit-session'], navigationExtras);  
+ }
+
+ refreshSessions(){
+  this.getSessionsByCaseId()
+ }
+
+  saveInvo() {
+    console.log('saveInvo')
+    this.api.saveCase(this.newCase).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Case Not Created') {
+     this.newCase.id = data['message']
+     if (this.selectedLawyersTeamArr.length > 0) {
+      this.selectedLawyersTeamArr.forEach(element => {
+        element.case_id = this.newCase.id
+       });
+       this.saveCaseLawers()
+     }else{
+      this.presentToast('تم حفظ البيانات بنجاح', 'success')
+      this.prepareCace()
+      this._location.back(); 
+     } 
+      }else{
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+  saveCaseLawers() {
+    console.log('saveInvo')
+    this.api.saveCaseLawyer(this.selectedLawyersTeamArr).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Post Not Created') {
+     //this.newCase.id = data['message']
+     this.presentToast('تم حفظ البيانات بنجاح', 'success')
+     this.prepareCace() 
+     this._location.back();
+      }else{
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+
+
+  prepareCace(){  
     this.caseTypeArr.push(
       {id:1,name:"جنائي"},
       {id:2,name:"تجاري"},
@@ -104,36 +317,28 @@ segVal:string = "basics"
       {id:2,name:"تجاري"},
       {id:3,name:"مدني"}
     )
+
+
     this.caseCategArrNagz.push(
       {id:1,name:"تصنيف 1"},
       {id:2,name:"تصنيف 2"},
       {id:3,name:"تصنيف 3"}
     )
 
-    this.items.push(
-      {id:1,name:"خالد المالكي"},
-      {id:2,name:"محمد المالكي"},
-      {id:3,name:"فهد المالكي"}
-    )
-
+  
     this.servArr.push(
       {id:1,name:"مرافعة "},
       {id:2,name:"تنفيذ"} ,
       {id:3,name:"استشارة"}
     )
+
     this.selectedServ = {id:"",name:""}
 
     this.caseStatusArr .push(
       {id:1,name:"مفتوح"},
-      {id:2,name:"مغلق"}
-    )
+      {id:0,name:"مغلق"}
+    ) 
 
-    this.custTypeArr.push(
-      {id:1,name:"حاتم ", checked:false},
-      {id:2,name:"اسلام", checked:false},
-      {id:3,name:"homeless", checked:false},
-      {id:4,name:"wonder" , checked:false}
-    )
     this.selectedCustTye = {id:1,name:"فرد"}
     
      this.BranchArr.push(
@@ -142,6 +347,7 @@ segVal:string = "basics"
       {id:3,name:"القصيم"},
       {id:4,name:"المدينة"}
     )
+
     this.selectedBranch = {id:"",name:""}
    
     this.invoiceArr.push(
@@ -156,7 +362,8 @@ segVal:string = "basics"
       {id:2,name:"الدمام"},
       {id:3,name:"القصيم"},
       {id:4,name:"المدينة"}
-     )
+      )
+
      this.selectedCourt = {id:"",name:""}
 
       this.agentArr.push(
@@ -166,6 +373,7 @@ segVal:string = "basics"
       {id:4,name:"تدخل مكتب"} ,
       {id:5,name:"تحت الدراسة"}  
       )
+
       this.selectedAgent = {id:"",name:""}
 
       this.costArr.push(
@@ -179,20 +387,108 @@ segVal:string = "basics"
         {id:8,name:"لا يوجد"} ,
         {id:9,name:"تحت الدراسة"}
        )
+    
+    this.selectedLawyersTeamArr = []   
     this.selectedCost = {id:"",name:""}
-    this.selectedItem = {id:"",name:""}
+    this.selectedCustomer = {id:"",cust_name:""}
     this.selectedType = {id:"",name:""}
     this.selectedCaseStatus = {id:"",name:""}
     this.selectedCaseNagz = {id:"",name:""}
     this.selectedCategNagz = {id:"",name:""}
+    this.selectedServ = {id:"",name:""}
+    this.selectedBranch = {id:"",name:""}
+    this.selectedInvoice = {id:"",name:""}
+    this.selectedCourt = {id:"",name:""}
+    this.selectedAgent = {id:"",name:""}
+    this.selectedCustTye = {id:1,name:"فرد"}
+
+    this.ionicForm.reset() 
+    this.isSubmitted = false 
+
+    this.newCase.case_title = ""
+    this.newCase.case_type = ""
+    this.newCase.service_classification = ""
+    this.newCase.client_role = ""
+    this.newCase.client_id = 0
+    this.newCase.case_status = ""
+    this.newCase.Plaintiff_Requests = ""
+    this.newCase.court_name = ""
+    this.newCase.caseId_najz = ""
+    this.newCase.work_hour_value = 0
+    this.newCase.opponent_representative = ""
+    this.newCase.constraintId_najz = ""
+    this.newCase.archive_id_najz = ""
+    this.newCase.case_subject = ""
+    this.newCase.opponent_id = 0
+    this.newCase.opponent_name = ""
+
   }
 
-  ngOnInit() {
-  }
+    get errorControl() {
+      return this.ionicForm.controls;
+    }
 
-  close(){
-    this._location.back();
-  }
+      validate(){ 
+        this.isSubmitted = true; 
+        console.log('validate' , this.isSubmitted , this.newCase.case_title)
+        if (this.newCase.case_title == "") { 
+          return false
+        } else if(this.newCase.client_id == 0){
+          return false
+        } else if(this.newCase.case_type == ""){
+          return false
+        } else if(this.newCase.service_classification == ""){
+          return false
+        }else if(this.newCase.client_role == ""){
+          return false
+        } else {
+          return true
+        }  
+      }
+
+
+ getLawyers(){ 
+        this.api.getTopUsers().subscribe(data =>{
+          console.log(data)
+          let res = data
+          this.usersArr = res['data']   
+        }, (err) => {} ,
+        ()=>{ 
+      }
+      )  
+    }
+
+
+
+    async presentToast(msg,color?) {
+      const toast = await this.toast.create({
+        message: msg,
+        duration: 2000,
+        color:color,
+        cssClass:'cust_Toast',
+        mode:'ios',
+        position:'top' 
+      });
+      toast.present();
+    }
+
+
+    async presentLoadingWithOptions(msg?) {
+      const loading = await this.loadingController.create({
+        spinner: 'bubbles',
+        mode:'ios',
+        duration: 5000,
+        message: msg,
+        translucent: true,
+       // cssClass: 'custom-class custom-loading',
+        backdropDismiss: false
+      });
+      await loading.present(); 
+      const { role, data } = await loading.onDidDismiss();
+      //console.log('Loading dismissed with role:', role);
+    }
+
+
 
   presentPopoverAgent(e?: Event) {
     this.popoverِِAgent.event = e;
@@ -243,6 +539,7 @@ segVal:string = "basics"
     this.isOpenCourt = false
     //console.log('dismissOver') 
   }
+
   didDissmisServ( ) {
     this.isOpenServ = false
     //console.log('dismissOver') 
@@ -270,6 +567,7 @@ segVal:string = "basics"
       id:item.id,
       name:item.name
     }   //console.log( this.selectedItem); 
+    this.newCase.service_classification = item.name
       this.didDissmisServ()
       //perform calculate here so moataz can get the qty
     }
@@ -279,13 +577,15 @@ segVal:string = "basics"
      this.selectedCourt = {
       id:item.id,
       name:item.name
-    }   //console.log( this.selectedItem); 
+    }   //console.log( this.selectedItem);
+    this.newCase.court_name = item.name 
       this.didDissmisCourt()
       //perform calculate here so moataz can get the qty
     }
 
     selectFromPopInvoice(item){
       console.log(item )
+      this.newCase.billing_type = item.name
        this.selectedInvoice = {
         id:item.id,
         name:item.name
@@ -296,6 +596,7 @@ segVal:string = "basics"
 
     selectFromPopCost(item){
       console.log(item )
+      this.newCase.claim_type = item.name
        this.selectedCost = {
         id:item.id,
         name:item.name
@@ -310,11 +611,18 @@ segVal:string = "basics"
         id:item.id,
         name:item.name
       }    
+      this.newCase.client_role=item.name
         this.didDissmisAgent()
        
       }
 
-      
+      getAppInfo(){ 
+        this.prepareCace() 
+        this.getTopCustomers()
+        this.getLawyers()
+
+
+      }
 
   didDissmisBranches( ) {
 
@@ -324,15 +632,16 @@ segVal:string = "basics"
 
   selectFromPopBranch(item){
     console.log(item )
+    this.newCase.branch = item.name
      this.selectedBranch = {
       id:item.id,
       name:item.name
     } 
-     
+     this.newCase.branch = item.name
       //console.log( this.selectedItem); 
       this.didDissmisBranches()
       //perform calculate here so moataz can get the qty
-    }
+  }
 
 
   
@@ -361,31 +670,61 @@ segVal:string = "basics"
       //  this.didDissmisCustType()
         //perform calculate here so moataz can get the qty
       }
-
-      
+   
 
       checkedTeam(event, item ,i ) {
         console.log(event, item ,i )
-        let flt = this.selectedTeamArr.filter(x=>x.id == item.id)
+        let flt = this.selectedLawyersTeamArr.filter(x=>x.user_id == item.id)
+        console.log(flt)
         if(event.target.checked == true ){
-          this.custTypeArr[i].checked = true
+          this.usersArr[i].checked = true
           if(flt.length == 0){
-          this.selectedTeamArr.push(item)
+          this.selectedLawyersTeamArr.push({
+            user_id:item.id ,
+            case_Id :this.newCase.id ,
+            full_name : this.usersArr[i].full_name 
+          })
           }
         }else{
-          this.custTypeArr[i].checked = false
-          this.selectedTeamArr.splice(this.selectedTeamArr.indexOf(item),1)
-        }
+          this.usersArr[i].checked = false
+          this.selectedLawyersTeamArr.splice(this.selectedLawyersTeamArr.indexOf(item),1)
+        } 
+        console.log(this.selectedLawyersTeamArr)
       }
 
+      getTopCustomers(){ 
+        this.api.getTopCustomers().subscribe(data =>{
+          console.log(data)
+          let res = data
+          this.costumerArr = res['data']   
+        }, (err) => {} ,
+        ()=>{ 
+      }
+      )  
+     }
 
+
+
+    newSessionPage(){
+      if(this.newCase.id != null){ 
+        let navigationExtras: NavigationExtras = {
+          queryParams: {
+            team: JSON.stringify(this.selectedLawyersTeamArr) ,
+            case: JSON.stringify(this.newCase) 
+          }
+        }; 
+        this.rout.navigate(['/new-session'] , navigationExtras)
+      }else{
+       this.presentToast('الرجاء حفظ البيانات الأساسية أولاً' ,"danger" ) 
+      } 
+     }
 
   presentPopover(e?: Event) {
     //console.log('preent me', e)
      this.popover.event = e;
      this.isOpen = true;
      this.clear()
-     this.searchResult = this.items
+     this.searchResult = this.costumerArr
      setTimeout(() => {
      this.setFocusOnInput('popInput')
      }, 2000);
@@ -404,10 +743,10 @@ segVal:string = "basics"
     const filterPipe3 = new FilterPipe3 ;
 
     let  fiteredArr :any
-    fiteredArr = filterPipe.transform(this.items,ev.target.value); 
+    fiteredArr = filterPipe.transform(this.costumerArr,ev.target.value); 
     
    
-    const fiteredArr2 = filterPipe2.transform(this.items,this.aliasTerm);  
+    const fiteredArr2 = filterPipe2.transform(this.costumerArr,this.aliasTerm);  
     //console.log('filte',fiteredArr)
     //console.log('fiteredArr2',fiteredArr2)
 
@@ -421,9 +760,7 @@ segVal:string = "basics"
        fiteredArr2.forEach(element => {
       this.searchResult.push( element)
     });
-    } 
-    
-    
+    }   
   }
 
   clear(item_name?){
@@ -521,20 +858,22 @@ segVal:string = "basics"
      this.popInput.setFocus();  
     }
   }
+
   selectFromPop(item){
     //console.log(item)
-    this.selectedItem = {
+    this.selectedCustomer = {
       id:item.id,
-      name:item.name
-    } 
+      cust_name:item.cust_name
+    }
+     this.newCase.client_id = item.id
      this.searchTerm = item.item_name
       //console.log( this.selectedItem); 
       this.didDissmis()
       //perform calculate here so moataz can get the qty
-    }
+  }
 
     
-    selectFromPopTypes(item    ){
+    selectFromPopTypes(item){
        
       // Push to arr
       // remove fro Array where index = item.
@@ -543,7 +882,7 @@ segVal:string = "basics"
         id:item.id,
         name:item.name
       } 
-       
+       this.newCase.case_type = item.name
         //console.log( this.selectedItem); 
          this.didDissmisNotif()
         //perform calculate here so moataz can get the qty
@@ -551,6 +890,7 @@ segVal:string = "basics"
 
       selectFromPopCase(item){
         console.log(item)
+        this.newCase.case_status = item.id
         this.selectedCaseStatus = {
           id:item.id,
           name:item.name
@@ -569,6 +909,7 @@ segVal:string = "basics"
           }
 
           selectFromPopCategNagz(item){
+            this.newCase.case_classification_najz = item.name
             console.log(item)
             this.selectedCategNagz = {
               id:item.id,
@@ -581,12 +922,14 @@ segVal:string = "basics"
           segmentCHange(event){
             console.log(event.detail.value)
             this.segVal = event.detail.value
-          }
-
-          saveBasics(){
-            console.log("save basics")
-            this.segVal = 'nagz'
-          }
+            if(this.segVal == 'sessions'){
+              if(this.newCase.id){ 
+                this.getSessionsByCaseId() 
+              }else{
+                this.showEmpty = true
+              }
+            } 
+           }
 
             saveNagz(){
               console.log("save basics")

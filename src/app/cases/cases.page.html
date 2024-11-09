@@ -31,7 +31,7 @@
       <ion-toolbar >
         <ion-title class="fontLarge">القضايا</ion-title>
         <ion-buttons slot="end">
-          <ion-searchbar class="custSearch"> </ion-searchbar>  
+          <ion-searchbar class="custSearch"  (ionCancel)="onCancel()"  id="searchsearch" #searchInput  [(ngModel)]="searchTerm"> </ion-searchbar>  
         </ion-buttons>
         <ion-button slot="end"  fill="outline" (click)="newCase()"  color="medium" class="custButton rad10">
           <ion-icon class="ico " color="dark" name="add-circle-outline"></ion-icon>
@@ -51,10 +51,11 @@
           <ion-icon  slot="icon-only" color="dark" name="refresh"></ion-icon>
         </ion-button>
       </ion-card-header>
+
       <ion-grid class="ion-no-padding"> 
         <ion-row>
-          <ion-col size="12" class="ion-no-padding custCol">
-            <table  class="table"  >
+          <ion-col size="12" class="ion-no-padding custCol"   *ngIf="searchMode == false">
+            <table  class="table">
               <tr>
                <th>
                  عنوان القضية  
@@ -76,7 +77,7 @@
                
               </tr>
                
-               <tr *ngFor="let case of caseArr"  >
+               <tr *ngFor="let case of caseArr "  >
                  <td>
                    <ion-text> {{case.case_title}} </ion-text> 
                  </td>
@@ -95,33 +96,34 @@
                  </td>
                  
                  <td>
-                  <ion-button fill="clear" (click)="getSessions(case)"><ion-icon name="people-outline" color="meduim" ></ion-icon></ion-button>
+                  <ion-button fill="clear" (click)="getCaseDetails(case , 'sessions')"><ion-icon name="people-outline" color="meduim" ></ion-icon></ion-button>
                 </td> 
                  <td> 
-                  <ion-button fill="clear" (click)="getFiles(case)"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
+                  <ion-button fill="clear" (click)="getCaseDetails(case , 'files')"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
                 </td> 
                 <td>
-                  <ion-button fill="clear" (click)="getCaseDetails(case)"><ion-icon name="create-outline" color="meduim"  ></ion-icon></ion-button>
+                  <ion-button fill="clear" (click)="getCaseDetails(case , 'basics')"><ion-icon name="create-outline" color="meduim"  ></ion-icon></ion-button>
                 </td>
               
                 
-               </tr> 
-               
+               </tr>
+               <tr *ngIf="loading == true">
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+               </tr>   
+              </table>
+ 
                  
 
-                <tr *ngIf="loading == true">
-               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-               <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-               <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-               <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-              </tr>   
-            </table>
-            
+                
+           
             
             <ion-row class="ion-justify-content-center ion-margin-top" *ngIf="showEmpty == true"> 
              <ion-col size="4" class="ion-text-center">  
@@ -131,6 +133,62 @@
               <h4> لا توجد سجلات </h4> 
              </ion-col>
            </ion-row>
+          </ion-col>
+          
+          <ion-col size="12" class="ion-no-padding custCol"  *ngIf="searchMode == true">
+                <!-- search -->
+              <table  class="table" > 
+                <tr *ngFor="let case of searchArr "  >
+                <td>
+                  <ion-text> {{case.case_title}} </ion-text> 
+                </td>
+                <td>
+                  <ion-text>{{case.case_type}} </ion-text> 
+                </td>
+                <td>
+                  <ion-text> {{case.client_name}}    </ion-text>
+                </td> 
+                <td>
+                  <ion-text *ngIf="case.case_status == 1">  جاري العمل       </ion-text> 
+                  <ion-text  *ngIf="case.case_status == 0"> مغلقة      </ion-text> 
+                </td>
+                <td>
+                  <ion-text  > {{case.case_open_date}}       </ion-text> 
+                </td>
+                
+                <td>
+                  <ion-button fill="clear" (click)="getCaseDetails(case , 'sessions')"><ion-icon name="people-outline" color="meduim" ></ion-icon></ion-button>
+                </td> 
+                 <td> 
+                  <ion-button fill="clear" (click)="getCaseDetails(case , 'files')"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
+                </td> 
+                <td>
+                  <ion-button fill="clear" (click)="getCaseDetails(case , 'basics')"><ion-icon name="create-outline" color="meduim"  ></ion-icon></ion-button>
+                </td>
+
+                
+              </tr>
+                <tr *ngIf="loading == true">
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
+                </tr>   
+              </table>
+
+              <ion-row class="ion-justify-content-center ion-margin-top" *ngIf="showEmptySerach == true"> 
+                <ion-col size="4" class="ion-text-center">  
+                  <ion-label> 
+                    <ion-icon style="font-size: 30px;"  name="archive-outline"></ion-icon>
+                 </ion-label>
+                 <h4> لا توجد سجلات </h4> 
+                </ion-col>
+              </ion-row>
           </ion-col>
         </ion-row>
       </ion-grid> 

@@ -15,6 +15,7 @@ import { SessionsPage } from './sessions.page';
     IonicModule,
     SessionsPageRoutingModule
   ],
+  exports:[SessionsPage] ,
   declarations: [SessionsPage]
 })
 export class SessionsPageModule {}

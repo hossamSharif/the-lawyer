@@ -1,9 +1,9 @@
 
 <ion-app   dir="rtl"> 
   <ion-content> 
-    <ion-split-pane contentId="side">   
+    <ion-split-pane contentId="side" *ngIf="isAuth == true">   
       <!-- *ngIf="isAuth == true"  -->
-    <ion-menu contentId="side" side="start"  dir="rtl"   type="overlay"> 
+    <ion-menu contentId="side"  side="start"  dir="rtl"   type="overlay"> 
         <ion-list id="inbox-list" dir="rtl" class="listBg h100">
           <ion-list-header>نظام مكاتب المحاماة  </ion-list-header>
           <ion-grid>
@@ -20,14 +20,18 @@
             <ion-icon class="ico" color="dark" name="home"></ion-icon> 
             <ion-label class="ion-margin-start"> الرئيسية </ion-label>
           </ion-item>
-          <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/cases" detail="false" routerLinkActive="selected">
-            <ion-icon class="ico" color="dark" name="briefcase"></ion-icon> 
-            <ion-label class="ion-margin-start"> القضايـا </ion-label> 
-          </ion-item>
           <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/contracts" detail="false" routerLinkActive="selected">
             <ion-icon class="ico" color="dark" name="reader"></ion-icon> 
             <ion-label class="ion-margin-start"> العقود </ion-label> 
           </ion-item>
+          <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/cases" detail="false" routerLinkActive="selected">
+            <ion-icon class="ico" color="dark" name="briefcase"></ion-icon> 
+            <ion-label class="ion-margin-start"> القضايـا </ion-label> 
+          </ion-item>
+          <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/consultations" detail="false" routerLinkActive="selected">
+            <ion-icon class="ico" color="dark" name="people"></ion-icon> 
+            <ion-label class="ion-margin-start"> الإستشارات </ion-label>
+          </ion-item> 
           <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/tasks" detail="false" routerLinkActive="selected">
             <ion-icon class="ico" color="dark" name="list"></ion-icon> 
             <ion-label class="ion-margin-start"> المهام </ion-label>
@@ -35,20 +39,20 @@
           <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/celander" detail="false" routerLinkActive="selected">
             <ion-icon class="ico" color="dark" name="calendar-number"></ion-icon> 
             <ion-label class="ion-margin-start"> التقويم </ion-label>
-          </ion-item> 
-          <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/consultations" detail="false" routerLinkActive="selected">
-            
-            <ion-icon class="ico" color="dark" name="people"></ion-icon> 
-            <ion-label class="ion-margin-start"> الإستشارات </ion-label>
-          </ion-item>      
+          </ion-item>  
           <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/customers" detail="false" routerLinkActive="selected">
-            <ion-icon class="ico" color="dark" name="people"></ion-icon> 
+            <ion-icon class="ico" color="dark" name="people-circle-outline"></ion-icon> 
+             
             <ion-label class="ion-margin-start"> العمـلاء </ion-label>
           </ion-item>
-          <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/customers" detail="false" routerLinkActive="selected">
+          <ion-item class="itemBg" routerDirection="root" lines="none"  detail="false" routerLinkActive="selected">
             <ion-icon class="ico" color="dark" name="cash"></ion-icon> 
             <ion-label class="ion-margin-start"> الحسابات </ion-label>
           </ion-item>
+          <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/notif" detail="false" routerLinkActive="selected">
+            <ion-icon class="ico" color="dark" name="notifications-outline"></ion-icon> 
+            <ion-label class="ion-margin-start"> التنبيهات  </ion-label>
+          </ion-item>  
           <ion-item class="itemBg" routerDirection="root" lines="none"   routerLink="folder/users" detail="false" routerLinkActive="selected">
             <ion-icon class="ico" color="dark" name="person"></ion-icon> 
             <ion-label class="ion-margin-start"> المستخدمين </ion-label>
@@ -70,8 +74,8 @@
      
     </ion-menu>
     <!-- *ngIf="isAuth == true" -->
-        <ion-router-outlet id="side" > </ion-router-outlet> 
+        <ion-router-outlet id="side" *ngIf="isAuth == true" > </ion-router-outlet> 
     </ion-split-pane> 
   </ion-content>   
-  <!-- <ion-router-outlet *ngIf="isAuth == false"></ion-router-outlet> -->
+   <ion-router-outlet *ngIf="isAuth == false"></ion-router-outlet> 
 </ion-app>

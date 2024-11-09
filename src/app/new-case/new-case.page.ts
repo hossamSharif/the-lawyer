@@ -163,6 +163,7 @@ export class NewCasePage implements OnInit {
     case_status_najz: '',
     case_subject: ''
   }
+  savedDone : boolean = false
 
   ionicForm: FormGroup;
   isSubmitted = false;
@@ -274,7 +275,7 @@ export class NewCasePage implements OnInit {
      }else{
       this.presentToast('تم حفظ البيانات بنجاح', 'success')
       this.prepareCace()
-      this._location.back(); 
+      //this._location.back(); 
      } 
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
@@ -293,7 +294,7 @@ export class NewCasePage implements OnInit {
      //this.newCase.id = data['message']
      this.presentToast('تم حفظ البيانات بنجاح', 'success')
      this.prepareCace() 
-     this._location.back();
+    // this._location.back();
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }
@@ -646,30 +647,30 @@ export class NewCasePage implements OnInit {
 
   
 
-  presentPopoverCustType(e?: Event) {
-    console.log('preent me', e)
-       this.showCustType = false
-      this.popoverNotif.event = e;
-       this.isOpenCustType = true;  
-     }
-
-    didDissmisCustType(){
-      this.isOpenCustType = false
-      //console.log('dismissOver') 
-    }
-
-    selectFromPopCustTypes(item , index){
-      console.log(item ,index)
-      // push and pop
-      this.selectedCustTye = {
-        id:item.id,
-        name:item.name
-      } 
-       
-        //console.log( this.selectedItem); 
-      //  this.didDissmisCustType()
-        //perform calculate here so moataz can get the qty
+    presentPopoverCustType(e?: Event) {
+      console.log('preent me', e)
+        this.showCustType = false
+        this.popoverNotif.event = e;
+        this.isOpenCustType = true;  
       }
+
+      didDissmisCustType(){
+        this.isOpenCustType = false
+        //console.log('dismissOver') 
+      }
+
+      selectFromPopCustTypes(item , index){
+        console.log(item ,index)
+        // push and pop
+        this.selectedCustTye = {
+          id:item.id,
+          name:item.name
+        } 
+        
+          //console.log( this.selectedItem); 
+        //  this.didDissmisCustType()
+          //perform calculate here so moataz can get the qty
+        }
    
 
       checkedTeam(event, item ,i ) {

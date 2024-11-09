@@ -12,8 +12,8 @@ import { Storage } from '@ionic/storage';
 
 
  export class ServicesService {
-  api = 'http://localhost/lawyerApi/myapi/api/'
-  // api :any =  'https://erp.hosamdev.com/myapi/api/'
+  //  api = 'http://localhost/lawyerapi/myapi/api/'
+ api :any =  'https://hossam.gvstech.net/lawyerapi/myapi/api/'
   year : {id:any ,yearDesc:any ,yearStart :any,yearEnd:any}
   folderNo:any=''
   public Notifications: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
@@ -27,7 +27,7 @@ import { Storage } from '@ionic/storage';
 
 uploadCaseFiles(file){
   //console.log(file)
-  return this.http.post('https://dashboard.gvstech.net/myapi2/api/'+'upload.php', 
+  return this.http.post('https://hossam.gvstech.net/lawyerapi/myapi/api/'+'upload.php', 
    file
    )
 }
@@ -36,6 +36,27 @@ uploadCaseFiles(file){
 saveCaseLawyer( caseLawyer){  
   caseLawyer = JSON.stringify(caseLawyer) 
   return this.http.post(this.api+'caselawyers/createMulti.php',
+    caseLawyer
+  )
+}
+
+saveContractFiles( caseLawyer){  
+  caseLawyer = JSON.stringify(caseLawyer) 
+  return this.http.post(this.api+'contractFiles/createMulti.php',
+    caseLawyer
+  )
+}
+
+saveContractServices( caseLawyer){  
+  caseLawyer = JSON.stringify(caseLawyer) 
+  return this.http.post(this.api+'legalServices/createMulti.php',
+    caseLawyer
+  )
+}
+
+savePaymentContrat( caseLawyer){  
+  caseLawyer = JSON.stringify(caseLawyer) 
+  return this.http.post(this.api+'payments/createMulti.php',
     caseLawyer
   )
 }
@@ -64,6 +85,7 @@ getTopUsers( ){
     // ,{params: params}
     return this.http.get(this.api+'sessions/getSessionsByCaseId.php' ,{params: params})
   }
+
   getCaseFilesByCaseId(case_id ){ 
     let params = new HttpParams() 
     params=params.append('case_id' , case_id)
@@ -72,6 +94,16 @@ getTopUsers( ){
     return this.http.get(this.api+'caseFiles/getCaseFilesByCaseId.php' ,{params: params})
   }
 
+  getContractFilesByContractId(contract_id ){ 
+    let params = new HttpParams() 
+    params=params.append('contract_id' , contract_id)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'contractFiles/getContractFilesByContractId.php' ,{params: params})
+  }
+
+  
+
   getTopCases( ){ 
     // let params = new HttpParams() 
     // params=params.append('store_id' , store_id)
@@ -79,6 +111,17 @@ getTopUsers( ){
     // ,{params: params}
     return this.http.get(this.api+'cases/read.php')
   }
+
+  getCaseBySearchTerm(searchTerm ){
+    console.log(searchTerm)
+    let params = new HttpParams()
+    params=params.append('searchTerm' , searchTerm)
+    // params=params.append('yearId' , yearId)
+    // ,{params: params}
+    return this.http.get(this.api+'cases/getCaseBySearchTerm.php' ,{params: params})
+  }
+  
+
   getTopConsultation( ){ 
     // let params = new HttpParams() 
     // params=params.append('store_id' , store_id)
@@ -106,6 +149,12 @@ getTopUsers( ){
      )
   }
 
+  saveContractFile(contractFile){
+    return this.http.post(this.api+'ContractFiles/create.php', 
+      contractFile
+     )
+  }
+
   saveConsultaion(Consultaion){
     return this.http.post(this.api+'consultations/create.php', 
       Consultaion
@@ -117,6 +166,12 @@ getTopUsers( ){
       newCase
      )
   }
+  saveContract(newCase){
+    return this.http.post(this.api+'contracts/create.php', 
+      newCase
+     )
+  }
+
 
   updateCase(newCase){
     return this.http.post(this.api+'cases/update.php', 

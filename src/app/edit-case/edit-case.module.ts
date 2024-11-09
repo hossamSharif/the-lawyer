@@ -7,14 +7,18 @@ import { IonicModule } from '@ionic/angular';
 import { EditCasePageRoutingModule } from './edit-case-routing.module';
 
 import { EditCasePage } from './edit-case.page';
+import { FilesPageModule } from '../files/files.module';
+import { SessionsPageModule } from '../sessions/sessions.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule, 
     IonicModule,
-    EditCasePageRoutingModule
+    EditCasePageRoutingModule ,
+    FilesPageModule,
+    SessionsPageModule
   ],
   declarations: [EditCasePage]
 })

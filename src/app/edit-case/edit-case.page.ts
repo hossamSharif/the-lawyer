@@ -170,8 +170,11 @@ export class EditCasePage implements OnInit {
       // company_represent : ['' , Validators.required]  
     })
     this.getAppInfo()
+
     this.route.queryParams.subscribe(params => {
       if (params && params.case) {
+        this.segVal = JSON.parse(params.segVal)
+        console.log('segment',JSON.parse(params.segVal))
         console.log('caseRoute',JSON.parse(params.case))
         this.newCase = JSON.parse(params.case)
         this.selectedType.name = this.newCase.case_type

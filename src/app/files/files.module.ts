@@ -15,6 +15,7 @@ import { FilesPage } from './files.page';
     IonicModule,
     FilesPageRoutingModule
   ],
+  exports : [FilesPage],
   declarations: [FilesPage]
 })
 export class FilesPageModule {}

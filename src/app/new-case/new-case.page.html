@@ -19,10 +19,22 @@
    
     </ion-col> 
   </ion-row>
-
+  <ion-row> 
+    <ion-segment dir="rtl" (ionChange)="segmentCHange($event)" [(ngModel)]="segVal" class="ion-margin-top">
+      <ion-segment-button value="basics">
+        <ion-label class="segLable">البيانات الأساسية</ion-label>
+      </ion-segment-button> 
+      <ion-segment-button value="sessions">
+        <ion-label class="segLable"> الجلسات  </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="files">
+        <ion-label class="segLable">الملفات   </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-row>
  
 
-  <ion-row >
+  <ion-row  *ngIf="segVal == 'basics'">
     <ion-card class="w100">
       <ion-card-content>
        
@@ -549,7 +561,15 @@
     </ion-card>
   </ion-row>
 
-  
+   <!-- sesions  -->
+   <ion-row  *ngIf="segVal == 'sessions'">
+    <app-sessions class="w100"></app-sessions>
+  </ion-row>
+
+   <!-- files -->
+   <ion-row  *ngIf="segVal == 'files'">
+       <app-files class="w100"></app-files>  
+   </ion-row>
 
  
 

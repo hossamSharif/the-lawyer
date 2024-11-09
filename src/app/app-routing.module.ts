@@ -160,6 +160,26 @@ const routes: Routes = [
   {
     path: 'edit-casefile',
     loadChildren: () => import('./edit-casefile/edit-casefile.module').then( m => m.EditCasefilePageModule)
+  },
+  {
+    path: 'new-contract',
+    loadChildren: () => import('./new-contract/new-contract.module').then( m => m.NewContractPageModule)
+  },
+  {
+    path: 'new-contract-file',
+    loadChildren: () => import('./new-contract-file/new-contract-file.module').then( m => m.NewContractFilePageModule)
+  },
+  {
+    path: 'contract-files',
+    loadChildren: () => import('./contract-files/contract-files.module').then( m => m.ContractFilesPageModule)
+  },
+  {
+    path: 'contract-services',
+    loadChildren: () => import('./contract-services/contract-services.module').then( m => m.ContractServicesPageModule)
+  },
+  {
+    path: 'new-contract-service',
+    loadChildren: () => import('./new-contract-service/new-contract-service.module').then( m => m.NewContractServicePageModule)
   }
 
 

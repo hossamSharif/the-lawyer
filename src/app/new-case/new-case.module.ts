@@ -9,6 +9,8 @@ import { FilterPipe3 } from "./pipe3";
 import { NewCasePageRoutingModule } from './new-case-routing.module';
 
 import { NewCasePage } from './new-case.page';
+import { FilesPageModule } from '../files/files.module';
+import { SessionsPageModule } from '../sessions/sessions.module';
 
 @NgModule({
   imports: [
@@ -16,7 +18,9 @@ import { NewCasePage } from './new-case.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    NewCasePageRoutingModule
+    NewCasePageRoutingModule,
+    FilesPageModule,
+    SessionsPageModule
   ],
   declarations:
    [NewCasePage,

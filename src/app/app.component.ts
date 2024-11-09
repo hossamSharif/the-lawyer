@@ -62,7 +62,7 @@ export class AppComponent {
  
   initializeApp() { 
    
-   this.auth();  
+  this.auth();  
   }
   
   async  getAppInfo(){

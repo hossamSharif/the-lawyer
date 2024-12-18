@@ -88,8 +88,13 @@
                    <ion-text> {{case.client_name}}    </ion-text>
                  </td> 
                  <td>
-                   <ion-text *ngIf="case.case_status == 1">  جاري العمل       </ion-text> 
-                   <ion-text  *ngIf="case.case_status == 0"> مغلقة      </ion-text> 
+                  <ion-grid>
+                    <ion-row class="ion-justify-content-center">
+                     <ion-col size="1">
+                       <div class="status-bullet" [ngStyle]="{'background-color': case.status_color}"></div>
+                     </ion-col> <ion-col size="8"> {{case.status_name}} </ion-col>
+                    </ion-row>
+                  </ion-grid>
                  </td>
                  <td>
                    <ion-text  > {{case.case_open_date}}       </ion-text> 

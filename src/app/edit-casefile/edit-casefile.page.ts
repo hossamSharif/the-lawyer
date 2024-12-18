@@ -42,7 +42,8 @@ export class EditCasefilePage implements OnInit {
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
-    case_subject: ''
+    case_subject: '',
+    court_id: 0,                            
   }
   newCaseFile: CaseFile =  {
     id: null,
@@ -53,6 +54,7 @@ export class EditCasefilePage implements OnInit {
     file_url: '',
     file_notes: '',
     uploaded_at: new Date().toISOString(),
+    category: 'case'
   }
   isSubmitted = false;
   uploadedFiles

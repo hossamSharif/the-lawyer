@@ -5,17 +5,19 @@ import { FilterPipe3  } from '../new-case/pipe3';
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ToastButton, ToastController } from '@ionic/angular';
+import { LoadingController, ModalController, ToastButton, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
-var ls = window.localStorage;
+import { NewCourtPage } from '../new-court/new-court.page';
+ 
+
 
 export interface NewSession {
   id: number;
   lawyer_id: number;
   case_id: number;
   session_title: string;
-  court_name: string;
+  court_id: number;
   cust_id: number;
   session_date: string; // Use string for date to handle various date formats
   session_time: string; // Use string for time to handle various time formats
@@ -24,6 +26,7 @@ export interface NewSession {
   opponent_representative: string;
   session_status: string;
   session_result: string;
+  court_name :string;
 }
 
 @Component({
@@ -53,7 +56,7 @@ export class NewSessionPage implements OnInit {
    
    selectedCustTye : {id:any ,name:any};
 
-
+   loadingCase :boolean = false
    isOpenServ = false ;
    showServ = false 
    servArr :Array<any> =[]
@@ -121,18 +124,20 @@ export class NewSessionPage implements OnInit {
   caseTypeArrNagz :Array<any> =[]
   
   @ViewChild('popoverCase') popoverCase;
+  @ViewChild('popoverCase2') popoverCase2;
   selectedCaseStatus : {id:any ,name:any };
   isOpenCase = false ;
+  isOpenCase2 = false ;
   caseStatusArr :Array<any> =[]
 
   @ViewChild('popover') popover;
   isOpen = false; 
   //new session 
    newSession: NewSession = {
-    id: 0,
+    id: 1,
     lawyer_id: 0,
     case_id: 0,
-    court_name: '',
+    court_id:0,
     cust_id: 0,
     session_title: '',
     opponent_name: '',
@@ -141,9 +146,10 @@ export class NewSessionPage implements OnInit {
     session_time:new Date().toISOString(),
     session_type: '',
     session_status: '',
-    session_result: ''
+    session_result: '',
+    court_name :'',
   };
-
+  showCaseesDepartent: boolean = false
   newCase: Case =  {
     id: null,
     case_title: '',
@@ -171,57 +177,138 @@ export class NewSessionPage implements OnInit {
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
-    case_subject: ''
+    case_subject: '',
+    court_id:0
   }
-
-    
+  segVal:any = 'basics'
+ searchTermCourt : any = ""
+  CasesArray :Array<any> =[]  
   ionicForm: FormGroup;
   isSubmitted = false;
-  constructor(private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
-    
-    this.route.queryParams.subscribe(params => {
-      if (params && params.team && params.case) {
-        console.log('caseRoute',JSON.parse(params.team))
-        this.selectedLawyersTeamArr = JSON.parse(params.team) 
-        this.newCase = JSON.parse(params.case)
-        this.getAppInfo()
-      }
-    });
+  category:any = 'session';	
+  constructor(private modalController :ModalController , private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
    
+    this.route.queryParams.subscribe(params => { 
+      if (params && params.case) {
+        console.log('params')
+        this.selectedLawyersTeamArr = JSON.parse(params.team) 
+        this.newCase = JSON.parse(params.case) 
+        this.showCaseesDepartent = false
+        console.log('caseesDepartent' , this.showCaseesDepartent)
+        this.newSession.cust_id = this.newCase.client_id
+        this.newSession.case_id = this.newCase.id
+      } else {
+        this.showCaseesDepartent = true
+        console.log('caseesDepartent not fout' , this.showCaseesDepartent)
+        this.getTopCases() 
+      
+      } 
+      });
+    
+   
+    
     this.ionicForm = this.formBuilder.group({
     session_title: ['' , Validators.required],
-    // client_id:  ['' ] ,
-    // case_type: ['' ] ,
-    // client_role: ['' ] ,
-    // service_classification: ['' ] ,
-    // branch: ['' ] ,
-    // court_name: ['' ] ,
-    // opponent_name: ['' ] ,
-    // opponent_id: ['' ],
-    // opponent_representative: ['' ] ,
-    // case_open_date: new  Date,
-    // deadline: new Date,
-    // billing_type: ['' ] ,
-    // claim_type: ['' ] ,
-    // work_hour_value: 0,
-    // estimated_work_hours: 0,
-    // case_status: ['' ] ,
-    // constraintId_najz: ['' ] ,
-    // archive_id_najz: ['' ] ,
-    // caseId_najz: ['' ] ,
-    // case_classification_najz: ['' ] ,
-    // case_open_date_najz: new Date,
-    // case_docs: ['' ] ,
-    // Plaintiff_Requests: ['' ] ,
-    // case_status_najz: ['' ] ,
-    // case_subject: ['' ] 
-      // company_phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
-      // company_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
-      // company_email: ['', [ Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
-      // company_ident: ['',Validators.required],
-      // company_regno: ['',Validators.required] ,
-      // company_represent : ['' , Validators.required]  
-    }) 
+   
+    })
+
+    this.getAppInfo()
+  }
+
+
+  segmentCHange(event){
+    console.log(event.detail.value)
+    this.segVal = event.detail.value
+    if(this.segVal == 'files'){
+      if(this.newCase.id){ 
+        //this.getSessionsByCaseId() 
+      }else{
+       // this.showEmpty = true
+      }
+    } 
+   }
+
+  checkIfCase(){
+    console.log('caseesDepartent' , this.showCaseesDepartent)
+    if(this.newCase.id == null){
+      this.getTopCases() 
+      console.log('im')
+      this.showCaseesDepartent = true
+    }else{
+      this.showCaseesDepartent = false
+    }
+  }
+
+
+  getTopCases() { 
+    this.api.getTopCases().subscribe((data: any) => {
+      console.log(data)
+      if (data['message'] != 'No record Found') {
+        this.CasesArray = data['data']
+      } else {
+       
+      }
+    }, (err) => {
+     // this.presentToast('خطا في الإتصال حاول مرة اخري', 'danger')
+    },
+      () => {
+         
+      }
+    )
+  }
+
+
+  getCourts(){ 
+    this.api.getCourts().subscribe(data =>{
+      console.log(data)
+      let res = data
+      if(data['message'] != 'No courts Found'){ 
+        this.courtArr = res['data']
+      }   
+    }, (err) => {
+
+    } ,
+    ()=>{ 
+   }
+   )  
+  }
+
+  selectFromPopCourt(item){
+    console.log(item )
+     this.selectedCourt = {
+      id:item.id,
+      name:item.court_name
+    } 
+      //console.log( this.selectedItem);
+      this.newSession.court_id = item.id  
+      this.didDissmisCourt()
+      //perform calculate here so moataz can get the qty
+    }
+
+    didDissmisCourt( ) {
+      this.isOpenCourt = false
+      //console.log('dismissOver') 
+    }
+  
+
+  presentPopoverCase2(e?: Event) {
+       console.log('preent me', e) 
+       this.showCase = false
+       this.popoverCase2.event = e;
+       this.isOpenCase2 = true;  
+     }
+
+  selectFromPopCase2(item){
+    console.log(item)
+     this.newCase = item
+     this.selectedLawyersTeamArr = item.team
+     this.newSession.case_id = this.newCase.id
+     this.newSession.cust_id = this.newCase.client_id
+     this.didDissmisCase2()  
+  }
+   
+  didDissmisCase2(){
+    this.isOpenCase2 = false 
   }
 
   ngOnInit() {
@@ -290,33 +377,69 @@ export class NewSessionPage implements OnInit {
    }
 
 
+   presentPopoverCourt(e?: Event) {
+    console.log('preent me', e)
+    this.showCourt = false
+    this.popoverِِCourt.event = e;
+    this.isOpenCourt = true;  
+  }
+
+
+   async presentCourtModal(id?, status?) {
+       
+    const modal = await this.modalController.create({
+      component: NewCourtPage ,
+      // componentProps: {
+      //   "item": this.selectedItem,
+      //   "colSetting": this.colSetting, 
+      //   "filterArrayOrign": this.filterArrayOrign, 
+      //   "filterArray": this.filterArray, 
+      //   "brandList": this.brandList, 
+      //   "modelList": this.modelList,  
+      //   "status": status
+      // }
+    });
+    
+    modal.onDidDismiss().then((dataReturned) => {
+      if (dataReturned !== null) {
+         console.log(dataReturned )
+        this.doAfterDissmiss(dataReturned)
+      }
+    });
+ 
+    return await modal.present(); 
+  }
+ 
+  doAfterDissmiss(data){
+    if (data.role == 'reload' ) { 
+          this.getCourts()
+      }   
+  }
+
   prepareCace(){  
-    this.caseTypeArr.push(
-      {id:1,name:"استماع"},
-      {id:2,name:"مرافعة"}
+    this.caseTypeArr.push( 
+      {id:1,name:"مرافعة"},
+      {id:2,name:"نطق بالحكم"}
     ) 
+    this.selectedCourt = {id:"",name:""}
     this.caseStatusArr .push(
-      {id:1,name:"مفتوح"},
-      {id:0,name:"مؤجلة"},
-      {id:0,name:"منتهية"}
+      {id:0,name:"جديدة"}, 
+      {id:1,name:"منتهية"}
     )  
    // this.selectedLawyersTeamArr = []   
     this.selectedType = {id:"",name:""}
     this.selectedCaseStatus = {id:"",name:""}
     this.selectedUser = {id:0 , full_name :""}
     this.ionicForm.reset() 
-    this.isSubmitted = false 
-
-    this.newSession.cust_id = this.newCase.client_id
-    this.newSession.case_id = this.newCase.id
-    
+    this.isSubmitted = false   
   }
 
     get errorControl() {
       return this.ionicForm.controls;
     }
 
-      validate(){ 
+      validate(){
+        console.log('validate' , this.isSubmitted , this.newSession)
         this.isSubmitted = true; 
         console.log('validate' , this.isSubmitted , this.newSession.session_title)
         if (this.newSession.session_title == "") { 
@@ -337,18 +460,18 @@ export class NewSessionPage implements OnInit {
       this.api.getTopUsers().subscribe(data =>{
           console.log("'úsers'", data)
           let res = data
-          this.usersArr = res['data']  
-           for (let index = 0; index < this.usersArr.length; index++) {
-            const element = this.usersArr[index];
-            let fltr = this.selectedLawyersTeamArr.filter(el => el.id == +element.id)
-            console.log(fltr ,this.selectedLawyersTeamArr )
-            if(fltr.length == 0){
-            console.log('lenght' )
-
-             this.usersArr.splice(index, 1);
-            }
-           }
-         
+          this.usersArr = res['data'] 
+          if (this.showCaseesDepartent == false) {
+            // for (let index = 0; index < this.usersArr.length; index++) {
+            //   const element = this.usersArr[index]; 
+            //   let fltr = this.selectedLawyersTeamArr.filter(el => el.id == +element.id)
+            //   console.log(fltr ,this.selectedLawyersTeamArr )
+            //   if(fltr.length == 0){
+            //   console.log('lenght' )
+            //    this.usersArr.splice(index, 1);
+            //   }
+            //  } 
+          }  
            console.log("fltUser",this.usersArr)
         }, (err) => {} ,
         ()=>{ 
@@ -389,7 +512,8 @@ export class NewSessionPage implements OnInit {
  
 
       getAppInfo(){ 
-        this.prepareCace() 
+        this.prepareCace()
+        this.getCourts() 
       //  this.getTopCustomers()
         this.getLawyers() 
       }

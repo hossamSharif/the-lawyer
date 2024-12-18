@@ -15,7 +15,7 @@ export class ContractsPage implements OnInit {
   constructor(private toast :ToastController,private api:ServicesService ,private rout: Router) { }
 
   ngOnInit() {
-    this.getTopCases()
+    // this.getTopCases()
   }
   
 

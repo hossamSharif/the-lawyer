@@ -12,12 +12,7 @@
         </ion-button>  
       </div>  
     </ion-buttons>
-    <!-- <ion-buttons>
-        <ion-button fill="clear" color="danger" (click)="logOut()">
-        <ion-icon name="lock-closed-outline" color="danger"  slot="end"></ion-icon>
-        log out
-      </ion-button>
-      <ion-buttons>   -->
+ 
   </ion-toolbar>
 </ion-header>
 
@@ -57,22 +52,15 @@
                   <th>   نوع العميل
                   </th>  
                   <th>
-                    الشركة/العميل   
+                     الاسم
                   </th>  
                   <th >  الهاتف    
                   </th>
                   <th>    البريد     
                   </th>  
-                  <th>      رقم الهوية     
+                  <th>      العنوان      
                   </th>
-                  <th>      السجل التجاري    
-                  </th>
-                  <th>       العنوان الوطني    
-                  </th> 
-                  <!-- <th>       الرقم الضريبي    
-                  </th> -->
-                  <th>       الممثل    
-                  </th>
+                   
                   
                   <th><strong>تعديل</strong></th> 
                  </tr>
@@ -80,27 +68,30 @@
                     <td>
                       <ion-text *ngIf="cust.cust_type == 0">  فرد    </ion-text>
                       <ion-text *ngIf="cust.cust_type == 1">  شركة    </ion-text>
+                      <ion-text *ngIf="cust.cust_type == 4">  جمعية    </ion-text>
+                      <ion-text *ngIf="cust.cust_type == 3">    سفارة/قنصلية  </ion-text>
+                      <ion-text *ngIf="cust.cust_type == 5">  هيئة دولية"    </ion-text>
+                      <ion-text *ngIf="cust.cust_type == 2"> جهة حكومية    </ion-text>
                     </td>
                   <td>
-                    <ion-text *ngIf="cust.cust_type == 0">   {{cust.cust_name}}   </ion-text>
-                    <ion-text *ngIf="cust.cust_type == 1">    {{cust.company_name}}   </ion-text>
+                    <ion-text >   {{cust.cust_name}}   </ion-text>
+                    
                   </td>
                   
                   <td>
-                    <ion-text *ngIf="cust.cust_type == 0">     {{cust.phone}} </ion-text>
-                    <ion-text *ngIf="cust.cust_type == 1">     {{cust.company_phone}} </ion-text>
+                    <ion-text>  {{cust.phone}}  <ion-text dir="ltr">{{cust.phone_key}} </ion-text>  </ion-text>
+                    
                   </td>
                   <td>
-                    <ion-text *ngIf="cust.cust_type == 0">  {{cust.email}}     </ion-text>
-                    <ion-text *ngIf="cust.cust_type == 1">    {{cust.company_email}}   </ion-text>
+                    <ion-text>  {{cust.email}}     </ion-text>
+                 
                   </td>
-                  <td><ion-text>   {{cust.cust_ident}}    </ion-text></td>
-                  <td><ion-text> {{cust.company_regno}}     </ion-text></td> 
-                  <td><ion-text>   {{cust.company_ident}}   </ion-text></td> 
-                  <td><ion-text>   {{cust.company_represent}}   </ion-text></td>
+                  <td><ion-text>   {{cust.city}} -   {{cust.region}}   </ion-text></td>
+                
+                  
                    
                   <td>
-                    <ion-button (click)="getCustomerDetails(cust)" fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
+                    <ion-button (click)="getCustomerDetails(cust)" fill="clear" ><ion-icon name="create-outline" color="meduim"></ion-icon></ion-button>
                   </td>
                   
                   </tr>
@@ -111,12 +102,7 @@
                   <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
                   <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
                   <td> <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
-                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  <td>  <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td>
-                  
+                  <td><ion-skeleton-text animated style="width: 100%"></ion-skeleton-text></td> 
                  </tr>  
                 
                </table> 

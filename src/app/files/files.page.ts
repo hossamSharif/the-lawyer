@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
 import { ServicesService } from '../stockService/services.service';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { Location } from '@angular/common'; 
 import { CaseFile } from '../new-casefile/new-casefile.page';
+import { NewSession } from '../new-session/new-session.page';
 
 @Component({
   selector: 'app-files',
@@ -12,6 +13,8 @@ import { CaseFile } from '../new-casefile/new-casefile.page';
   styleUrls: ['./files.page.scss'],
 })
 export class FilesPage implements OnInit {
+  @Input() objectFromParnt : any;
+  @Input() categoryFromParnt : any;
   loading:boolean = false
   showEmpty:boolean = false
   filesArray:any = []
@@ -23,7 +26,8 @@ export class FilesPage implements OnInit {
     file_size: 0,
     file_url: '',
     file_notes: '',
-    uploaded_at: new Date().toISOString()
+    uploaded_at: new Date().toISOString(),
+    category: 'case'
   }
   
   newCase: Case =  {
@@ -53,8 +57,26 @@ export class FilesPage implements OnInit {
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
-    case_subject: ''
+    case_subject: '',
+    court_id: 0
   }
+
+  newSession: NewSession = {
+    id: 1,
+    lawyer_id: 0,
+    case_id: 0,
+    court_id:0,
+    cust_id: 0,
+    session_title: '',
+    opponent_name: '',
+    opponent_representative: '',
+    session_date: new Date().toISOString(),
+    session_time:new Date().toISOString(),
+    session_type: '',
+    session_status: '',
+    session_result: '',
+    court_name :'',
+  };
   
   constructor(private route: ActivatedRoute ,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private _location :Location ,private api:ServicesService ) {
     this.route.queryParams.subscribe(params => {
@@ -67,6 +89,8 @@ export class FilesPage implements OnInit {
   }
 
   ngOnInit() {
+    console.log('categoryFromParnt',this.categoryFromParnt) 
+    console.log('objectFromParnt',this.objectFromParnt)
     this.getCaseFilesByCaseId()
   }
 
@@ -75,7 +99,7 @@ export class FilesPage implements OnInit {
 
   getCaseFilesByCaseId() {
     this.loading = true 
-    this.api.getCaseFilesByCaseId(this.newCase.id).subscribe(data =>{
+    this.api.getCaseFilesByCaseId(this.objectFromParnt.id , this.categoryFromParnt).subscribe(data =>{
       console.log(data)
       let res = data 
       if(res['message'] != 'No Case Files Found'){
@@ -91,7 +115,7 @@ export class FilesPage implements OnInit {
       this.loading = false
   }
   )  
- }  
+  }  
 
 
   newFilePage(){

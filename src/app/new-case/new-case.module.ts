@@ -11,7 +11,7 @@ import { NewCasePageRoutingModule } from './new-case-routing.module';
 import { NewCasePage } from './new-case.page';
 import { FilesPageModule } from '../files/files.module';
 import { SessionsPageModule } from '../sessions/sessions.module';
-
+import { ShareModuleModule } from '../shareModule/share-module.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -20,6 +20,7 @@ import { SessionsPageModule } from '../sessions/sessions.module';
     IonicModule,
     NewCasePageRoutingModule,
     FilesPageModule,
+    ShareModuleModule,
     SessionsPageModule
   ],
   declarations:

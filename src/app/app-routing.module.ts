@@ -180,6 +180,34 @@ const routes: Routes = [
   {
     path: 'new-contract-service',
     loadChildren: () => import('./new-contract-service/new-contract-service.module').then( m => m.NewContractServicePageModule)
+  },
+  {
+    path: 'new-court',
+    loadChildren: () => import('./new-court/new-court.module').then( m => m.NewCourtPageModule)
+  },
+  {
+    path: 'courts',
+    loadChildren: () => import('./courts/courts.module').then( m => m.CourtsPageModule)
+  },
+  {
+    path: 'case-status',
+    loadChildren: () => import('./case-status/case-status.module').then( m => m.CaseStatusPageModule)
+  },
+  {
+    path: 'new-case-status',
+    loadChildren: () => import('./new-case-status/new-case-status.module').then( m => m.NewCaseStatusPageModule)
+  },
+  {
+    path: 'edit-task',
+    loadChildren: () => import('./edit-task/edit-task.module').then( m => m.EditTaskPageModule)
+  },
+  {
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'company-admin',
+    loadChildren: () => import('./company-admin/company-admin.module').then( m => m.CompanyAdminPageModule)
   }
 
 

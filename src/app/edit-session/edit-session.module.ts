@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { EditSessionPageRoutingModule } from './edit-session-routing.module';
 
 import { EditSessionPage } from './edit-session.page';
+import { ShareModuleModule } from '../shareModule/share-module.module';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { EditSessionPage } from './edit-session.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
+    ShareModuleModule,
     EditSessionPageRoutingModule
   ],
   declarations: [EditSessionPage]

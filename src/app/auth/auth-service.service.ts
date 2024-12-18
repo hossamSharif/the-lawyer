@@ -2,39 +2,55 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { ToastController, Platform, LoadingController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs'
-import { Router } from '@angular/router';
-import { ServicesService } from "../stockService/services.service";
+import { Router } from '@angular/router'; 
+import { PortalserviceService } from '../portal/portalservice.service';
  
+ 
+
  
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServiceService {
   authState = new BehaviorSubject(false);
-  device:any ='' ;
-   USER_INFO : {
-    id: any ,
-    user_name: any,
-    store_id :any,
-    full_name:any,
-     password:any
-  };
-  constructor(private toast:ToastController ,private loadingController:LoadingController,private api:ServicesService,   private router: Router,private storage: Storage,private platform: Platform,public toastController: ToastController) { 
+
+   USER_INFO :  {
+    id: number;
+    user_name: string;
+    store_id: number;
+    full_name: string;
+    password: string;
+    job_title: string;
+    email: string;
+    phone: string;
+    level: number;
+    subscriber_id: number;
+    company_email2: string;
+    company_email: string;
+    company_phone1: string;
+    company_phone2: string;
+    region: string;
+    city: string;
+    country: string;
+    full_address: string;
+    company_name: string;
+    short_desc: string;
+    full_desc: string;
+    logo_url: string;
+    subscriptions: Array<{
+      package_id: number;
+      status: string;
+      start_date: string;
+      end_date: string;
+    }>;
+  }
+  constructor(private toast:ToastController ,private loadingController:LoadingController,private api:PortalserviceService,   private router: Router,private storage: Storage,private platform: Platform,public toastController: ToastController) { 
     this.platform.ready().then(() => {
-      this.checkPlatform()
       this.ifLoggedIn();
     });
   }
 
-  checkPlatform(){
-    if (this.platform.is('desktop')) { 
-      this.device = 'desktop'
-      //console.log('I am an desktop device!');
-     }else if(this.platform.is('mobile')){
-      this.device = 'mobile'
-      //console.log('I am an mobile device!'); 
-     }
-  }
+ 
   
   async presentToast(msg,color?) {
     const toast = await this.toast.create({
@@ -73,56 +89,47 @@ export class AuthServiceService {
   }
 
 
+
+ 
  async login(user) { 
    await   this.presentLoadingWithOptions('جاري تسجيل الدخول' , 'login')
     //console.log(user)
     this.api.login(user).subscribe(data =>{
-      //console.log('loogingksks',data)
-      let res = data
+     console.log('loogingksks',data)
+      let res = data['data'][0]
       if(res['id'] != null){
-      this.USER_INFO ={
-        id :res['id'],
-        user_name:res['user_name'],
-        full_name:res['full_name'],
-        password:res['password'],
-        store_id:res['store_id'] 
-      } 
-        //console.log(  'sdlijlf' ,  this.USER_INFO)
-        this.storage.set('USER_INFO', this.USER_INFO).then((response) => {
-          if(this.device == 'mobile'){
+             this.USER_INFO = res 
+            this.storage.set('USER_INFO', this.USER_INFO).then((response) => {
             this.router.navigate(['folder/dashboard']);
-          }else{
-            this.router.navigate(['folder/dashboard']);
-          }  
-        this.authState.next(true); 
+            this.authState.next(true); 
       });
       }else{
         this.loadingController.dismiss()
-        this.presentToast('خطأ في اسم المستخدم او كلمة المرور' ,'danger')
+        this.presentToast('خطأ في البريد الإلكتروني او كلمة المرور' ,'danger')
       }  
     }, (err) => {
        //console.log(err);
        this.loadingController.dismiss()
-       this.presentToast('خطأ في اسم المستخدم او كلمة المرور' ,'danger')
+       this.presentToast('خطأ في البريد الإلكتروني او كلمة المرور' ,'danger')
         
       },()=>{ }
-    )      
-   
-  }
+    )    
+   }
 
  
   async logout() {
-    this.storage.remove('USER_INFO').then(() => {
-      this.storage.remove('STORE_INFO').then(() => { 
+    this.storage.remove('USER_INFO').then(() => { 
         this.router.navigate(['folder/login']);
-        this.authState.next(false);
-      }); 
+        this.authState.next(false); 
     }); 
   }
+
+   
   
 
   isAuthenticated() {
     return this.authState.value;
   }
 
+  
 }

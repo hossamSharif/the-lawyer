@@ -5,8 +5,9 @@ import { FormsModule ,ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { NewSessionPageRoutingModule } from './new-session-routing.module';
-
+import { FilesPageModule } from '../files/files.module';
 import { NewSessionPage } from './new-session.page';
+import { ShareModuleModule } from '../shareModule/share-module.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,9 @@ import { NewSessionPage } from './new-session.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    NewSessionPageRoutingModule
+    ShareModuleModule,
+    NewSessionPageRoutingModule,
+    FilesPageModule
   ],
   declarations: [NewSessionPage]
 })

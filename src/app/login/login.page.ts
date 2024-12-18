@@ -3,6 +3,8 @@ import { LoadingController, Platform, ToastController } from '@ionic/angular';
 import { AuthServiceService } from "../../app/auth/auth-service.service";
 import { Storage } from '@ionic/storage';
 import { ServicesService } from '../stockService/services.service';
+import { PortalserviceService } from '../portal/portalservice.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -13,80 +15,89 @@ import { ServicesService } from '../stockService/services.service';
 
 
 export class LoginPage implements OnInit {
-  USER_INFO : {
-    id: any ,
-    user_name: any,
-    store_id :any,
-    full_name:any,
-    password:any
-  };
+  USER_INFO :  {
+    id: number;
+    user_name: string;
+    store_id: number;
+    full_name: string;
+    password: string;
+    job_title: string;
+    email: string;
+    phone: string;
+    level: number;
+    subscriber_id: number;
+    company_email2: string;
+    company_email: string;
+    company_phone1: string;
+    company_phone2: string;
+    region: string;
+    city: string;
+    country: string;
+    full_address: string;
+    company_name: string;
+    short_desc: string;
+    full_desc: string;
+    logo_url: string;
+    subscriptions: Array<{
+      package_id: number;
+      status: string;
+      start_date: string;
+      end_date: string;
+    }>;
+  }
   offline:boolean = false
-  stores:Array<any> =[]
-  store_info : {id:any ,store_ref:any , store_name:any , location :any }
-  device :any = "" 
-  company : { id: any , phone: any, phone2  :any, address :any, logoUrl:any,engName:any,arName:any ,tradNo:any , vatNo:any};
+ 
+  
+  
 
-  constructor(private platform:Platform,private api:ServicesService,private storage: Storage,private toast:ToastController ,private loadingController:LoadingController , private authenticationService: AuthServiceService) {
+  constructor(private apiPortal:PortalserviceService,private platform:Platform,private api:ServicesService,private storage: Storage,private toast:ToastController ,private loadingController:LoadingController , private authenticationService: AuthServiceService) {
     
-    this.store_info = {id:1 ,store_ref:"sh" , store_name:"sooq sha'by" , location :"" } 
-    this.USER_INFO = {
-      id: "" ,
+    
+    this.USER_INFO =  {
+      id: 0,
       user_name: "",
-      store_id :"",
-      full_name:"",
-      password:"", 
+      store_id: 0,
+      full_name: "",
+      password: "",
+      job_title: "",
+      email: "",
+      phone: "",
+      level: 0,
+      subscriber_id: 0,
+      company_email2: "",
+      company_email: "",
+      company_phone1: "",
+      company_phone2: "",
+      region: "",
+      city: "",
+      country: "",
+      full_address: "",
+      company_name: "",
+      short_desc: "",
+      full_desc: "",
+      logo_url: "",
+      subscriptions: [
+        {
+          package_id: 0,
+          status: "",
+          start_date: "",
+          end_date: ""
+        }
+      ]
     }
+
    }
 
   
 
-   checkPlatform(){
-    if (this.platform.is('desktop')) { 
-      this.device = 'desktop'
-      console.log('I am an desktop device!');
-     }else if(this.platform.is('mobile')){
-      this.device = 'mobile'
-      console.log('I am an mobile device!'); 
-     }
-    }
-
+   
 
 
   ngOnInit() {
-    console.log('hello')
-    this.checkPlatform() 
-    this.getCompany()
+    console.log('hello') 
   }
-
-  pickDetail(ev){
-    let fl= this.stores.filter(x=>x.store_name == ev.target.value)
-    console.log(fl);
-    this.store_info = {
-      id:fl[0]['id'],
-      store_name:fl[0]['store_name'],
-      store_ref: fl[0]['store_ref'],
-      location:fl[0]['location'] 
-    }
-    this.USER_INFO.store_id =fl[0]['id']
-    console.log( this.store_info); 
-  }
-
-   
-
-  getCompany(){
-    this.api.getCompany().subscribe(data =>{
-        console.log('companay',data)
-       let res = data
-       this.company = res['data']
-     }, (erriho) => {
-     //console.log(err);
-   })  
-  }
-
  
  
-   
-
   async presentToast(msg,color?) {
     const toast = await this.toast.create({
       message: msg,
@@ -121,18 +132,13 @@ export class LoginPage implements OnInit {
   
 
    loginUser( ){
-      if(this.USER_INFO.user_name == "" || this.USER_INFO.password == ""){
+      if(this.USER_INFO.email == "" || this.USER_INFO.password == ""){
         this.presentToast('please fill all requaired feild' ,'danger') 
       }else{ 
-        this.storage.set('STORE_INFO', this.store_info).then((response) => {
-        })
-        this.storage.set('company', this.company).then((response) => {
-      
-        })
+         
             this.authenticationService.login(this.USER_INFO)    
-      }
-
-      }
+      } 
+    }
 
   
 }

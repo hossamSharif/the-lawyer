@@ -7,7 +7,7 @@ import { Storage } from '@ionic/storage';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { StockServiceService } from '../syncService/stock-service.service';
-
+import { CitiesArray } from '../cities/citiesArray';
 
 @Component({
   selector: 'app-edit-customer',
@@ -16,29 +16,64 @@ import { StockServiceService } from '../syncService/stock-service.service';
 })
 
 export class EditCustomerPage implements OnInit {
+  cities: CitiesArray = new CitiesArray();  
+  phoneKeysArr:Array<any>=[]  ; 
+  citiesArr: Array<any>=[] ; 
   @ViewChild('popoverNotif') popoverNotif;
+  @ViewChild('popover') popover;
+  @ViewChild('popoverKey') popoverKey;
   isOpenCustType = false ;
   showCustType = false
+
+  searchTerm : any = ""
+  searchTermKey : any = ""
+  aliasTerm :any =""
+  aliasTermKey :any =""
+ 
+   isOpen = false ;
+   isOpenKey = false ;
+ 
+
   custTypeArr :Array<any> =[]
   selectedCustTye : {id:any ,name:any};
   spinner:boolean = false 
-  seledctedCustomer :{id:any ,cust_ref :any ,cust_type:any,cust_name:any,cust_ident:any,phone:any,email:any,company_name:any,company_ident:any ,company_regno:any,company_phone:any,company_represent:any,company_email:any, status:any };
+  seledctedCustomer :{id:any ,cust_ref :any ,cust_type:any,cust_name:any,cust_ident:any,phone:any,email:any,company_name:any,company_ident:any ,company_regno:any,company_phone:any,company_represent:any,company_email:any, status:any  , city:any , region :any,passport : any , company_represent_desc:any,full_address:any , phone_key:any};
+  searchResult :Array<any> =[]
+  searchResultKey :Array<any> =[]
+  selectedCity :{id:any ,city:any ,region:any};
+  selectedPhoneKey :{id:any ,key:any ,country:any};
+  idType :any = ""
   ionicForm: FormGroup;
   ionicForm2: FormGroup;
   isSubmitted = false;
   isSubmitted2 = false;
  constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
-   this.custTypeArr.push(
-     {id:0,name:"فرد"},
-     {id:1,name:"شركة"}
+  this.citiesArr = this.cities.cities;
+  this.phoneKeysArr = this.cities.keys;
+  this.custTypeArr.push(
+    {id:0,name:"فرد"},
+    {id:1,name:"شركة"},
+    {id:2,name:"جهة حكومية"},
+    {id:3,name:"سفارة/قنصلية"},
+    {id:4,name:"جمعية"},
+    {id:5,name:"هيئة دولية"} 
    )
-   this.selectedCustTye = {id:0,name:"فرد"}
+    
 
 
    this.route.queryParams.subscribe(params => {
     if (params && params.customer) {
       this.seledctedCustomer = JSON.parse(params.customer);
       console.log('seledctedCustomer',this.seledctedCustomer)
+      this.selectedCustTye = this.custTypeArr.filter(x=>x.id == this.seledctedCustomer.cust_type)[0]
+      if (this.selectedCustTye.id == 0 && this.seledctedCustomer.cust_ident != "" ) {
+        this.idType = "1"
+      }else {
+        this.idType = "2" 
+      }
+      this.selectedPhoneKey = this.phoneKeysArr.filter(x=>x.key == this.seledctedCustomer.phone_key)[0]
+      this.selectedCity = this.citiesArr.filter(x=>x.city == this.seledctedCustomer.city)[0]
+      
     }
   });
 
@@ -46,22 +81,31 @@ export class EditCustomerPage implements OnInit {
 
 
 
-   this.ionicForm2 = this.formBuilder.group({
-     company_phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
-     company_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
-     company_email: ['', [ Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
-     company_ident: ['',Validators.required],
-     company_regno: ['',Validators.required] ,
-     company_represent : ['' , Validators.required]  
-   })
+  this.ionicForm = this.formBuilder.group({
+    cust_ident: ['' , Validators.required], 
+    passport: [''], 
+    cust_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z\u0600-\u06FF ]+')]],
+    email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]], 
+    phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
+    full_address : [''],
+    idType : [''],
+    searchTerm : [''],
+    searchTermKey : ['']
+  })
 
-   this.ionicForm = this.formBuilder.group({
-     cust_ident: ['' , Validators.required], 
-     cust_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
-     email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]], 
-     phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]]
-     
-   })
+  this.ionicForm2 = this.formBuilder.group({
+    phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
+    cust_name: ['', [Validators.required, Validators.minLength(4),  Validators.pattern('[a-zA-Z\u0600-\u06FF ]+')]],
+    email: ['', [ Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
+    cust_ident: [''],
+    company_regno: [''] ,
+    company_represent : ['' , Validators.required] , 
+    company_represent_desc : ['' , Validators.required]  ,
+    full_address : [''],
+    searchTerm : [''],
+    searchTermKey : ['']
+  })
+
 
  }
 
@@ -70,6 +114,81 @@ export class EditCustomerPage implements OnInit {
 
   }
 
+  presentPopover(e?: Event) {
+    //console.log('preent me', e)
+     this.popover.event = e;
+     this.isOpen = true;
+     this.clear()
+     this.searchResult = this.cities.cities
+     setTimeout(() => {
+    //  this.setFocusOnInput('popInput')
+     }, 2000);
+   }
+
+  selectFromPop(item){
+    //console.log(item)
+    this.selectedCity = {
+      id:item.id,
+      city:item.city ,
+      region:item.region
+    }
+    this.seledctedCustomer.city = item.city
+    this.seledctedCustomer.region = item.region
+     //this.searchTerm = item.city
+     
+      this.didDissmis() 
+  }
+
+  selectFromPopKey(item){
+  console.log('item',item)
+    this.selectedPhoneKey = {
+      id:item.id,
+      key:item.key ,
+      country:item.country
+    }
+    this.seledctedCustomer.phone_key = item.key  
+      this.didDissmisKey() 
+  }
+
+
+  didDissmis(){
+    this.isOpen = false
+  }
+
+  didDissmisKey(){
+    this.isOpenKey = false
+  }
+
+  clear(item_name?){
+    if(item_name){ 
+    }else{
+     this.searchTerm = "" 
+    }
+   }
+
+   clearKey(item_name?){
+    if(item_name){ 
+    }else{
+     this.searchTermKey = "" 
+    }
+   }
+
+   presentPopoverKey(e?: Event) { 
+     this.popoverKey.event = e;
+     this.isOpenKey = true;
+     this.clearKey() 
+   }
+
+   idTypeChange(event){
+    console.log(event.detail.value)
+    if(event.detail.value == 1){
+      this.seledctedCustomer.cust_ident = ""
+    }else{
+      this.seledctedCustomer.passport = ""
+    } 
+   }
+
+  
 
   save() {
     if (this.validate() == true) {

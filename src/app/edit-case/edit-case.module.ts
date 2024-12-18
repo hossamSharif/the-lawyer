@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule ,ReactiveFormsModule } from '@angular/forms';
 
@@ -20,6 +20,7 @@ import { SessionsPageModule } from '../sessions/sessions.module';
     FilesPageModule,
     SessionsPageModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [EditCasePage]
 })
 export class EditCasePageModule {}

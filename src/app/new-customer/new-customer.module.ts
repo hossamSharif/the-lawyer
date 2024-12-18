@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { NewCustomerPageRoutingModule } from './new-customer-routing.module';
 
 import { NewCustomerPage } from './new-customer.page';
+import { ShareModuleModule } from '../shareModule/share-module.module';
  
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonicModule, 
+    ShareModuleModule,
     NewCustomerPageRoutingModule
   ],
   declarations: [NewCustomerPage]

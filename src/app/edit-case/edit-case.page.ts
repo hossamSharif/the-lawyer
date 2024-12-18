@@ -5,9 +5,11 @@ import { FilterPipe3  } from '../new-case/pipe3';
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ToastButton, ToastController } from '@ionic/angular';
+import { LoadingController, ModalController, ToastButton, ToastController } from '@ionic/angular';
 import { Case } from '../new-case/new-case.page';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { NewCourtPage } from '../new-court/new-court.page';
+import { NewCaseStatusPage } from '../new-case-status/new-case-status.page';
 var ls = window.localStorage;
 
 @Component({
@@ -97,7 +99,7 @@ export class EditCasePage implements OnInit {
   showCategNagz = false
   selectedCustomer : {id:any ,cust_name:any};
   selectedType : {id:any ,name:any };
-  selectedCaseStatus : {id:any ,name:any };
+  selectedCaseStatus : {id:any ,name:any , status_color:any };
   selectedCaseNagz : {id:any ,name:any };
   selectedCategNagz : {id:any ,name:any };
 
@@ -129,45 +131,16 @@ export class EditCasePage implements OnInit {
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
-    case_subject: ''
+    case_subject: '',
+    court_id: 0
   }
 
   ionicForm: FormGroup;
   isSubmitted = false;
-  constructor( private route: ActivatedRoute ,private rout : Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor(private modalController : ModalController, private route: ActivatedRoute ,private rout : Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
     this.ionicForm = this.formBuilder.group({
     case_title: ['' , Validators.required],
-    // client_id:  ['' ] ,
-    // case_type: ['' ] ,
-    // client_role: ['' ] ,
-    // service_classification: ['' ] ,
-    // branch: ['' ] ,
-    // court_name: ['' ] ,
-    // opponent_name: ['' ] ,
-    // opponent_id: ['' ],
-    // opponent_representative: ['' ] ,
-    // case_open_date: new  Date,
-    // deadline: new Date,
-    // billing_type: ['' ] ,
-    // claim_type: ['' ] ,
-    // work_hour_value: 0,
-    // estimated_work_hours: 0,
-    // case_status: ['' ] ,
-    // constraintId_najz: ['' ] ,
-    // archive_id_najz: ['' ] ,
-    // caseId_najz: ['' ] ,
-    // case_classification_najz: ['' ] ,
-    // case_open_date_najz: new Date,
-    // case_docs: ['' ] ,
-    // Plaintiff_Requests: ['' ] ,
-    // case_status_najz: ['' ] ,
-    // case_subject: ['' ] 
-      // company_phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]],
-      // company_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
-      // company_email: ['', [ Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
-      // company_ident: ['',Validators.required],
-      // company_regno: ['',Validators.required] ,
-      // company_represent : ['' , Validators.required]  
+   
     })
     this.getAppInfo()
 
@@ -182,20 +155,30 @@ export class EditCasePage implements OnInit {
         this.selectedServ.name = this.newCase.service_classification
         this.selectedBranch.name = this.newCase.branch
         this.selectedCourt.name = this.newCase.court_name
-        console.log('caseRoute',this.newCase)
         this.selectedInvoice.name = this.newCase.billing_type
         this.selectedCost.name = this.newCase.claim_type
-        if (+this.newCase.case_status == 0) {
-          this.selectedCaseStatus.name =  'جاري العمل' 
-        }else{
-          this.selectedCaseStatus.name =  'مغلقة ' 
-        }
+        this.newCase.case_status =  this.newCase.case_status
+        this.selectedCaseStatus.name = this.newCase['status_name']
+        this.selectedCaseStatus.status_color = this.newCase['status_color'] 
         this.selectedCategNagz.name = this.newCase.case_classification_najz
+        this.addParam()
       }
     });
   }
 
   ngOnInit() {
+  }
+
+
+  addParam() {
+    this.rout.navigate([],
+      {
+        queryParams: { case: JSON.stringify(this.newCase) },
+         queryParamsHandling: 'merge' // This will keep the existing query params and add the new one 
+
+      }
+    );
+    console.log('queryParams', this.rout.getCurrentNavigation().extras.queryParams)
   }
 
   close(){
@@ -283,6 +266,36 @@ export class EditCasePage implements OnInit {
     })
   }
 
+  getCourts(){ 
+    this.api.getCourts().subscribe(data =>{
+      console.log(data)
+      let res = data
+      if(data['message'] != 'No courts Found'){ 
+        this.courtArr = res['data']
+      }   
+    }, (err) => {
+
+    } ,
+    ()=>{ 
+   }
+   )  
+  }
+
+  getCaseStatus(){ 
+    this.api.getCaseStatus().subscribe(data =>{
+      console.log(data)
+      let res = data
+      if(data['message'] != 'No case status Found'){ 
+        this.caseStatusArr = res['data']
+      }   
+    }, (err) => {
+
+    } ,
+    ()=>{ 
+   }
+   )  
+  }
+
   saveCaseLawers() {
     console.log('saveInvo' , this.selectedLawyersTeamArr)
     // let arr =[]
@@ -299,6 +312,7 @@ export class EditCasePage implements OnInit {
      if(data['message'] != 'Post Not Created') {
      //this.newCase.id = data['message']
      this.presentToast('تم حفظ البيانات بنجاح', 'success')
+     this.addParam()
      this.prepareCace()
      this._location.back();
       }else{
@@ -310,19 +324,84 @@ export class EditCasePage implements OnInit {
     })
   }
 
+  async presentStatusModal(id?, status?) {
+       
+    const modal = await this.modalController.create({
+      component: NewCaseStatusPage ,
+      // componentProps: {
+      //   "item": this.selectedItem,
+      //   "colSetting": this.colSetting, 
+      //   "filterArrayOrign": this.filterArrayOrign, 
+      //   "filterArray": this.filterArray, 
+      //   "brandList": this.brandList, 
+      //   "modelList": this.modelList,  
+      //   "status": status
+      // }
+    });
+    
+    modal.onDidDismiss().then((dataReturned) => {
+      if (dataReturned !== null) {
+         console.log(dataReturned )
+        this.doAfterDissmissStatus(dataReturned)
+      }
+    });
+ 
+    return await modal.present(); 
+  }
+  async presentCourtModal(id?, status?) {
+       
+    const modal = await this.modalController.create({
+      component: NewCourtPage ,
+      // componentProps: {
+      //   "item": this.selectedItem,
+      //   "colSetting": this.colSetting, 
+      //   "filterArrayOrign": this.filterArrayOrign, 
+      //   "filterArray": this.filterArray, 
+      //   "brandList": this.brandList, 
+      //   "modelList": this.modelList,  
+      //   "status": status
+      // }
+    });
+    
+    modal.onDidDismiss().then((dataReturned) => {
+      if (dataReturned !== null) {
+         console.log(dataReturned )
+        this.doAfterDissmiss(dataReturned)
+      }
+    });
+ 
+    return await modal.present(); 
+  }
 
+  doAfterDissmiss(data){
+    if (data.role == 'reload' ) { 
+          this.getCourts()
+      }   
+  }
+
+  doAfterDissmissStatus(data){
+    if (data.role == 'reload' ) { 
+          this.getCaseStatus()
+      }   
+  }
 
   prepareCace(){  
     this.caseTypeArr.push(
-      {id:1,name:"جنائي"},
-      {id:2,name:"تجاري"},
-      {id:3,name:"مدني"}
+      {id:1,name:"احوال شخصية"},
+      {id:2,name:"تنفيذ"},
+      {id:3,name:"جزائية"},
+      {id:4,name:"عامة"},
+      {id:5,name:"عمالية"},
+      {id:6,name:"إنهائات"}
     )
 
     this.caseTypeArrNagz.push(
-      {id:1,name:"جنائي"},
-      {id:2,name:"تجاري"},
-      {id:3,name:"مدني"}
+      {id:1,name:"احوال شخصية"},
+      {id:2,name:"تنفيذ"},
+      {id:3,name:"جزائية"},
+      {id:4,name:"عامة"},
+      {id:5,name:"عمالية"},
+      {id:6,name:"إنهائات"}
     )
 
 
@@ -399,7 +478,7 @@ export class EditCasePage implements OnInit {
     this.selectedCost = {id:"",name:""}
     this.selectedCustomer = {id:"",cust_name:""}
     this.selectedType = {id:"",name:""}
-    this.selectedCaseStatus = {id:"",name:""}
+    this.selectedCaseStatus = {id:"",name:"",status_color:""}
     this.selectedCaseNagz = {id:"",name:""}
     this.selectedCategNagz = {id:"",name:""}
     this.ionicForm.reset() 
@@ -562,6 +641,7 @@ export class EditCasePage implements OnInit {
       name:item.name
     }   //console.log( this.selectedItem);
     this.newCase.court_name = item.name 
+    this.newCase.court_id = item.id
       this.didDissmisCourt()
       //perform calculate here so moataz can get the qty
     }
@@ -603,6 +683,8 @@ export class EditCasePage implements OnInit {
         this.prepareCace() 
         this.getTopCustomers()
         this.getLawyers() 
+        this.getCourts() 
+        this.getCaseStatus() 
       }
 
   didDissmisBranches( ) {
@@ -866,11 +948,11 @@ export class EditCasePage implements OnInit {
         this.newCase.case_status = item.id
         this.selectedCaseStatus = {
           id:item.id,
-          name:item.name
-        } //console.log( this.selectedItem); 
-          this.didDissmisCase()
-          //perform calculate here so moataz can get the qty
-        }
+          name:item.status_name,
+          status_color:item.status_color
+        }  
+          this.didDissmisCase() 
+      }
 
         selectFromPopCaseNagz(item){
           console.log(item)

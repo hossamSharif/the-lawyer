@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,Input} from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
 import { ServicesService } from '../stockService/services.service';
@@ -13,7 +13,7 @@ export class SessionsPage implements OnInit {
   loading:boolean = false
   showEmpty:boolean = false
   sessionsArray:any = []
-
+  @Input() caseFromParnt : any;
   newCase: Case =  {
     id: null,
     case_title: '',
@@ -41,7 +41,8 @@ export class SessionsPage implements OnInit {
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
-    case_subject: ''
+    case_subject: '',
+    court_id: 0
   }
   selectedLawyersTeamArr : Array<any> = []
 
@@ -54,12 +55,42 @@ export class SessionsPage implements OnInit {
         console.log(this.newCase)
       }
     });
+    
    }
 
   ngOnInit() {
-    this.getSessionsByCaseId()
+    if(this.newCase.id){
+      this.getSessionsByCaseId()
+    }else{
+      this.getTopSessions()
+    }
+    
+   }
+
+
+
+   ngAfterViewInit() {
+    console.log('caseFromParnt',this.caseFromParnt) 
   }
 
+ getTopSessions(){
+    this.loading = true 
+    this.api.getTopSessions().subscribe(data =>{
+      console.log(data)
+      let res = data 
+      if(res['message'] != 'No cases Found'){
+        this.sessionsArray = res['data']
+      } 
+    
+    }, (err) => {
+      this.presentToast('خطا في الإتصال حاول مرة اخري' , 'danger')
+    } ,
+    ()=>{ 
+      
+    this.loading = false
+    }
+  )  
+}
 
   getSessionsByCaseId() {
     this.loading = true 
@@ -83,14 +114,21 @@ export class SessionsPage implements OnInit {
 
 
   newSessionPage(){
-      let navigationExtras: NavigationExtras = {
-        queryParams: {
-          team: JSON.stringify(this.selectedLawyersTeamArr) ,
-          case: JSON.stringify(this.newCase) 
-        }
-      }; 
-      this.rout.navigate(['new-session'] , navigationExtras)
-   }
+   console.log('queryParams', this.caseFromParnt) 
+      if (this.caseFromParnt) {
+        console.log('caseFromParnt',this.caseFromParnt) 
+         let navigationExtras: NavigationExtras = {
+          queryParams: {
+            case: JSON.stringify( this.caseFromParnt),
+            team: JSON.stringify(this.caseFromParnt['team']) 
+          }
+        }; 
+        this.rout.navigate(['new-session'] , navigationExtras)
+        }else{ 
+          console.log('not found caseFromParnt',this.caseFromParnt)
+          this.rout.navigate(['new-session'] )
+        }   
+      }
 
    refreshSessions(){
     this.getSessionsByCaseId()
@@ -119,6 +157,6 @@ export class SessionsPage implements OnInit {
       position:'top' 
     });
     toast.present();
-  }
+   }
 
 }

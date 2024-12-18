@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 import { ServicesService } from '../stockService/services.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ToastButton, ToastController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
 var ls = window.localStorage;
 
@@ -18,6 +18,7 @@ export interface CaseFile {
   file_url?: string  ;
   file_notes?: string  ;
   uploaded_at?: string  ;
+  category: string  ;
 }
 
 
@@ -55,7 +56,8 @@ export class NewCasefilePage implements OnInit {
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
-    case_subject: ''
+    case_subject: '',
+    court_id: 0
   }
   newCaseFile: CaseFile =  {
     id: null,
@@ -66,11 +68,12 @@ export class NewCasefilePage implements OnInit {
     file_url: '',
     file_notes: '',
     uploaded_at: new Date().toISOString(),
+    category: ''
   }
   isSubmitted = false;
   uploadedFiles
 
-  constructor(private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor( private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
 
     this.route.queryParams.subscribe(params => {
       if (params &&  params.case) {
@@ -84,6 +87,9 @@ export class NewCasefilePage implements OnInit {
   ngOnInit() {
   }
 
+  
+
+ 
   getAppInfo(){ 
     this.prepareCace()  
   }

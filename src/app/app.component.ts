@@ -128,21 +128,18 @@ export class AppComponent {
     }
 
   
-async auth (){ 
-   this.storage.create().then(() => {
-    this.authenticationService.authState.subscribe(state => {
-    this.isAuth = this.authenticationService.isAuthenticated()
-    if (state) { 
-      this.getAppInfo()  
-     
-    } else {
-      this.router.navigate(['folder/login']);
-    }
-  });
- })
-
- 
-}
+      async auth (){ 
+        this.storage.create().then(() => {
+          this.authenticationService.authState.subscribe(state => {
+          this.isAuth = this.authenticationService.isAuthenticated()
+          if (state) { 
+            this.getAppInfo()  
+          } else {
+            this.router.navigate(['folder/login']);
+          }
+        });
+      })
+      }
 
 async presentAlertConfirm() {
   let msg:string = 'please set the defualt project and the default finance year , we will redirect you to settings page '

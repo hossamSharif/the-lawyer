@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router'
 import { PortalserviceService } from '../portal/portalservice.service';
 import { Storage } from '@ionic/storage';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from "@angular/forms";
 import { ToastController } from '@ionic/angular'; 
 
 @Component({
@@ -47,7 +47,7 @@ export class VirefyRestPage implements OnInit {
     token:any
     code:any; 
     phone:any
-    ionicForm: FormGroup;
+    ionicForm: UntypedFormGroup;
     spinner:boolean = false 
     spinner2:boolean = false 
     isSubmitted = false;
@@ -57,7 +57,7 @@ export class VirefyRestPage implements OnInit {
     digit 
     user : {email:any}
      key : any  = ''
-  constructor(private toast:ToastController,private formBuilder: FormBuilder,private route: ActivatedRoute,private storage: Storage, private rout : Router ,private api:PortalserviceService) {
+  constructor(private toast:ToastController,private formBuilder: UntypedFormBuilder,private route: ActivatedRoute,private storage: Storage, private rout : Router ,private api:PortalserviceService) {
     this.user = { 
       email:""
     }

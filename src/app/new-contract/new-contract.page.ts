@@ -5,7 +5,7 @@ import { FilterPipe2 } from '../new-case/pipe2';
 import { FilterPipe3  } from '../new-case/pipe3';
 import { ServicesService } from '../stockService/services.service';
 import { LoadingController, ToastController } from '@ionic/angular';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
  
 
@@ -95,7 +95,7 @@ export class NewContractPage implements OnInit {
   savedDone : boolean = false
   isSubmitted = false;
   
-  constructor(private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor(private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService ) {
      this.payDate =  new Date().toISOString()
      this.selectedService = {id:"" ,title:"" , type:""}
      this.selectedCustomer= {id:"" ,cust_name:"" }

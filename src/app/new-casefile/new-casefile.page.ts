@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef ,Renderer2,Input} from '@angul
  
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ToastButton, ToastController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
@@ -121,7 +121,7 @@ export class NewCasefilePage implements OnInit {
   isSubmitted = false;
   uploadedFiles
   category: string = ''
-  constructor( private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor( private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService ) {
 
     this.route.queryParams.subscribe(params => {
       if (params &&  params.case) {

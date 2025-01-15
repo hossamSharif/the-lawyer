@@ -4,7 +4,7 @@ import { FilterPipe2 } from './pipe2';
 import { FilterPipe3  } from './pipe3';
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { NavigationExtras, Route, Router } from '@angular/router';
 import { NewCourtPage } from '../new-court/new-court.page';
@@ -658,10 +658,10 @@ export class NewCasePage implements OnInit {
   }
   savedDone : boolean = false
 
-  ionicForm: FormGroup;
+  ionicForm: UntypedFormGroup;
   isSubmitted = false;
   isSubmittedFinance = false;
-  constructor(private apiPortal:PortalserviceService  ,private storage: Storage, private modalController : ModalController,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor(private apiPortal:PortalserviceService  ,private storage: Storage, private modalController : ModalController,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService ) {
     this.ionicForm = this.formBuilder.group({
     case_title: ['' , Validators.required]
     })

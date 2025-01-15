@@ -5,7 +5,7 @@ import { FilterPipe } from './pipe';
 import { FilterPipe2 } from './pipe2';
 import { FilterPipe3  } from './pipe3';
 import { LoadingController, ToastController } from '@ionic/angular';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ServicesService } from '../stockService/services.service'; 
 
 export interface Consultation {
@@ -131,7 +131,7 @@ export class NewConsultationPage implements OnInit {
    
  
  isSubmitted = false;
-   constructor(private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+   constructor(private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService ) {
     
     this.getAppInfo()
     

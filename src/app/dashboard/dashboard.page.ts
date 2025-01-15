@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { map ,reduce ,filter ,first ,take ,debounceTime,distinctUntilChanged , switchMap , concatMap} from 'rxjs/operators';
 import { Observable, of  } from 'rxjs'; 
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,8 +16,8 @@ export class DashboardPage implements OnInit {
   firstObservable:any
   takeObservable:any
 
-  form: FormGroup;
-  constructor(private fb: FormBuilder) {
+  form: UntypedFormGroup;
+  constructor(private fb: UntypedFormBuilder) {
     this.form = this.fb.group({
       search: ['']
     });

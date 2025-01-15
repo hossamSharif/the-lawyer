@@ -2,7 +2,7 @@ import { Component, OnInit ,ViewChild} from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router'
 import { Storage } from '@ionic/storage';
 import { ModalController, ToastController } from '@ionic/angular';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from "@angular/forms";
 import { ServicesService } from '../stockService/services.service';
 @Component({
   selector: 'app-forget-password',
@@ -41,11 +41,11 @@ export class ForgetPasswordPage implements OnInit {
     }>;
   }
   spinner:boolean = false 
-  ionicForm: FormGroup;
+  ionicForm: UntypedFormGroup;
    user : { email:any  }
    isSubmitted :boolean = false 
    
-  constructor(private api : ServicesService,private formBuilder: FormBuilder,private toast:ToastController,private route: ActivatedRoute,private storage: Storage, private rout : Router ) {
+  constructor(private api : ServicesService,private formBuilder: UntypedFormBuilder,private toast:ToastController,private route: ActivatedRoute,private storage: Storage, private rout : Router ) {
   
     this.ionicForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common'; 
 import { LoadingController, ModalController, ToastController } from '@ionic/angular';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServicesService } from '../stockService/services.service';
 
@@ -15,7 +15,7 @@ export class NewCaseStatusPage implements OnInit {
   colors = ['#FFFFFF', '#e4e493', '#53e853', '#808080', '#ed4949'];
   selectedColor = '#FFFFFF';
 
-  constructor(private modalController : ModalController,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService) { }
+  constructor(private modalController : ModalController,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService) { }
 
   ngOnInit() {
 

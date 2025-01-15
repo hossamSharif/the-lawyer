@@ -4,7 +4,7 @@ import { FilterPipe2 } from '../new-case/pipe2';
 import { FilterPipe3  } from '../new-case/pipe3';
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LoadingController, ModalController, ToastButton, ToastController } from '@ionic/angular';
 import { Case } from '../new-case/new-case.page';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
@@ -394,9 +394,9 @@ export class EditCasePage implements OnInit {
 
 
 
-  ionicForm: FormGroup;
+  ionicForm: UntypedFormGroup;
   isSubmitted = false;
-  constructor(private storage: Storage,private modalController : ModalController, private route: ActivatedRoute ,private rout : Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ,private apiPortal:PortalserviceService  ) {
+  constructor(private storage: Storage,private modalController : ModalController, private route: ActivatedRoute ,private rout : Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService ,private apiPortal:PortalserviceService  ) {
     this.ionicForm = this.formBuilder.group({
     case_title: ['' , Validators.required],
    

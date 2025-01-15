@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { AlertController, Platform , LoadingController, ModalController, ToastController, MenuController } from '@ionic/angular';
 import { DatePipe ,Location} from '@angular/common';
 import { Storage } from '@ionic/storage';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { StockServiceService } from '../syncService/stock-service.service';
 import { CitiesArray } from '../cities/citiesArray';
@@ -43,11 +43,11 @@ export class EditCustomerPage implements OnInit {
   selectedCity :{id:any ,city:any ,region:any};
   selectedPhoneKey :{id:any ,key:any ,country:any};
   idType :any = ""
-  ionicForm: FormGroup;
-  ionicForm2: FormGroup;
+  ionicForm: UntypedFormGroup;
+  ionicForm2: UntypedFormGroup;
   isSubmitted = false;
   isSubmitted2 = false;
- constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
+ constructor(private formBuilder: UntypedFormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
   this.citiesArr = this.cities.cities;
   this.phoneKeysArr = this.cities.keys;
   this.custTypeArr.push(

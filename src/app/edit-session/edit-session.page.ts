@@ -4,7 +4,7 @@ import { FilterPipe2 } from '../new-case/pipe2';
 import { FilterPipe3  } from '../new-case/pipe3';
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LoadingController, ModalController, ToastButton, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
@@ -164,9 +164,9 @@ export class EditSessionPage implements OnInit {
   }
 
   category:any = 'session';	
-  ionicForm: FormGroup;
+  ionicForm: UntypedFormGroup;
   isSubmitted = false;
-  constructor(private modalController :ModalController, private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor(private modalController :ModalController, private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: UntypedFormBuilder,private _location :Location ,private api:ServicesService ) {
     this.getAppInfo()
     this.route.queryParams.subscribe(params => {
       if (params  && params.session) {

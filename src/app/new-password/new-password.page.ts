@@ -3,7 +3,7 @@ import { ActivatedRoute, NavigationExtras, Router } from '@angular/router'
 import { PortalserviceService } from '../portal/portalservice.service';
 import { Storage } from '@ionic/storage';
 import { ModalController, ToastController } from '@ionic/angular';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms"; 
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from "@angular/forms"; 
 import { AuthServiceService } from "../../app/auth/auth-service.service";
 @Component({
   selector: 'app-new-password',
@@ -11,7 +11,7 @@ import { AuthServiceService } from "../../app/auth/auth-service.service";
   styleUrls: ['./new-password.page.scss'],
 })
 export class NewPasswordPage implements OnInit {
-  ionicForm: FormGroup;
+  ionicForm: UntypedFormGroup;
  
 USER_INFO :  {
   id: number;
@@ -54,7 +54,7 @@ USER_INFO :  {
   show :boolean = false
   showConf :boolean = false
    
-  constructor(private authenticationService: AuthServiceService ,private modalController:ModalController,private formBuilder: FormBuilder,private toast:ToastController,private route: ActivatedRoute,private storage: Storage, private rout : Router ,private api:PortalserviceService) { 
+  constructor(private authenticationService: AuthServiceService ,private modalController:ModalController,private formBuilder: UntypedFormBuilder,private toast:ToastController,private route: ActivatedRoute,private storage: Storage, private rout : Router ,private api:PortalserviceService) { 
 
     this.ionicForm = this.formBuilder.group({ 
       password: ['', [Validators.required, Validators.minLength(5),Validators.pattern('^([^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$')]],

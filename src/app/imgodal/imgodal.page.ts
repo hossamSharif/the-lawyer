@@ -1,6 +1,6 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { LoadingController, ModalController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup } from  '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from  '@angular/forms';
 import { ServicesService } from '../stockService/services.service';
 @Component({
   selector: 'app-imgodal',
@@ -20,7 +20,7 @@ export class ImgodalPage implements OnInit {
   @Input() modelList: any;
   @Input() firstq: any;
   @Input() colSetting: any;
-  form: FormGroup;
+  form: UntypedFormGroup;
   uploadResponse;
   segme
   selectedItem : {id:any ,item_name:any,model:any  ,part_no:any  ,min_qty:any ,brand:any,pay_price:any,perch_price:any,item_unit:any,item_desc:any,item_parcode:any,aliasEn:any,tax:any , imgUrl:any};
@@ -29,7 +29,7 @@ export class ImgodalPage implements OnInit {
  
   segment :any ='manual'
   price : {payval:any,perchval:any ,type:any, status:any} 
-  constructor(private formBuilder: FormBuilder,private loadingController:LoadingController,private api:ServicesService,private modalController: ModalController,private toast :ToastController) {
+  constructor(private formBuilder: UntypedFormBuilder,private loadingController:LoadingController,private api:ServicesService,private modalController: ModalController,private toast :ToastController) {
     this.selectedItem = {id:"" ,item_name:"",model:"",part_no:""  ,min_qty:0 ,brand:"",pay_price:"",perch_price:"",item_unit:"",item_desc:"",item_parcode:"",aliasEn:"" ,tax:0 , imgUrl:""};   
     this.firstqObj = {id:"" ,item_id:"" , store_id:"" , quantity :0 ,	fq_year:"" ,	pay_price:"" ,	perch_price:"" }
     this.colSettingpr = {id:true ,item_name:true ,model:true ,part_no:true  ,min_qty:true ,brand:true,pay_price:true,perch_price:true,item_unit:true,item_desc:true,item_parcode:true,profit:true,instock:true,total:true,lastSold:true,edit:true,delete:true,aliasEn:true};

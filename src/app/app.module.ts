@@ -20,16 +20,15 @@ import { CommonModule } from '@angular/common';
 //import { QRCodeModule } from 'angularx-qrcode';
 //import { ShareModule } from './shareModule/share-module/share-module.module';
 @NgModule({
-  declarations: [AppComponent, SelectAllDirective],
-  entryComponents: [],
-  imports: [ BrowserModule,CommonModule,HttpClientModule, IonicModule.forRoot(),IonicStorageModule.forRoot(), AppRoutingModule, ServiceWorkerModule.register('ngsw-worker.js', {
-  enabled: environment.production,
-  // Register the ServiceWorker as soon as the app is stable
-  // or after 30 seconds (whichever comes first).
-  registrationStrategy: 'registerWhenStable:30000'
-})],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },DatePipe,AuthServiceService,AuthGaurdService],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    declarations: [AppComponent, SelectAllDirective],
+    imports: [BrowserModule, CommonModule, HttpClientModule, IonicModule.forRoot(), IonicStorageModule.forRoot(), AppRoutingModule, ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: environment.production,
+            // Register the ServiceWorker as soon as the app is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
+        })],
+    providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, DatePipe, AuthServiceService, AuthGaurdService],
+    bootstrap: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}

@@ -8,6 +8,7 @@ import { Storage } from '@ionic/storage';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { StockServiceService } from '../syncService/stock-service.service';
+import { PortalserviceService } from '../portal/portalservice.service';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.page.html',
@@ -15,6 +16,36 @@ import { StockServiceService } from '../syncService/stock-service.service';
 })
 export class AddUserPage implements OnInit {
   @ViewChild('popoverNotif') popoverNotif;
+  USER_INFO :  {
+    id: number;
+    user_name: string;
+    store_id: number;
+    full_name: string;
+    password: string;
+    job_title: string;
+    email: string;
+    phone: string;
+    level: number;
+    subiscriber_id: number;
+    company_email2: string;
+    company_email: string;
+    company_phone1: string;
+    company_phone2: string;
+    region: string;
+    city: string;
+    country: string;
+    full_address: string;
+    company_name: string;
+    short_desc: string;
+    full_desc: string;
+    logo_url: string;
+    subscriptions: Array<{
+      package_id: number;
+      status: string;
+      start_date: string;
+      end_date: string;
+    }>;
+  }
   isOpenCustType = false ;
   showCustType = false ;  
   userTypeArr :Array<any> =[] 
@@ -24,7 +55,7 @@ export class AddUserPage implements OnInit {
   spinner:boolean = false 
   ionicForm: FormGroup; 
   isSubmitted = false; 
-  constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
+  constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:PortalserviceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
 
     this.userTypeArr.push(
       {id:2,name:"super Admin"}, 
@@ -36,17 +67,23 @@ export class AddUserPage implements OnInit {
       job_title: ['' , Validators.required], 
       user_name: ['' , Validators.required], 
       password: ['' , Validators.required], 
-      level: ['' , Validators.required], 
-      full_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
+      full_name: ['', [Validators.required,Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
       email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]], 
       phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]]
-      
     })
+
+    this.prepareInvo()
     
   }
 
   ngOnInit() {
-
+    this.storage.get('USER_INFO').then((response) => {
+      console.log('response',response)
+      if (response) {
+        this.USER_INFO = response  
+        console.log('USER_INFO',this.USER_INFO) 
+      }
+    }); 
   }
 
   prepareInvo(){  
@@ -63,10 +100,24 @@ save() {
     } 
 }
 
+prepareUser(selectedUser){ 
+  let user = { 
+      id: null,
+      user_name: selectedUser.user_name, 
+      password: selectedUser.password,
+      full_name:  selectedUser.full_name, 
+      level:  +selectedUser.level,
+      email:  selectedUser.email,
+      subiscriber_id:   +this.USER_INFO.subiscriber_id ,
+      phone:  selectedUser.phone, 
+      job_title:  selectedUser.job_title
+  }
+  return user
+  }
 
 saveInvo() {
-  console.log('saveInvo')
-  this.api.saveUser(this.seledctedUser).subscribe(data => {
+  
+  this.api.saveUser(this.prepareUser(this.seledctedUser)).subscribe(data => {
     console.log('save',data)
    if(data['message'] != 'Post Not Created') {
    // this.selectedِCustmer.id = data['message']
@@ -87,6 +138,7 @@ get errorControl() {
 }
  
 validate(){
+  console.log('saveInvo' ,this.prepareUser(this.seledctedUser)) 
   this.isSubmitted = true;
   if (this.ionicForm.valid == false) {
     //console.log('Please provide all the required values! 1') 

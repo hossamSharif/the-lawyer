@@ -7,12 +7,14 @@ import { IonicModule } from '@ionic/angular';
 import { SessionsPageRoutingModule } from './sessions-routing.module';
 
 import { SessionsPage } from './sessions.page';
+import { ShareModuleModule } from '../shareModule/share-module.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    ShareModuleModule,
     SessionsPageRoutingModule
   ],
   exports:[SessionsPage] ,

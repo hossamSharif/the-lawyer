@@ -67,7 +67,7 @@
                   مطلوب</ion-note>
                 <ion-item class="custInput" (click)="presentPopoverNotif($event)">
                   <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon>
-                  <ion-label> {{selectedType.name}} </ion-label>
+                  <ion-label> {{selectedType?.name}} </ion-label>
                 </ion-item>
                 <ion-popover #popoverNotif [isOpen]="isOpenNotif" (didDismiss)="didDissmisNotif()"> 
                   <ng-template>
@@ -102,7 +102,7 @@
                   مطلوب</ion-note>
                 <ion-item class="custInput" (click)="presentPopover($event)">
                   <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon>
-                  <ion-label> {{selectedCustomer.cust_name}} </ion-label> 
+                  <ion-label> {{selectedCustomer?.cust_name}} </ion-label> 
                 </ion-item>
                 <ion-popover #popover [isOpen]="isOpen" (didDismiss)="didDissmis()">
                   <ng-template>
@@ -137,7 +137,7 @@
 
                 <ion-item class="custInput" (click)="presentPopoverAgent($event)">
                   <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon>
-                  <ion-label> {{selectedAgent.name}} </ion-label>
+                  <ion-label> {{selectedAgent?.name}} </ion-label>
                 </ion-item>
                 <ion-popover #popoverِِAgent [isOpen]="isOpenAgent" (didDismiss)="didDissmisAgent()">
                   <ng-template>
@@ -229,7 +229,7 @@
 
                 <ion-item class="custInput" (click)="presentPopoverCourt($event)">
                   <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon>
-                  <ion-label> {{selectedCourt.name}} </ion-label>
+                  <ion-label> {{selectedCourt?.name}} </ion-label>
                 </ion-item>
 
                 <ion-popover #popoverِِCourt [isOpen]="isOpenCourt" (didDismiss)="didDissmisCourt()"> 
@@ -305,7 +305,7 @@
 
                 <ion-item class="custInput" (click)="presentPopoverCase($event)">
                   <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon>
-                  <ion-label> {{selectedCaseStatus.name}} </ion-label>
+                  <ion-label> {{selectedCaseStatus?.name}} </ion-label>
                 </ion-item>
                 <ion-popover #popoverCase [isOpen]="isOpenCase" (didDismiss)="didDissmisCase()">
                   <ng-template>
@@ -335,26 +335,48 @@
 
               <ion-col size="4" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong> تاريخ فتح القضية </strong></ion-label>
-                <ion-item class="custInput">
+                <!-- <ion-item class="custInput">
                   <ion-datetime-button datetime="datetime"></ion-datetime-button>
                 </ion-item>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
                     <ion-datetime [(ngModel)]="newCase.case_open_date" presentation="date" id="datetime"></ion-datetime>
                   </ng-template>
-                </ion-modal>
+                </ion-modal> -->
+
+                <ion-item class="custInput">
+                  
+                    <div class="date-time-container"> 
+                      <input 
+                        type="date" 
+                        [(ngModel)]="newCase.case_open_date"
+                        class="native-date-picker"
+                      >      
+                    </div>
+                   
+                </ion-item>
               </ion-col>
 
               <ion-col size="4" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong> الموعد النهائي </strong></ion-label>
-                <ion-item class="custInput">
+                <!-- <ion-item class="custInput">
                   <ion-datetime-button datetime="datetime2"></ion-datetime-button>
                 </ion-item>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
                     <ion-datetime [(ngModel)]="newCase.deadline" presentation="date" id="datetime2"></ion-datetime>
                   </ng-template>
-                </ion-modal>
+                </ion-modal> -->
+                <ion-item class="custInput">
+                  <div class="date-time-container"> 
+                    <input 
+                      type="date" 
+                      [(ngModel)]="newCase.deadline"
+                      class="native-date-picker"
+                    >      
+                  </div>
+                </ion-item>
+                
               </ion-col>
 
               <ion-col size="4" class="ion-margin-top">
@@ -379,6 +401,8 @@
                   </ng-template>
                 </ion-popover>
               </ion-col>
+
+              
               <ion-col size="4" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong> طلبات المدعي </strong></ion-label>
                 <ion-item class="custInput">
@@ -717,7 +741,7 @@
 
                                   <ion-col size="3">
                                     <ion-label class="ion-padding"><strong> تاريخ الإستحقاق </strong></ion-label>
-                                    <ion-item class="custInput">
+                                    <!-- <ion-item class="custInput">
                                       <ion-datetime-button datetime="datetime5"></ion-datetime-button>
                                     </ion-item>
                                     <ion-modal [keepContentsMounted]="true">
@@ -725,7 +749,17 @@
                                         <ion-datetime [(ngModel)]="payDate" presentation="date"
                                           id="datetime5"></ion-datetime>
                                       </ng-template>
-                                    </ion-modal>
+                                    </ion-modal> -->
+                                    <ion-item class="custInput"> 
+                                      <div class="date-time-container"> 
+                                        <input 
+                                          type="date" 
+                                          [(ngModel)]="payDate"
+                                          class="native-date-picker"
+                                        >      
+                                      </div>
+                                    </ion-item>
+                                    
                                   </ion-col>
                                 </ion-row>
                               </ion-grid>

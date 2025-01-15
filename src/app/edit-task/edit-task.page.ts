@@ -76,9 +76,9 @@ export class EditTaskPage implements OnInit {
   costumerArr :Array<any> =[]
   
  
-   
+  category =  'task'
  
-  
+  segVal = 'basics'
   
  
   showNotif = false
@@ -113,7 +113,7 @@ export class EditTaskPage implements OnInit {
     title:"",
     description:"",
     status:"",
-    due_date: new Date().toISOString(),
+    due_date: new Date().toISOString().split('T')[0],
     created_at: new Date().toISOString(),
     category:""
   }
@@ -129,15 +129,11 @@ export class EditTaskPage implements OnInit {
     this.getAppInfo()
     this.route.queryParams.subscribe(params => {
       if (params  && params.task ) {
-    
-     
+        this.segVal = JSON.parse(params.segVal) 
         this.newTask = JSON.parse(params.task) 
         this.selectedType.name = this.newTask['category']
-        this.selectedCaseStatus.name = this.newTask['status']
-      
-        this.usersArr = this.newTask['team']
-       
-        
+        this.selectedCaseStatus.name = this.newTask['status'] 
+        this.usersArr = this.newTask['team'] 
       }
     });
 
@@ -146,6 +142,19 @@ export class EditTaskPage implements OnInit {
   ngOnInit() {
     
   }
+
+
+  segmentCHange(event){
+    console.log(event.detail.value)
+    this.segVal = event.detail.value
+    if(this.segVal == 'files'){
+      if(this.newTask.id){ 
+        //this.getSessionsByCaseId() 
+      }else{
+       // this.showEmpty = true
+      }
+    } 
+   }
 
   close(){
     this._location.back();
@@ -211,6 +220,7 @@ export class EditTaskPage implements OnInit {
     this.api.updateTask(this.newTask).subscribe(data => {
       console.log('save',data)
      if(data['message'] != 'Case Not Updated') { 
+      this.newTask.id = data['message']
       this.deleteTaskLawers() 
       }else{
       this.presentToast('1لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
@@ -230,13 +240,11 @@ export class EditTaskPage implements OnInit {
      if(data['message'] != 'Post Not Deleted') {
       if (this.selectedLawyersTeamArr.length > 0) {
         this.selectedLawyersTeamArr.forEach(element => {
-          element.case_id = this.newTask.id
+          element.task_id = this.newTask.id
          });
          this.saveTaskLawers()
        }else{
         this.presentToast('تم حفظ البيانات بنجاح', 'success')
-        this.prepareCace()
-        this._location.back();
        } 
       }else{
       this.presentToast('3لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
@@ -253,10 +261,9 @@ export class EditTaskPage implements OnInit {
     this.api.saveTaskLawyer(this.selectedLawyersTeamArr).subscribe(data => {
       console.log('save',data)
      if(data['message'] != 'Post Not Created') {
-     //this.newCase.id = data['message']
-     this.presentToast('تم حفظ البيانات بنجاح', 'success')
-     this.prepareCace() 
-     this._location.back();
+      this.newTask['team'] = this.selectedLawyersTeamArr
+      this.presentToast('تم حفظ البيانات بنجاح', 'success')
+      this.segVal = 'files'
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }

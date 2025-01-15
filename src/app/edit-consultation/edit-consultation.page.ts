@@ -66,8 +66,8 @@ export class EditConsultationPage implements OnInit {
  costumerArr :Array<any> =[]
  
 
-  
-
+ segVal = 'basics'
+ category =  'consultation'
  
  
 
@@ -99,7 +99,7 @@ export class EditConsultationPage implements OnInit {
     case_id:0,
     title:"",
     duration: 0,
-    consultation_date:new Date().toISOString(), 
+    consultation_date:new Date().toISOString().split('T')[0], 
     consultation_notes:"",
     consultation_fee:0,
     consultation_type:"",
@@ -117,7 +117,8 @@ export class EditConsultationPage implements OnInit {
     
     this.getAppInfo()
     this.route.queryParams.subscribe(params => {
-      if (params  && params.consultation ) { 
+      if (params  && params.consultation ) {
+        this.segVal = JSON.parse(params.segVal)  
         this.newConsultation = JSON.parse(params.consultation)  
         this.selectedType.name =this.newConsultation.consultation_type
         this.selectedConsultaionStatus.name = this.newConsultation.status
@@ -141,7 +142,17 @@ export class EditConsultationPage implements OnInit {
     this._location.back();
   }
 
-
+  segmentCHange(event){
+    console.log(event.detail.value)
+    this.segVal = event.detail.value
+    if(this.segVal == 'files'){
+      if(this.newConsultation.id){ 
+        //this.getSessionsByCaseId() 
+      }else{
+       // this.showEmpty = true
+      }
+    } 
+   }
   saveBasics() {
     // let d: Date = this.payInvo.pay_date
     // this.payInvo.sub_name = this.selectedAccount.sub_name
@@ -252,9 +263,7 @@ export class EditConsultationPage implements OnInit {
     this.newConsultation.lawyer_id = 0
     this.newConsultation.case_id = 0
     this.newConsultation.duration = 0 
-    this.newConsultation.consultation_date = new Date().toISOString()
-    
-
+    this.newConsultation.consultation_date = new Date().toISOString().split('T')[0] 
   }
  
 

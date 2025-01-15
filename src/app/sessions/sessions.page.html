@@ -72,14 +72,14 @@
                    </th>
                    <th >حالة الجلسة 
                    </th>
-                   <th>    المحامي
-                   </th> 
+                   <th>    الملفات المرفقة 
+                  </th> 
                      
                    <th><strong>تعديل</strong>  </th> 
                    
                   </tr>
                    
-                  <tr *ngFor="let session of sessionsArray"   (click)="getSessionDetails(session)">
+                  <tr *ngFor="let session of sessionsArray">
                      <td>
                        <ion-text> {{session.session_title}} </ion-text> 
                      </td>
@@ -87,18 +87,17 @@
                        <ion-text>{{session.session_date}} </ion-text> 
                      </td>
                      <td>
-                       <ion-text> {{session.session_time}}    </ion-text>
+                       <ion-text> {{session.session_time | timeFormat}}    </ion-text>
                      </td> 
                      <td>
                        <ion-text *ngIf="session.session_status == 0">    جديدة        </ion-text> 
                        <ion-text  *ngIf="session.session_status == 1"> منتهية      </ion-text>  
                      </td>
+                     <td> 
+                      <ion-button fill="clear" (click)="getSessionDetails(session , 'files')"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
+                    </td>  
                      <td>
-                       <ion-text  > {{session.lawyer_name}}       </ion-text> 
-                     </td> 
-                     
-                     <td>
-                       <ion-button fill="clear" ><ion-icon name="create-outline" color="meduim"></ion-icon></ion-button>
+                       <ion-button fill="clear" (click)="getSessionDetails(session , 'basics')" ><ion-icon name="create-outline" color="meduim"></ion-icon></ion-button>
                      </td> 
                   </tr> 
                    

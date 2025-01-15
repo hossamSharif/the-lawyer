@@ -76,6 +76,7 @@ export class FilesPage implements OnInit {
     session_status: '',
     session_result: '',
     court_name :'',
+    session_requirements: '',
   };
   
   constructor(private route: ActivatedRoute ,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private _location :Location ,private api:ServicesService ) {
@@ -86,15 +87,27 @@ export class FilesPage implements OnInit {
         console.log(this.newCase)
       }
     });
+
+
+    
   }
 
   ngOnInit() {
-    console.log('categoryFromParnt',this.categoryFromParnt) 
-    console.log('objectFromParnt',this.objectFromParnt)
-    this.getCaseFilesByCaseId()
+    
   }
 
- 
+  ionViweDidEnter() {
+    console.log('categoryFromParnt',this.categoryFromParnt) 
+    console.log('objectFromParnt',this.objectFromParnt)
+   
+  }
+
+  ngOnChanges(changes) {
+    console.log(changes)
+    if (changes.categoryFromParnt && changes.categoryFromParnt.currentValue) {
+        this.getCaseFilesByCaseId()
+    }
+  }
 
 
   getCaseFilesByCaseId() {
@@ -107,7 +120,6 @@ export class FilesPage implements OnInit {
       }else{
         this.showEmpty = true
       } 
-     
     }, (err) => {
       this.presentToast('خطا في الإتصال حاول مرة اخري' , 'danger')
     } ,
@@ -115,13 +127,14 @@ export class FilesPage implements OnInit {
       this.loading = false
   }
   )  
-  }  
+}  
 
 
-  newFilePage(){
+  newFilePage(){ 
       let navigationExtras: NavigationExtras = {
         queryParams: { 
-          case: JSON.stringify(this.newCase) 
+          case: JSON.stringify(this.objectFromParnt) ,
+          category: JSON.stringify(this.categoryFromParnt)
         }
       }; 
       this.rout.navigate(['new-casefile'] , navigationExtras)

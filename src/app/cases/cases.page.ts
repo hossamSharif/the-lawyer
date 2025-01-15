@@ -27,7 +27,7 @@ export class CasesPage implements OnInit {
   }
 
   ngOnInit() {
-    this.getTopCases()
+    
   }
 
   test() {
@@ -35,6 +35,7 @@ export class CasesPage implements OnInit {
   }
 
   ionViewDidEnter() {
+    this.getTopCases()
     console.log('view inital', this.searchInput)
     this.keyupSubescription = fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
       debounceTime(1000),

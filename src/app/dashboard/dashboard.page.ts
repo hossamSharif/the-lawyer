@@ -95,4 +95,15 @@ export class DashboardPage implements OnInit {
     example.subscribe(data => console.log("swichMap from observable of(1,2,3) = >" , data));
   }
 
+
+  concatArr(){
+    let fruits: string[] = ["apple", "banana", "orange"];
+    fruits.join(", ");
+ // Removes elements at index 1 and 2
+    
+    // let combinedFruits = fruits.concat(["pineapple", "pear"]);
+      console.log(fruits)
+
+  }
+
 }

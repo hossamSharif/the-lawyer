@@ -4,6 +4,7 @@ import { ToastController, Platform, LoadingController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs'
 import { Router } from '@angular/router'; 
 import { PortalserviceService } from '../portal/portalservice.service';
+import { ServicesService } from '../stockService/services.service';
  
  
 
@@ -24,7 +25,7 @@ export class AuthServiceService {
     email: string;
     phone: string;
     level: number;
-    subscriber_id: number;
+    subiscriber_id: number;
     company_email2: string;
     company_email: string;
     company_phone1: string;
@@ -44,7 +45,7 @@ export class AuthServiceService {
       end_date: string;
     }>;
   }
-  constructor(private toast:ToastController ,private loadingController:LoadingController,private api:PortalserviceService,   private router: Router,private storage: Storage,private platform: Platform,public toastController: ToastController) { 
+  constructor(private toast:ToastController ,private loadingController:LoadingController,private api:ServicesService,   private router: Router,private storage: Storage,private platform: Platform,public toastController: ToastController) { 
     this.platform.ready().then(() => {
       this.ifLoggedIn();
     });
@@ -115,6 +116,32 @@ export class AuthServiceService {
       },()=>{ }
     )    
    }
+
+
+
+
+    updatePassword(USER_INFO){
+    //await   this.presentLoadingWithOptions('جاري تسجيل الدخول' , 'login')
+      this.api.updatePass(USER_INFO).subscribe(data =>{
+        //console.log('user was updated',data)
+        let res = data
+        if (res['message'] != 'Post Not Updated'){
+          this.storage.set('USER_INFO', USER_INFO).then((response) => {
+            this.router.navigate(['folder/dashboard']);
+            this.authState.next(true); 
+            });
+        }else{
+          this.presentToast(' حدث خطأ في النظام، يرجى المحاولة مرة أخرى', 'danger') 
+        } 
+      }, (err) => { 
+      this.presentToast('حدث خطأ في النظام، يرجى المحاولة مرة أخرى', 'danger') 
+    },()=>{
+    
+    })
+    }
+  
+
+
 
  
   async logout() {

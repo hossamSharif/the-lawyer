@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { NewTaskPageRoutingModule } from './new-task-routing.module';
 
 import { NewTaskPage } from './new-task.page';
+import { FilesPageModule } from '../files/files.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { NewTaskPage } from './new-task.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    NewTaskPageRoutingModule
+    NewTaskPageRoutingModule,
+    FilesPageModule
   ],
   declarations: [NewTaskPage]
 })

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { EditConsultationPageRoutingModule } from './edit-consultation-routing.module';
 
 import { EditConsultationPage } from './edit-consultation.page';
+import { FilesPageModule } from '../files/files.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { EditConsultationPage } from './edit-consultation.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    EditConsultationPageRoutingModule
+    EditConsultationPageRoutingModule,
+    FilesPageModule
   ],
   declarations: [EditConsultationPage]
 })

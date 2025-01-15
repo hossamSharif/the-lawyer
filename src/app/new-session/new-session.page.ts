@@ -5,7 +5,7 @@ import { FilterPipe3  } from '../new-case/pipe3';
 import { Location } from '@angular/common'; 
 import { ServicesService } from '../stockService/services.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ModalController, ToastButton, ToastController } from '@ionic/angular';
+import { IonModal, LoadingController, ModalController, ToastButton, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
 import { NewCourtPage } from '../new-court/new-court.page';
@@ -27,6 +27,7 @@ export interface NewSession {
   session_status: string;
   session_result: string;
   court_name :string;
+  session_requirements: string;
 }
 
 @Component({
@@ -122,7 +123,7 @@ export class NewSessionPage implements OnInit {
   caseTypeArr :Array<any> =[]
   isOpenNotif = false ;
   caseTypeArrNagz :Array<any> =[]
-  
+  @ViewChild(IonModal) modal: IonModal;
   @ViewChild('popoverCase') popoverCase;
   @ViewChild('popoverCase2') popoverCase2;
   selectedCaseStatus : {id:any ,name:any };
@@ -134,7 +135,7 @@ export class NewSessionPage implements OnInit {
   isOpen = false; 
   //new session 
    newSession: NewSession = {
-    id: 1,
+    id: 0,
     lawyer_id: 0,
     case_id: 0,
     court_id:0,
@@ -142,12 +143,13 @@ export class NewSessionPage implements OnInit {
     session_title: '',
     opponent_name: '',
     opponent_representative: '',
-    session_date: new Date().toISOString(),
+    session_date: new Date().toISOString().split('T')[0],
     session_time:new Date().toISOString(),
     session_type: '',
     session_status: '',
     session_result: '',
     court_name :'',
+    session_requirements: '',
   };
   showCaseesDepartent: boolean = false
   newCase: Case =  {
@@ -181,7 +183,7 @@ export class NewSessionPage implements OnInit {
     court_id:0
   }
   segVal:any = 'basics'
- searchTermCourt : any = ""
+  searchTermCourt : any = ""
   CasesArray :Array<any> =[]  
   ionicForm: FormGroup;
   isSubmitted = false;
@@ -200,8 +202,7 @@ export class NewSessionPage implements OnInit {
       } else {
         this.showCaseesDepartent = true
         console.log('caseesDepartent not fout' , this.showCaseesDepartent)
-        this.getTopCases() 
-      
+       // this.getTopCases() 
       } 
       });
     
@@ -245,6 +246,10 @@ export class NewSessionPage implements OnInit {
       console.log(data)
       if (data['message'] != 'No record Found') {
         this.CasesArray = data['data']
+        //incase cae fro the case deparment
+      
+      
+         
       } else {
        
       }
@@ -264,6 +269,12 @@ export class NewSessionPage implements OnInit {
       let res = data
       if(data['message'] != 'No courts Found'){ 
         this.courtArr = res['data']
+        console.log('this.newSession.case_id',this.newCase.id) 
+        if(this.newCase.id != null){
+          console.log('<>null',this.newCase.id) 
+          this.selectedCourt.name = this.courtArr?.filter(x=>x.id == this.newCase.court_id)[0].court_name
+          this.selectedCourt.id = this.courtArr?.filter(x=>x.id == this.newCase.court_id)[0].court_id
+        }
       }   
     }, (err) => {
 
@@ -301,9 +312,12 @@ export class NewSessionPage implements OnInit {
   selectFromPopCase2(item){
     console.log(item)
      this.newCase = item
-     this.selectedLawyersTeamArr = item.team
      this.newSession.case_id = this.newCase.id
      this.newSession.cust_id = this.newCase.client_id
+     //get the cort of  the case
+     this.newSession.court_id = item.court_id
+     this.selectedCourt.name = this.courtArr?.filter(x=>x.id == this.newSession.court_id)[0].court_name
+     this.selectedCourt.id =  this.courtArr?.filter(x=>x.id == this.newSession.court_id)[0].court_id
      this.didDissmisCase2()  
   }
    
@@ -319,14 +333,78 @@ export class NewSessionPage implements OnInit {
     this._location.back();
   }
 
+  presentPopoverCustType(e?: Event) {
+    console.log('preent me', e)
+      this.showCustType = false
+      this.popoverNotif.event = e;
+      this.isOpenCustType = true;  
+  }
+
+  didDissmisCustType(){
+    this.isOpenCustType = false
+    //console.log('dismissOver') 
+  }
+
+  selectFromPopCustTypes(item , index){
+    console.log(item ,index)
+    // push and pop
+    this.selectedCustTye = {
+      id:item.id,
+      name:item.name
+    } 
+    
+      //console.log( this.selectedItem); 
+    //  this.didDissmisCustType()
+      //perform calculate here so moataz can get the qty
+  }
+
+  checkedTeam(event, item ,i ) {
+    console.log('check',event, item ,i )
+    let flt = this.selectedLawyersTeamArr.filter(x=>x.user_id == item.id)
+    console.log(flt)
+    if(event.target.checked == true ){
+      this.usersArr[i].checked = true
+      if(flt.length == 0){
+      this.selectedLawyersTeamArr.push({
+        user_id:item.id ,
+        case_id :this.newCase.id ,
+        session_id :this.newSession.id,
+        full_name : this.usersArr[i].full_name 
+      })
+      }
+    }else{
+      this.usersArr[i].checked = false
+      this.selectedLawyersTeamArr.splice(this.selectedLawyersTeamArr.indexOf(item),1)
+    } 
+    console.log('check selectedLawyersTeamArr',this.selectedLawyersTeamArr)
+  }
+
+  checkedTeam2(event, item ,i ) { 
+    this.selectedLawyersTeamArr = []
+    console.log(this.usersArr)
+    console.log('check',event, item ,i )
+     this.usersArr.forEach(element => {
+      if (element.checked == true) {
+        this.selectedLawyersTeamArr.push({
+          user_id:element.id ,
+          case_id :this.newCase.id ,
+          session_id :this.newSession.id,
+          full_name : element.full_name
+        }) 
+      }
+     });  
+    console.log('check selectedLawyersTeamArr',this.selectedLawyersTeamArr)
+   }
+
+
 
   saveBasics() {
     // let d: Date = this.payInvo.pay_date
     // this.payInvo.sub_name = this.selectedAccount.sub_name
     // this.payInvo.pay_date = this.datePipe.transform(d, 'yyyy-MM-dd')
-   
+    this.newSession.session_title = this.newSession.session_type + ' - ' + this.newCase.case_title
     if (this.validate() == true) {
-      this.presentLoadingWithOptions('جاري حفظ البيانات ...')
+      this.presentLoadingWithOptions('جاري حفظ البيانات ...') 
       console.log(this.newSession) 
       this.saveInvo() 
     }
@@ -337,9 +415,105 @@ export class NewSessionPage implements OnInit {
     this.api.saveSession(this.newSession).subscribe(data => {
       console.log('save',data)
      if(data['message'] != 'Case Not Created') { 
-      this.presentToast('تم حفظ البيانات بنجاح', 'success')
-      this.prepareCace() 
-      this._location.back();
+      this.newSession.id = +data['message']
+        if (this.selectedLawyersTeamArr.length > 0) {
+          this.selectedLawyersTeamArr.forEach(element => {
+          element.case_id = this.newCase.id
+          element.session_id = this.newSession.id
+         });
+         this.savesessionLawers()
+       }else{
+        this.presentToast('تم حفظ البيانات بنجاح', 'success') 
+       } 
+      }else{
+        this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+ 
+  handleDateChange(ev) {
+    console.log(ev.detail.value)
+    this.newSession.session_date = ev.detail.value;
+    this.modal.dismiss();
+  }
+  
+  cancel() {
+    this.modal.dismiss();
+  }
+
+  updateBasics() { 
+    this.newSession.session_title = this.newSession.session_type + ' - ' + this.newCase.case_title 
+    if (this.validate() == true) {
+      this.presentLoadingWithOptions('جاري حفظ البيانات ...')
+      console.log(this.newSession) 
+      this.updateInvo() 
+    }
+  }
+
+  updateInvo() {
+    console.log('saveInvo')
+    this.api.updateSession(this.newSession).subscribe(data => {
+      console.log('save',data)
+      if(data['message'] != 'Case Not Updated') { 
+        this.deleteSessionLawers() 
+        }else{
+        this.presentToast('1لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+        }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+  deleteSessionLawers() {
+    console.log('deleteCaseLawers')
+    this.api.deleteSessionLawers(this.newSession.id).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Post Not Deleted') {
+      this.prepareLawyers()
+      if (this.selectedLawyersTeamArr.length > 0) { 
+         this.savesessionLawers()
+       }else{
+        this.presentToast('تم حفظ البيانات بنجاح', 'success')
+       } 
+      }else{
+      this.presentToast('3لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('4لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+  prepareLawyers(){
+    let arr : any =[]
+    for (let index = 0; index < this.usersArr.length; index++) {
+      const element = this.usersArr[index];
+      if (element.checked == true) {
+        arr.push(
+          {
+          user_id:element.id ,
+          case_id :this.newCase.id ,
+          session_id :this.newSession.id
+          }  
+        )
+      }  
+     }
+    this.selectedLawyersTeamArr  = arr
+  }
+
+  savesessionLawers() {
+    console.log('saveInvo') 
+    this.api.saveSessionLawyer(this.selectedLawyersTeamArr).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Post Not Created') {
+     //this.newCase.id = data['message']
+     this.presentToast('تم حفظ البيانات بنجاح', 'success')
+     this.newSession['team'] = this.selectedLawyersTeamArr 
+     this.segVal = "files"  
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }
@@ -348,7 +522,7 @@ export class NewSessionPage implements OnInit {
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
     })
   }
- 
+
 
     selectFromPop(item){
       //console.log(item)
@@ -357,7 +531,7 @@ export class NewSessionPage implements OnInit {
         full_name:item.full_name
       }
       this.newSession.lawyer_id = item.id   
-        this.didDissmis()   
+      this.didDissmis()   
     }
 
     didDissmis(){
@@ -365,7 +539,7 @@ export class NewSessionPage implements OnInit {
     }
 
 
-  presentPopover(e?: Event) {
+   presentPopover(e?: Event) {
     //console.log('preent me', e)
      this.popover.event = e;
      this.isOpen = true;
@@ -444,8 +618,6 @@ export class NewSessionPage implements OnInit {
         console.log('validate' , this.isSubmitted , this.newSession.session_title)
         if (this.newSession.session_title == "") { 
           return false
-        } else if(this.newSession.lawyer_id == 0){
-          return false
         } else if(this.newSession.session_type == ""){
           return false
         }else if(this.newSession.cust_id == 0 ){
@@ -461,6 +633,11 @@ export class NewSessionPage implements OnInit {
           console.log("'úsers'", data)
           let res = data
           this.usersArr = res['data'] 
+          for (let index = 0; index < this.usersArr.length; index++) {
+            const element = this.usersArr[index];
+            element.checked = false
+          }
+          console.log('loading user',this.usersArr)
           if (this.showCaseesDepartent == false) {
             // for (let index = 0; index < this.usersArr.length; index++) {
             //   const element = this.usersArr[index]; 
@@ -472,13 +649,14 @@ export class NewSessionPage implements OnInit {
             //   }
             //  } 
           }  
-           console.log("fltUser",this.usersArr)
+           
         }, (err) => {} ,
         ()=>{ 
       }
       )  
      }
 
+    
 
 
     async presentToast(msg,color?) {
@@ -514,7 +692,7 @@ export class NewSessionPage implements OnInit {
       getAppInfo(){ 
         this.prepareCace()
         this.getCourts() 
-      //  this.getTopCustomers()
+       this.getTopCases()
         this.getLawyers() 
       }
 

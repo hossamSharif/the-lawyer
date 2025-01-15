@@ -8,6 +8,7 @@ import { EditSessionPageRoutingModule } from './edit-session-routing.module';
 
 import { EditSessionPage } from './edit-session.page';
 import { ShareModuleModule } from '../shareModule/share-module.module';
+import { FilesPageModule } from '../files/files.module';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { ShareModuleModule } from '../shareModule/share-module.module';
     ReactiveFormsModule,
     IonicModule,
     ShareModuleModule,
-    EditSessionPageRoutingModule
+    EditSessionPageRoutingModule,
+    FilesPageModule
   ],
   declarations: [EditSessionPage]
 })

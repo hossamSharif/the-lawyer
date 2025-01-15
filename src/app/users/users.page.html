@@ -64,27 +64,24 @@
                   <th>      اسم المستخدم       
                   </th>
                   <th>      كلمة  المرور    
-                  </th>    المسمي الوظيفي 
-                  <th>    المستوي    
+                  </th> 
+                  <th>     المسمي الوظيفي 
+                  <th>     المستوي    
                   </th> 
                   
                   
                   <th><strong>تعديل</strong></th> 
                  </tr>
                   <tr *ngFor="let user of userArr ; let i = index"  (click)="getUserDetails(user)">
-                    <td> <ion-text>   {{user.full_name}}   </ion-text></td>
+                    <td> <ion-text>   {{user.full_name}}   </ion-text> <ion-text *ngIf="USER_INFO.id == user.id" color="medium">   (انت)    </ion-text></td>
                     <td> <ion-text>   {{user.phone}}   </ion-text></td>
                     <td> <ion-text>   {{user.email}}   </ion-text></td>
                     <td> <ion-text>   {{user.user_name}}   </ion-text></td>
-                    <td> <ion-text>   {{user.password}}   </ion-text></td>
+                    <td> <ion-text>  ******    </ion-text></td>
                     <td> <ion-text>   {{user.job_title}}   </ion-text></td>
-                    <td> <ion-text>   {{user.leve}}   </ion-text></td>
-                   
-                  
-                   
-                   
+                    <td> <ion-text>   {{getLevel(user.level)}}   </ion-text></td>  
                   <td>
-                    <ion-button (click)="getUserDetails(user)" fill="clear" ><ion-icon name="edit" color="meduim"></ion-icon></ion-button>
+                    <ion-button (click)="getUserDetails(user)" fill="clear" ><ion-icon name="create" color="meduim"></ion-icon></ion-button>
                   </td>
                   
                   </tr>
@@ -108,11 +105,11 @@
         </ion-grid> 
   
         <ion-card-header class="listHed">
-          <ion-button class="rad10"  fill="clear"   >
+          <ion-button class="rad10"  fill="clear">
             <ion-icon color="dark"   name="chevron-forward"></ion-icon>
             <ion-text color="dark" >السابق</ion-text> 
           </ion-button>
-          <ion-button class="rad10 fleft"  fill="clear"   > 
+          <ion-button class="rad10 fleft"  fill="clear"> 
             <ion-text color="dark"  >التالي</ion-text>
             <ion-icon color="dark"   name="chevron-back"></ion-icon> 
           </ion-button>

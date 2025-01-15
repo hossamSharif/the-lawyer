@@ -42,7 +42,7 @@ export class NewTaskPage implements OnInit {
    usersArr :Array<any> =[]
    
    selectedCustTye : {id:any ,name:any};
-
+  category =  'task'
    isOpenServ = false ;
    showServ = false 
    servArr :Array<any> =[]
@@ -122,10 +122,12 @@ export class NewTaskPage implements OnInit {
     title:"",
     description:"",
     status:"",
-    due_date: new Date().toISOString(),
+    due_date: new Date().toISOString().split('T')[0],
     created_at: new Date().toISOString(),
     category:""
   }
+
+  segVal = 'basics'
 
    
 
@@ -150,6 +152,18 @@ export class NewTaskPage implements OnInit {
     this._location.back();
   }
 
+
+  segmentCHange(event){
+    console.log(event.detail.value)
+    this.segVal = event.detail.value
+    if(this.segVal == 'files'){
+      if(this.newTask.id){ 
+        //this.getSessionsByCaseId() 
+      }else{
+       // this.showEmpty = true
+      }
+    } 
+   }
 
   saveBasics() {
     // let d: Date = this.payInvo.pay_date
@@ -188,7 +202,60 @@ export class NewTaskPage implements OnInit {
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
     })
   }
+
+  updateBasics() {
+    // let d: Date = this.payInvo.pay_date
+    // this.payInvo.sub_name = this.selectedAccount.sub_name
+    // this.payInvo.pay_date = this.datePipe.transform(d, 'yyyy-MM-dd')
+   
+    if (this.validate() == true) {
+      this.presentLoadingWithOptions('جاري حفظ البيانات ...')
+      console.log(this.newTask) 
+      this.updateInvo() 
+    }
+  }
  
+  updateInvo() {
+    console.log('saveInvo')
+    this.api.updateTask(this.newTask).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Case Not Updated') { 
+      this.deleteTaskLawers() 
+      }else{
+      this.presentToast('1لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('2لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+ 
+
+
+  deleteTaskLawers() {
+    console.log('deleteCaseLawers')
+    this.api.deleteTaskLawers(this.newTask.id).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Post Not Deleted') {
+      if (this.selectedLawyersTeamArr.length > 0) {
+        this.selectedLawyersTeamArr.forEach(element => {
+          element.case_id = this.newTask.id
+         });
+         this.saveTaskLawers()
+       }else{
+        this.presentToast('تم حفظ البيانات بنجاح', 'success')
+        this.prepareCace()
+        this._location.back();
+       } 
+      }else{
+      this.presentToast('3لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('4لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
 
   saveTaskLawers() {
     console.log('saveInvo')
@@ -205,8 +272,7 @@ export class NewTaskPage implements OnInit {
      if(data['message'] != 'Post Not Created') {
      //this.newCase.id = data['message']
      this.presentToast('تم حفظ البيانات بنجاح', 'success')
-     this.prepareCace() 
-     this._location.back();
+    this.segVal = 'files'
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }

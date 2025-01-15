@@ -9,6 +9,7 @@ import { EditCasePageRoutingModule } from './edit-case-routing.module';
 import { EditCasePage } from './edit-case.page';
 import { FilesPageModule } from '../files/files.module';
 import { SessionsPageModule } from '../sessions/sessions.module';
+import { ShareModuleModule } from '../shareModule/share-module.module';
 
 @NgModule({
   imports: [
@@ -16,8 +17,10 @@ import { SessionsPageModule } from '../sessions/sessions.module';
     FormsModule,
     ReactiveFormsModule, 
     IonicModule,
+    ShareModuleModule,
     EditCasePageRoutingModule ,
     FilesPageModule,
+    
     SessionsPageModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

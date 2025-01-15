@@ -4,6 +4,7 @@ import { AuthServiceService } from "../../app/auth/auth-service.service";
 import { Storage } from '@ionic/storage';
 import { ServicesService } from '../stockService/services.service';
 import { PortalserviceService } from '../portal/portalservice.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +26,7 @@ export class LoginPage implements OnInit {
     email: string;
     phone: string;
     level: number;
-    subscriber_id: number;
+    subiscriber_id: number;
     company_email2: string;
     company_email: string;
     company_phone1: string;
@@ -50,7 +51,7 @@ export class LoginPage implements OnInit {
   
   
 
-  constructor(private apiPortal:PortalserviceService,private platform:Platform,private api:ServicesService,private storage: Storage,private toast:ToastController ,private loadingController:LoadingController , private authenticationService: AuthServiceService) {
+  constructor(private rout : Router,private apiPortal:PortalserviceService,private platform:Platform,private api:ServicesService,private storage: Storage,private toast:ToastController ,private loadingController:LoadingController , private authenticationService: AuthServiceService) {
     
     
     this.USER_INFO =  {
@@ -63,7 +64,7 @@ export class LoginPage implements OnInit {
       email: "",
       phone: "",
       level: 0,
-      subscriber_id: 0,
+      subiscriber_id: 0,
       company_email2: "",
       company_email: "",
       company_phone1: "",
@@ -90,7 +91,9 @@ export class LoginPage implements OnInit {
 
   
 
-   
+   forgetPassword(){
+    this.rout.navigate(['folder/forget-password'])
+   }
 
 
   ngOnInit() {

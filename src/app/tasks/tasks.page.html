@@ -66,9 +66,10 @@
                <th>  فريق العمل
               </th>
                <th>    حالة المهمة
-              </th>  
-               <th><strong>تعديل</strong>  </th> 
-               
+              </th>   
+               <th>    الملفات المرفقة 
+              </th> 
+              <th><strong>تعديل</strong>  </th> 
               </tr>
                
                <tr *ngFor="let case of tasksArr">
@@ -95,8 +96,12 @@
                   <div class="status-bullet green"  *ngIf="case.status == 'مكتملة'"></div> 
                   <ion-text> {{case.status}}    </ion-text> 
                  </td> 
+
+                 <td> 
+                  <ion-button fill="clear" (click)="getTaskDetails(case , 'files')"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
+                </td>
                  <td>
-                  <ion-button fill="clear" (click)="getTaskDetails(case)"><ion-icon name="create-outline" color="meduim" ></ion-icon></ion-button>
+                  <ion-button fill="clear" (click)="getTaskDetails(case  , 'basics')"><ion-icon name="create-outline" color="meduim" ></ion-icon></ion-button>
                  </td>  
                </tr> 
                

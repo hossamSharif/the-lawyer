@@ -13,7 +13,25 @@
 
 <ion-content class="ion-margin-top">
   <ion-grid class="ion-margin-start ion-margin-bottom ion-margin-end">
+    <ion-row class="ion-margin-top"> 
+      <ion-col size="12">
+      </ion-col>
+    </ion-row>
+    
     <ion-row>
+      <ion-segment dir="rtl" (ionChange)="segmentCHange($event)" [(ngModel)]="segVal" class="ion-margin-top">
+        <ion-segment-button value="basics">
+          <ion-label class="segLable">البيانات الأساسية</ion-label>
+        </ion-segment-button>
+        <!-- [disabled]="!this.newSession.id" -->
+        <ion-segment-button value="files"  [disabled]="!this.newConsultation.id">
+          <ion-label class="segLable">الملفات </ion-label>
+        </ion-segment-button>
+     
+      </ion-segment>
+    </ion-row>
+
+    <ion-row *ngIf="segVal == 'basics'">
       <ion-card class="w100">
         <ion-card-content>
           <ion-grid>
@@ -86,15 +104,23 @@
 
               <ion-col size="6" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong>تاريخ الإستشارة</strong></ion-label>
-                <ion-item class="custInput"> 
+                <!-- <ion-item class="custInput"> 
                   <ion-datetime-button  datetime="date"></ion-datetime-button>
                 </ion-item>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
                     <ion-datetime [(ngModel)]="newConsultation.consultation_date" presentation="date" id="date"></ion-datetime>
                   </ng-template>
-                </ion-modal>
-                
+                </ion-modal> -->
+                <ion-item class="custInput"> 
+                  <div class="date-time-container"> 
+                    <input 
+                      type="date" 
+                      [(ngModel)]="newConsultation.consultation_date"
+                      class="native-date-picker"
+                    >      
+                  </div>
+                </ion-item>
               </ion-col>
 
              
@@ -198,5 +224,10 @@
         </ion-card-header>
       </ion-card>
     </ion-row>
+
+    <ion-row *ngIf="segVal == 'files'"> 
+      <app-files [categoryFromParnt]="category" [objectFromParnt]="newConsultation"  class="w100"></app-files>
+    </ion-row>
+
   </ion-grid>
 </ion-content>

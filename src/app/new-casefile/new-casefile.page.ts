@@ -6,6 +6,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ToastButton, ToastController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
+import { NewSession } from '../new-session/new-session.page';
+import { Consultation } from '../new-consultation/new-consultation.page';
+import { Task } from '../new-task/new-task.page';
 var ls = window.localStorage;
 
 
@@ -59,6 +62,7 @@ export class NewCasefilePage implements OnInit {
     case_subject: '',
     court_id: 0
   }
+
   newCaseFile: CaseFile =  {
     id: null,
     case_id: 0,
@@ -70,43 +74,106 @@ export class NewCasefilePage implements OnInit {
     uploaded_at: new Date().toISOString(),
     category: ''
   }
+
+  newSession: NewSession = {
+    id: 1,
+    lawyer_id: 0,
+    case_id: 0,
+    court_id:0,
+    cust_id: 0,
+    session_title: '',
+    opponent_name: '',
+    opponent_representative: '',
+    session_date: new Date().toISOString(),
+    session_time:new Date().toISOString(),
+    session_type: '',
+    session_status: '',
+    session_result: '',
+    court_name :'',
+    session_requirements: ''
+  };
+
+  newConsultation: Consultation = {
+    id: 0,
+    client_id: 0,
+    lawyer_id: 0,
+    case_id: 0,
+    title: '',
+    duration: 0,
+    consultation_date: new Date().toISOString(),
+    consultation_notes: '',
+    consultation_fee: 0,
+    consultation_type: '',
+    status: '',
+    created_at: null,
+    updated_at: null
+  }
+  newTask :Task = {
+    id:0,
+    title:"",
+    description:"",
+    status:"",
+    due_date: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    category:""
+  }
+
   isSubmitted = false;
   uploadedFiles
-
+  category: string = ''
   constructor( private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
 
     this.route.queryParams.subscribe(params => {
       if (params &&  params.case) {
-        console.log('caseRoute',JSON.parse(params.case)) 
-        this.newCase = JSON.parse(params.case)
+        console.log('caseRoute',JSON.parse(params.case),JSON.parse(params.category))  
+        this.category = JSON.parse(params.category)
+        if (this.category == 'case') {
+          this.newCase = JSON.parse(params.case)
+        }else if (this.category == 'session') {
+          this.newSession = JSON.parse(params.case)
+        }else if (this.category == 'task') {
+          this.newTask = JSON.parse(params.case)
+        }else if (this.category == 'consultation') {
+          this.newConsultation = JSON.parse(params.case)
+        }
         this.getAppInfo()
       }
     });
    }
 
   ngOnInit() {
+
   }
 
-  
 
- 
   getAppInfo(){ 
     this.prepareCace()  
   }
 
-  prepareCace(){  
-     
+  prepareCace(){      
   //  this.ionicForm.reset() 
     this.isSubmitted = false 
-
-    if ( this.newCase['team'].lenght > 0) {
-      this.newCaseFile.user_id = this.newCase['team'][0].id
-    } else {
-      this.newCaseFile.user_id = 0 
+    if(this.category == 'case') {
+      if ( this.newCase['team'].lenght > 0) {
+        this.newCaseFile.user_id = this.newCase['team'][0].id 
+      } else {
+        this.newCaseFile.user_id = 0 
+      }
+      this.newCaseFile.category = 'case'
+      this.newCaseFile.case_id = this.newCase.id
+    }else if (this.category == 'session') {
+      this.newCaseFile.case_id = this.newSession.id
+      this.newCaseFile.user_id = this.newSession.lawyer_id || 0
+      this.newCaseFile.category = 'session'	
+    }else if (this.category == 'task') {
+      this.newCaseFile.case_id = this.newTask.id
+      this.newCaseFile.user_id = this.newTask.id
+      this.newCaseFile.category = 'task'
+    }else if (this.category == 'consultation') {
+      this.newCaseFile.case_id = this.newConsultation.id
+      this.newCaseFile.user_id = this.newConsultation.lawyer_id || 0
+      this.newCaseFile.category = 'consultation'
     }
-    
-    this.newCaseFile.case_id = this.newCase.id
-    
   }
 
   validate(){ 
@@ -118,8 +185,7 @@ export class NewCasefilePage implements OnInit {
       return false
     }else if(!this.uploadedFiles){
       return false
-    }
-      else {
+    } else {
       return true
     }  
   }
@@ -170,11 +236,6 @@ close(){
           this._location.back();
         });
       }
-
-      
-
-      
-     
     },(error)=>{ 
       this.presentToast("خطأ في الإتصال بالسيرفر")
     }
@@ -213,11 +274,6 @@ close(){
     })
   }
  
-
-
-
-
-
   async presentToast(msg,color?) {
     const toast = await this.toast.create({
       message: msg,

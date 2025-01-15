@@ -45,7 +45,7 @@ export class SessionsPage implements OnInit {
     court_id: 0
   }
   selectedLawyersTeamArr : Array<any> = []
-
+  category = 'sessions'
   constructor(private route: ActivatedRoute ,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private _location :Location ,private api:ServicesService ) {
     this.route.queryParams.subscribe(params => {
       if (params && params.case) {
@@ -59,19 +59,29 @@ export class SessionsPage implements OnInit {
    }
 
   ngOnInit() {
+  
+   }
+
+   ionViewDidEnter() {
     if(this.newCase.id){
       this.getSessionsByCaseId()
     }else{
       this.getTopSessions()
     }
-    
-   }
+    }
 
+    ngOnChanges(changes) {
+      console.log(changes)
+      if (changes.caseFromParnt && changes.caseFromParnt.currentValue) {
+        if(this.newCase.id){
+          this.getSessionsByCaseId()
+        } else {
+          this.getTopSessions() 
+        }
+      }
+    }
 
-
-   ngAfterViewInit() {
-    console.log('caseFromParnt',this.caseFromParnt) 
-  }
+   
 
  getTopSessions(){
     this.loading = true 
@@ -131,16 +141,21 @@ export class SessionsPage implements OnInit {
       }
 
    refreshSessions(){
-    this.getSessionsByCaseId()
+    if(this.newCase.id){
+      this.getSessionsByCaseId()
+    }else{
+      this.getTopSessions()
+    }
    }
    
 
 
-   getSessionDetails(session){
+   getSessionDetails(session , segVal){
     let navigationExtras: NavigationExtras = {
       queryParams: {
         session: JSON.stringify(session),
-        case : JSON.stringify(this.newCase) 
+        case : JSON.stringify(this.newCase) ,
+        segVal : JSON.stringify(segVal)
       }
     }; 
     this.rout.navigate(['edit-session'], navigationExtras);  

@@ -10,14 +10,240 @@ import { Case } from '../new-case/new-case.page';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { NewCourtPage } from '../new-court/new-court.page';
 import { NewCaseStatusPage } from '../new-case-status/new-case-status.page';
+import { PortalserviceService } from '../portal/portalservice.service';
 var ls = window.localStorage;
-
+import { Storage } from '@ionic/storage';
+ 
 @Component({
   selector: 'app-edit-case',
   templateUrl: './edit-case.page.html',
   styleUrls: ['./edit-case.page.scss'],
 })
 export class EditCasePage implements OnInit {
+ 
+ 
+  searchTermCaseType : any = ""
+      searchTermCustomer : any = "" 
+      searchTermCourt : any = ""
+  caseTypeArr2: Array<any> = [
+    { id: 1, name: "إقامة حارس قضائي", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: false },
+    { id: 2, name: "التعويض عن أضرار التقاضي", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: true },
+    { id: 3, name: "أتعاب محامين أو وكلاء", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: true },
+    { id: 4, name: "مطالبة بمستندات", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: false },
+    { id: 5, name: "معارضة على صك إنهائي", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: false },
+    { id: 6, name: "منع من السفر", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: false },
+    { id: 7, name: "هبة أو رجوع عنها", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: false },
+    { id: 8, name: "إثبات شهادة", category: "أحوال شخصية", sub_category: "التصنيف العام", isFinancial: false },
+    { id: 9, name: "إبطال وقف أو وصية", category: "أحوال شخصية", sub_category: "دعاوى الأوقاف والوصايا", isFinancial: false },
+    { id: 10, name: "إثبات وقف أو وصية", category: "أحوال شخصية", sub_category: "دعاوى الأوقاف والوصايا", isFinancial: false },
+    { id: 11, name: "استحقاق في وقف أو وصية", category: "أحوال شخصية", sub_category: "دعاوى الأوقاف والوصايا", isFinancial: true },
+    { id: 12, name: "عزل ناظر وقف أو وصية", category: "أحوال شخصية", sub_category: "دعاوى الأوقاف والوصايا", isFinancial: false },
+    { id: 13, name: "محاسبة ناظر وقف أو وصية", category: "أحوال شخصية", sub_category: "دعاوى الأوقاف والوصايا", isFinancial: true },
+    { id: 14, name: "أجرة رضاع أو حضانة", category: "أحوال شخصية", sub_category: "دعاوى الحضانة والزيارة والنفقة", isFinancial: true },
+    { id: 15, name: "تسليم صغير لحاضنه", category: "أحوال شخصية", sub_category: "دعاوى الحضانة والزيارة والنفقة", isFinancial: false },
+    { id: 16, name: "حضانة", category: "أحوال شخصية", sub_category: "دعاوى الحضانة والزيارة والنفقة", isFinancial: false },
+    { id: 17, name: "رؤية صغير", category: "أحوال شخصية", sub_category: "دعاوى الحضانة والزيارة والنفقة", isFinancial: false },
+    { id: 18, name: "زيادة نفقة أو إنقاصها أو إلغائها", category: "أحوال شخصية", sub_category: "دعاوى الحضانة والزيارة والنفقة", isFinancial: true },
+    { id: 19, name: "زيارة أولاد أو غيرهم", category: "أحوال شخصية", sub_category: "دعاوى الحضانة والزيارة والنفقة", isFinancial: false },
+    { id: 20, name: "إثبات المراجعة", category: "أحوال شخصية", sub_category: "دعاوى الزواج والفرقة", isFinancial: false },
+    { id: 21, name: "إثبات طلاق", category: "أحوال شخصية", sub_category: "دعاوى الزواج والفرقة", isFinancial: false },
+    { id: 22, name: "إثبات زواج", category: "أحوال شخصية", sub_category: "دعاوى الزواج والفرقة", isFinancial: false },
+    { id: 23, name: "مهر", category: "أحوال شخصية", sub_category: "دعاوى الزواج والفرقة", isFinancial: true },
+    { id: 24, name: "عفش الزوجية", category: "أحوال شخصية", sub_category: "دعاوى الزواج والفرقة", isFinancial: true },
+    { id: 25, name: "فسخ عقد زواج", category: "أحوال شخصية", sub_category: "دعاوى الزواج والفرقة", isFinancial: false },
+    { id: 26, name: "إثبات نسب أو نفيه", category: "أحوال شخصية", sub_category: "دعاوى الولاية", isFinancial: false },
+    { id: 27, name: "حجر أو رفعه", category: "أحوال شخصية", sub_category: "دعاوى الولاية", isFinancial: false },
+    { id: 28, name: "عزل ولي", category: "أحوال شخصية", sub_category: "دعاوى الولاية", isFinancial: false },
+    { id: 29, name: "عضل", category: "أحوال شخصية", sub_category: "دعاوى الولاية", isFinancial: false },
+    { id: 30, name: "محاسبة ولي", category: "أحوال شخصية", sub_category: "دعاوى الولاية", isFinancial: true },
+    { id: 31, name: "دعوى قسمة تركة أكثر من خمسين مليون ريال", category: "أحوال شخصية", sub_category: "دعاوى قسمة التركات", isFinancial: true },
+    { id: 32, name: "قسمة تركة عقارية", category: "أحوال شخصية", sub_category: "دعاوى قسمة التركات", isFinancial: true },
+    { id: 33, name: "قسمة تركة مالية", category: "أحوال شخصية", sub_category: "دعاوى قسمة التركات", isFinancial: true },
+    { id: 34, name: "محاسبة في تركة", category: "أحوال شخصية", sub_category: "دعاوى قسمة التركات", isFinancial: true },
+    { id: 35, name: "التحكيم (تجاري)", category: "تجاري", sub_category: "الاستئناف", isFinancial: true },
+    { id: 36, name: "الاستثمار الأجنبي", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 37, name: "البيانات التجارية", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 38, name: "التجارة البحرية", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 39, name: "الامتياز التجاري", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 40, name: "الرهن التجاري", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 41, name: "السجل التجاري", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 42, name: "مكافحة الغش التجاري", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 43, name: "الأوراق التجارية", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 44, name: "المنافسة غير المشروعة", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 45, name: "الوكالات التجارية", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 46, name: "الأسماء التجارية", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 47, name: "حماية الأسرار التجارية", category: "تجاري", sub_category: "الأنظمة التجارية", isFinancial: true },
+    { id: 48, name: "شركات المضاربة", category: "تجاري", sub_category: "الشركات", isFinancial: true },
+    { id: 49, name: "الشركات النظامية", category: "تجاري", sub_category: "الشركات", isFinancial: true },
+    { id: 50, name: "عقد الشركة", category: "تجاري", sub_category: "الشركات", isFinancial: true },
+    { id: 51, name: "أتعاب محاماة أو وكلاء", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 52, name: "دعوى الضرر بين التجار بسبب المسؤولية التقصيرية", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 53, name: "المعينين في القضايا التجارية", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: false },
+    { id: 54, name: "أوامر الأداء", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 55, name: "التعويض عن مصاريف التقاضي", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 56, name: "التظلم على أمر الأداء", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: false },
+    { id: 57, name: "إجارة", category: "تجاري", sub_category: "العقود التجارية", isFinancial: true },
+    { id: 58, name: "الحوالة التجارية", category: "تجاري", sub_category: "العقود التجارية", isFinancial: true },
+    { id: 59, name: "الدعاية والإعلان والتسويق", category: "تجاري", sub_category: "العقود التجارية", isFinancial: true },
+    { id: 60, name: "الكفالة التجارية", category: "تجاري", sub_category: "العقود التجارية", isFinancial: true },
+    { id: 61, name: "المقاولات", category: "تجاري", sub_category: "العقود التجارية", isFinancial: true },
+    { id: 62, name: "المكاتب والمحلات التجارية", category: "تجاري", sub_category: "العقود التجارية", isFinancial: true },
+    { id: 63, name: "حماية حقوق المؤلف", category: "تجاري", sub_category: "الملكية الفكرية", isFinancial: true },
+    { id: 64, name: "براءات الاختراع", category: "تجاري", sub_category: "الملكية الفكرية", isFinancial: true },
+    { id: 65, name: "العلامات التجارية", category: "تجاري", sub_category: "الملكية الفكرية", isFinancial: true },
+    { id: 66, name: "حجز تحفظي", category: "تجاري", sub_category: "الدعاوى المستعجلـة", isFinancial: true },
+    { id: 67, name: "حراسة قضائية", category: "تجاري", sub_category: "الدعاوى المستعجلـة", isFinancial: true },
+    { id: 68, name: "منع من السفر", category: "تجاري", sub_category: "الدعاوى المستعجلـة", isFinancial: false },
+    { id: 69, name: "وقف الأعمال الجديدة", category: "تجاري", sub_category: "الدعاوى المستعجلـة", isFinancial: false },
+    { id: 70, name: "معاينة لإثبات الحالة", category: "تجاري", sub_category: "الدعاوى المستعجلـة", isFinancial: false },
+    { id: 71, name: "وقف تنفيذ", category: "تجاري", sub_category: "الدعاوى المستعجلـة", isFinancial: false },
+    { id: 72, name: "الامتناع", category: "تنفيذ", sub_category: "الامتناع عن قبول السند", isFinancial: false },
+    { id: 73, name: "دعوى الملاءة", category: "تنفيذ", sub_category: "دعوى الإعسار أو الملاءة", isFinancial: true },
+    { id: 74, name: "عدم توفر شرط شكلي للسند أو تزويره أو إنكار التوقيع", category: "تنفيذ", sub_category: "منازعات شكلية", isFinancial: false },
+    { id: 75, name: "عدم الصفة", category: "تنفيذ", sub_category: "منازعات شكلية", isFinancial: false },
+    { id: 76, name: "الإبراء بعد صدور السند التنفيذي", category: "تنفيذ", sub_category: "منازعات غير شكلية", isFinancial: true },
+    { id: 77, name: "التأجيل بعد صدور السند التنفيذي", category: "تنفيذ", sub_category: "منازعات غير شكلية", isFinancial: true },
+    { id: 78, name: "الحوالة بعد صدور السند التنفيذي", category: "تنفيذ", sub_category: "منازعات غير شكلية", isFinancial: true },
+    { id: 79, name: "الصلح بعد صدور السند التنفيذي", category: "تنفيذ", sub_category: "منازعات غير شكلية", isFinancial: true },
+    { id: 80, name: "المال المحجوز يفوق مقدار الدين المطالب به", category: "تنفيذ", sub_category: "منازعات غير شكلية", isFinancial: true },
+    { id: 81, name: "المقاصة بموجب سند تنفيذي", category: "تنفيذ", sub_category: "منازعات غير شكلية", isFinancial: true },
+    { id: 82, name: "المطالبة بالحق الخاص", category: "جزائية", sub_category: "الحق الخاص", isFinancial: true },
+    { id: 83, name: "منع من السفر", category: "جزائية", sub_category: "الطلبات القضائية", isFinancial: false },
+    { id: 84, name: "إثبات تنازل", category: "جزائية", sub_category: "الطلبات القضائية", isFinancial: false },
+    { id: 85, name: "تسليم مضبوطات", category: "جزائية", sub_category: "الطلبات القضائية", isFinancial: false },
+    { id: 86, name: "المعاينة لإثبات الحالة", category: "جزائية", sub_category: "الطلبات القضائية", isFinancial: false },
+    { id: 87, name: "إثبات شهادة", category: "جزائية", sub_category: "الطلبات القضائية", isFinancial: false },
+    { id: 88, name: "التظلم من أمر توقيف", category: "جزائية", sub_category: "الطلبات القضائية", isFinancial: false },
+    { id: 89, name: "قذف", category: "جزائية", sub_category: "حدود", isFinancial: false },
+    { id: 90, name: "ما دون النفس", category: "جزائية", sub_category: "قصاص", isFinancial: false },
+    { id: 91, name: "نفس", category: "جزائية", sub_category: "قصاص", isFinancial: false },
+    { id: 92, name: "أتعاب محاماة أو وكلاء", category: "جزائية", sub_category: "مطالبة مالية", isFinancial: true },
+    { id: 93, name: "التعويض عن السجن", category: "جزائية", sub_category: "مطالبة مالية", isFinancial: true },
+    { id: 94, name: "أرش", category: "جزائية", sub_category: "مطالبة مالية", isFinancial: true },
+    { id: 95, name: "دية", category: "جزائية", sub_category: "مطالبة مالية", isFinancial: true },
+    { id: 96, name: "رد العين", category: "جزائية", sub_category: "مطالبة مالية", isFinancial: true },
+    { id: 97, name: "التعويض عن أضرار التقاضي", category: "جزائية", sub_category: "مطالبة مالية", isFinancial: true },
+    { id: 98, name: "منع من السفر", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 99, name: "حراسة قضائية", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 100, name: "وقف الأعمال الجديدة", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 101, name: "أجرة الأجير اليومية أو الأسبوعية", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: true },
+    { id: 102, name: "استرداد حيازة عقار", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 103, name: "المعاينة لإثبات الحالة", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 104, name: "منع التعرض للحيازة", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 105, name: "حجز تحفظي", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: true },
+    { id: 106, name: "إثبات شهادة", category: "عامة", sub_category: "الدعاوى المستعجلة", isFinancial: false },
+    { id: 107, name: "حق الشفعة", category: "عامة", sub_category: "عقارية", isFinancial: false },
+    { id: 108, name: "ملكية عقار", category: "عامة", sub_category: "عقارية", isFinancial: false },
+    { id: 109, name: "قسمة عقارات مشتركة", category: "عامة", sub_category: "عقارية", isFinancial: false },
+    { id: 110, name: "مساهمة عقارية", category: "عامة", sub_category: "عقارية", isFinancial: true },
+    { id: 111, name: "مساييل أو حمى", category: "عامة", sub_category: "عقارية", isFinancial: false },
+    { id: 112, name: "مقاولات إنشاء مباني", category: "عامة", sub_category: "عقارية", isFinancial: true },
+    { id: 113, name: "إثبات رهن أو بيع المرهون", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 114, name: "رد مسروق", category: "عامة", sub_category: "مالية", isFinancial: false },
+    { id: 115, name: "عاريّة", category: "عامة", sub_category: "مالية", isFinancial: false },
+    { id: 116, name: "قرض أو سلف", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 117, name: "هبة في غير عقار", category: "عامة", sub_category: "مالية", isFinancial: false },
+    { id: 118, name: "أتعاب محامين أو وكلاء", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 119, name: "أجرة أعمال", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 120, name: "أجرة عقار", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 121, name: "أجرة عين منقول", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 122, name: "التعويض عن أضرار التقاضي", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 123, name: "ثمن مبيع", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 124, name: "حوالة الدين من ذمة شخص لآخر", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 125, name: "شراكة في أملاك غير عقارية", category: "عامة", sub_category: "مالية", isFinancial: false },
+    { id: 126, name: "ضمان (كفالة)", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 127, name: "محاسبة وكيل", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 128, name: "مطالبة الضامن للمضمون عنه (كفيل لمكفوله)", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 129, name: "أرش إصابة أو دية في غير حادث مروري", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 130, name: "وديعة", category: "عامة", sub_category: "مالية", isFinancial: true },
+    { id: 131, name: "حق خاص ناشئ عن حادث مروري", category: "عامة", sub_category: "مروري", isFinancial: true },
+    { id: 132, name: "التحكيم (عامة)", category: "عامة", sub_category: "الاستئناف", isFinancial: false },
+    { id: 133, name: "التأمينات الاجتماعية", category: "عامة", sub_category: "اعتراض على قرارات", isFinancial: true },
+    { id: 134, name: "إثبات السبب الصحيح لإنهاء العلاقة", category: "عامة", sub_category: "اعتراض على قرارات", isFinancial: false },
+    { id: 135, name: "إيقاع العقوبات النظامية", category: "عامة", sub_category: "اعتراض على قرارات", isFinancial: false },
+    { id: 136, name: "دعوى اعتراض على قرار المنشأة الإداري", category: "عامة", sub_category: "اعتراض على قرارات", isFinancial: false },
+    { id: 137, name: "لجان الخدمة المنزلية", category: "عمالية", sub_category: "اعتراض على قرارات", isFinancial: false },
+    { id: 51, name: "أتعاب محاماة أو وكلاء", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 52, name: "دعوى الضرر بين التجار بسبب المسؤولية التقصيرية", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 53, name: "المعينين في القضايا التجارية", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: false },
+    { id: 54, name: "أوامر الأداء", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 55, name: "التعويض عن مصاريف التقاضي", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: true },
+    { id: 56, name: "التظلم على أمر الأداء", category: "تجاري", sub_category: "الطلبات القضائيـة", isFinancial: false },
+    { id: 138, name: "منع من السفر", category: "عمالية", sub_category: "الطلبات العارضة والعاجلة", isFinancial: false },
+    { id: 139, name: "أجرة الأجير اليومية أو الأسبوعية", category: "عمالية", sub_category: "الطلبات العارضة والعاجلة", isFinancial: true },
+    { id: 140, name: "إيقاف التنفيذ", category: "عمالية", sub_category: "الطلبات العارضة والعاجلة", isFinancial: false },
+    { id: 141, name: "المعاينة لإثبات الحالة", category: "عمالية", sub_category: "الطلبات العارضة والعاجلة", isFinancial: false },
+    { id: 142, name: "حجز تحفظي", category: "عمالية", sub_category: "الطلبات العارضة والعاجلة", isFinancial: true },
+    { id: 143, name: "إثبات شهادة", category: "عمالية", sub_category: "الطلبات العارضة والعاجلة", isFinancial: false },
+    { id: 144, name: "مكافأة", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 145, name: "أتعاب محاماة أو وكلاء", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 146, name: "أجر", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 147, name: "بدل", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 148, name: "دفع أو استرداد الرسوم", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 149, name: "قيمة متلف", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 150, name: "مبالغ مالية أنفقها العامل لصالح العمل", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 151, name: "العمولات", category: "عمالية", sub_category: "حقوق مالية", isFinancial: true },
+    { id: 152, name: "تأمين سكن", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: true },
+    { id: 153, name: "توسيع مجال خدمات التأمين الصحي", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: true },
+    { id: 154, name: "تذاكر سفر", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: true },
+    { id: 155, name: "ترقية أو علاوة", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: true },
+    { id: 156, name: "تسكين على وظيفة أو تعديل أو مساواة في المرتبة", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: false },
+    { id: 157, name: "تسليم عهدة أو استرداد قرض", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: true },
+    { id: 158, name: "تمكين من العمل", category: "عمالية", sub_category: "حقوق وظيفية", isFinancial: false },
+    { id: 159, name: "نسخة من عقد العمل", category: "عمالية", sub_category: "مستندات ووثائق", isFinancial: false },
+    { id: 160, name: "مستندات ووثائق", category: "عمالية", sub_category: "مستندات ووثائق", isFinancial: false },
+    { id: 161, name: "شهادة الخدمة", category: "عمالية", sub_category: "مستندات ووثائق", isFinancial: false },
+    { id: 162, name: "تكاليف العلاج", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 163, name: "التعويض عن عدم التسجيل في التأمينات", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 164, name: "إنهاء العلاقة العمالية من صاحب العمل", category: "عمالية", sub_category: "تعويض", isFinancial: false },
+    { id: 165, name: "إنهاء العلاقة العمالية من العامل", category: "عمالية", sub_category: "تعويض", isFinancial: false },
+    { id: 166, name: "عدم إلتزام صاحب العمل بمهلة الإشعار", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 167, name: "عدم إلتزام العامل بمهلة الإشعار", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 168, name: "التعويض عن أضرار التقاضي", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 169, name: "رصيد الإجازات", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 170, name: "إصابة العمل", category: "عمالية", sub_category: "تعويض", isFinancial: true },
+    { id: 171, name: "عدم المنافسة وحماية الأسرار", category: "عمالية", sub_category: "تعويض", isFinancial: false },
+    { id: 172, name: "التحكيم (عمالي)", category: "عمالية", sub_category: "الاستئناف", isFinancial: false },
+    { id: 173, name: "إقامة ولاية على قاصر سناً", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 174, name: "إقامة ولاية على قاصر عقلاً", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 175, name: "إثبات رشد من كان قاصراً عقلاً", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 176, name: "فسخ ولاية بطلب من الولي", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 177, name: "تقدير نفقة قاصر", category: "إنهاءات", sub_category: "الولايات", isFinancial: true },
+    { id: 178, name: "فسخ الولاية لموت الولي", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 179, name: "إقامة ولاية على مال مفقود", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 180, name: "فسخ ولاية على مال مفقود", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 181, name: "ولاية ورعاية وحضانة يتيم أو ذوي احتياجات خاصة", category: "إنهاءات", sub_category: "الولايات", isFinancial: false },
+    { id: 182, name: "الموافقة على الزواج المبكر", category: "إنهاءات", sub_category: "إثباتات اجتماعية", isFinancial: false },
+    { id: 183, name: "إثبات انقطاع الأولياء عن المرأة لغرض الزواج", category: "إنهاءات", sub_category: "إثباتات اجتماعية", isFinancial: false },
+    { id: 184, name: "عقد زواج بولاية القاضي", category: "إنهاءات", sub_category: "إثباتات اجتماعية", isFinancial: false },
+    { id: 185, name: "إثبات أقرب ولي لتزويج", category: "إنهاءات", sub_category: "إثباتات اجتماعية", isFinancial: false },
+    { id: 186, name: "إثبات فقد وغيبة", category: "إنهاءات", sub_category: "إثباتات اجتماعية", isFinancial: false },
+    { id: 187, name: "إثبات تبين حال مفقود بالسلامة والحضور", category: "إنهاءات", sub_category: "إثباتات اجتماعية", isFinancial: false },
+    { id: 188, name: "إذن تصرف بأملاك وقف أو وصية", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: true },
+    { id: 189, name: "تعديل وإضافة لصك الوقف أو الوصية", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: false },
+    { id: 190, name: "طلب المستثمر فسخ أو تعديل على عقد الاستثمار المأذون به من المحكمة", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: true },
+    { id: 191, name: "تسليم أموال الوقف أو الوصية المودعة لدى الهيئة", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: true },
+    { id: 192, name: "إقامة مشرف على وقف أو وصية", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: false },
+    { id: 193, name: "استقالة ناظر على وقف أو وصية", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: false },
+    { id: 194, name: "إثبات وقف أو وصية لمتوفى ومن ضمن الورثة غائب أو قاصر أو مفقود", category: "إنهاءات", sub_category: "الأوقاف والوصايا", isFinancial: false },
+    { id: 195, name: "إذن التصرف بأملاك القاصر أو المفقود أو الغائب", category: "إنهاءات", sub_category: "الأذونات", isFinancial: true },
+    { id: 196, name: "تعديل وتهميش على صك إنهائي", category: "إنهاءات", sub_category: "تعديلات الصكوك", isFinancial: false } ,
+    { id: 197, name: "إثبات زواج سابق", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 198, name: "إثبات رجعة", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 199, name: "إثبات طلاق", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 200, name: "إثبات خلع", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 201, name: "إثبات حضانة", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 202, name: "إثبات زواج أحد الزوجين غير سعودي", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 203, name: "إثبات ورثة متوفى", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 204, name: "الموافقة على الزواج المبكر", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 205, name: "إثبات وقف", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 206, name: "إثبات وصية", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false },
+    { id: 207, name: "قسمة تركة بالتراضي مع وجود قاصر أو غائب أو مفقود أو وقف أو وصية", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: true },
+    { id: 208, name: "إنشاء عقد زواج", category: "إنهاءات", sub_category: "إنهاءات الأوقاف والمواريث في الأحساء والقطيف", isFinancial: false }
+  ]
+  
+  
+  
   segVal:string = "basics"
   @ViewChild('popInput') popInput; 
   @ViewChild('popover') popover;
@@ -135,14 +361,56 @@ export class EditCasePage implements OnInit {
     court_id: 0
   }
 
+  USER_INFO :  {
+    id: number;
+    user_name: string;
+    store_id: number;
+    full_name: string;
+    password: string;
+    job_title: string;
+    email: string;
+    phone: string;
+    level: number;
+    subiscriber_id: number;
+    company_email2: string;
+    company_email: string;
+    company_phone1: string;
+    company_phone2: string;
+    region: string;
+    city: string;
+    country: string;
+    full_address: string;
+    company_name: string;
+    short_desc: string;
+    full_desc: string;
+    logo_url: string;
+    subscriptions: Array<{
+      package_id: number;
+      status: string;
+      start_date: string;
+      end_date: string;
+    }>;
+  }
+
+
+
   ionicForm: FormGroup;
   isSubmitted = false;
-  constructor(private modalController : ModalController, private route: ActivatedRoute ,private rout : Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor(private storage: Storage,private modalController : ModalController, private route: ActivatedRoute ,private rout : Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ,private apiPortal:PortalserviceService  ) {
     this.ionicForm = this.formBuilder.group({
     case_title: ['' , Validators.required],
    
-    })
-    this.getAppInfo()
+  })
+
+    this.storage.get('USER_INFO').then((response) => {
+      if (response) {
+        this.USER_INFO = response  
+        console.log('USER_INFO',this.USER_INFO) 
+        this.getLawyers() 
+      }  
+      })
+
+      this.getAppInfo()
 
     this.route.queryParams.subscribe(params => {
       if (params && params.case) {
@@ -167,6 +435,7 @@ export class EditCasePage implements OnInit {
   }
 
   ngOnInit() {
+   
   }
 
 
@@ -174,11 +443,10 @@ export class EditCasePage implements OnInit {
     this.rout.navigate([],
       {
         queryParams: { case: JSON.stringify(this.newCase) },
-         queryParamsHandling: 'merge' // This will keep the existing query params and add the new one 
-
+         queryParamsHandling: 'merge' // This will keep the existing query params and add the new one  
       }
     );
-    console.log('queryParams', this.rout.getCurrentNavigation().extras.queryParams)
+  //  console.log('queryParams', this.rout.getCurrentNavigation().extras.queryParams)
   }
 
   close(){
@@ -509,7 +777,7 @@ export class EditCasePage implements OnInit {
 
 
  getLawyers(){ 
-        this.api.getTopUsers().subscribe(data =>{
+        this.apiPortal.getUsersBySubiscriberId(this.USER_INFO.subiscriber_id).subscribe(data =>{
           console.log(data)
           let res = data
           this.usersArr = res['data']  
@@ -638,9 +906,9 @@ export class EditCasePage implements OnInit {
     console.log(item )
      this.selectedCourt = {
       id:item.id,
-      name:item.name
+      name:item.court_name
     }   //console.log( this.selectedItem);
-    this.newCase.court_name = item.name 
+    this.newCase.court_name = item.court_name 
     this.newCase.court_id = item.id
       this.didDissmisCourt()
       //perform calculate here so moataz can get the qty
@@ -675,14 +943,14 @@ export class EditCasePage implements OnInit {
         name:item.name
       }    
       this.newCase.opponent_representative=item.name
-        this.didDissmisAgent()
+      this.didDissmisAgent()
        
       }
 
       getAppInfo(){ 
         this.prepareCace() 
         this.getTopCustomers()
-        this.getLawyers() 
+       
         this.getCourts() 
         this.getCaseStatus() 
       }
@@ -744,7 +1012,7 @@ export class EditCasePage implements OnInit {
         if(event.target.checked == true ){
           this.usersArr[i].checked = true
           if(flt.length == 0){
-          this.selectedLawyersTeamArr.push({
+            this.selectedLawyersTeamArr.push({
             user_id:item.id ,
             case_id :this.newCase.id ,
             full_name : this.usersArr[i].full_name 
@@ -942,6 +1210,8 @@ export class EditCasePage implements OnInit {
          this.didDissmisNotif()
         //perform calculate here so moataz can get the qty
       }
+
+
 
       selectFromPopCase(item){
         console.log(item)

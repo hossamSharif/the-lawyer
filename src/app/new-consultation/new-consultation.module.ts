@@ -8,7 +8,8 @@ import { NewConsultationPageRoutingModule } from './new-consultation-routing.mod
 import { FilterPipe } from "./pipe";
 import { FilterPipe2 } from "./pipe2";
 import { FilterPipe3 } from "./pipe3";
-import { NewConsultationPage } from './new-consultation.page';
+import { NewConsultationPage } from './new-consultation.page'; 
+import { FilesPageModule } from '../files/files.module';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { NewConsultationPage } from './new-consultation.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    NewConsultationPageRoutingModule
+    NewConsultationPageRoutingModule,
+    FilesPageModule
   ],
   declarations: [NewConsultationPage,FilterPipe,
     FilterPipe2,

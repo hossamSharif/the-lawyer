@@ -39,7 +39,7 @@ export class EditSessionPage implements OnInit {
    isOpenCase2 = false ;
    selectedCustTye : {id:any ,name:any};
 
-
+   locale : string = 'ar-SA';
    isOpenServ = false ;
    showServ = false 
    servArr :Array<any> =[]
@@ -81,7 +81,7 @@ export class EditSessionPage implements OnInit {
   searchResult :Array<any> =[]
   costumerArr :Array<any> =[]
   
- 
+  segVal:any = 'basics'
    
  searchTermCourt : any = ""
   
@@ -123,12 +123,13 @@ export class EditSessionPage implements OnInit {
     session_title: '',
     opponent_name: '',
     opponent_representative: '',
-    session_date: new Date().toISOString(),
+    session_date: new Date().toISOString().split('T')[0],
     session_time:new Date().toISOString(),
     session_type: '',
     session_status: '',
     session_result: '',
     court_name: '', 
+    session_requirements: '',
   };
 
   newCase: Case =  {
@@ -162,13 +163,15 @@ export class EditSessionPage implements OnInit {
     court_id:0
   }
 
-    
+  category:any = 'session';	
   ionicForm: FormGroup;
   isSubmitted = false;
   constructor(private modalController :ModalController, private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
     this.getAppInfo()
     this.route.queryParams.subscribe(params => {
       if (params  && params.session) {
+        this.segVal = JSON.parse(params.segVal)
+        console.log('segment',JSON.parse(params.segVal), JSON.parse(params.session))
         this.newSession = JSON.parse(params.session) 
         this.selectedType.name =this.newSession.session_type
 
@@ -182,15 +185,11 @@ export class EditSessionPage implements OnInit {
 
         if(!params.case){ 
           this.checkIfCase()
+          console.log('once there are no case',this.newCase)
         }else{
           this.newCase = JSON.parse(params.case)
-          console.log(this.newCase)
-          this.usersArr = this.newCase['team']
-          if(this.usersArr){
-            let flt = this.usersArr.filter(x=>x.id == this.newSession.lawyer_id)
-            console.log(flt)
-            this.selectedUser.full_name = flt[0].full_name
-          }
+          console.log('once there are case',this.newCase)
+          
         }
       }
     });
@@ -206,17 +205,112 @@ export class EditSessionPage implements OnInit {
     
   }
 
+
+  prepareTeam(){
+    this.route.queryParams.subscribe(params => {
+      if (params && params.session) {
+        let cs = JSON.parse(params.session)
+        if (cs['team'].length > 0) {
+          console.log('for' , cs['team'])
+         //set userArr checked true if in team arr of new case 
+          for (let index = 0; index < cs['team'].length; index++) {
+            const element = cs['team'][index];
+            console.log('id' , element)
+               for (let i = 0; i < this.usersArr.length; i++) {
+                const element2 = this.usersArr[i];
+                if (element2.id == element.id) {
+                  element2.checked = true
+                  this.selectedLawyersTeamArr.push({
+                    user_id:element2.id ,
+                    case_id :this.newSession.case_id ,
+                    session_id : this.newSession.id ,
+                    full_name : element2.full_name 
+                  })
+                 } 
+               } 
+          }
+          console.log('selectedLawyersTeamArr',  this.selectedLawyersTeamArr , this.usersArr) 
+        }
+
+      }
+    })
+   
+  }
+
+
+  checkedTeam2(event, item ,i ) { 
+    this.selectedLawyersTeamArr = []
+    console.log(this.usersArr)
+    console.log('check',event, item ,i )
+     this.usersArr.forEach(element => {
+      if (element.checked == true) {
+        this.selectedLawyersTeamArr.push({
+          user_id:element.id ,
+          case_id :this.newSession.case_id,
+          session_id :this.newSession.id,
+          full_name : element.full_name
+        }) 
+      }
+     });  
+    console.log('check selectedLawyersTeamArr',this.selectedLawyersTeamArr)
+   }
+
+
   close(){
     this._location.back();
   }
 
+  presentPopoverCustType(e?: Event) {
+    console.log('preent me', e)
+      this.showCustType = false
+      this.popoverNotif.event = e;
+      this.isOpenCustType = true;  
+  }
+
+  didDissmisCustType(){
+    this.isOpenCustType = false
+    //console.log('dismissOver') 
+  }
+
+  selectFromPopCustTypes(item , index){
+    console.log(item ,index)
+    // push and pop
+    this.selectedCustTye = {
+      id:item.id,
+      name:item.name
+    } 
+    
+      //console.log( this.selectedItem); 
+    //  this.didDissmisCustType()
+      //perform calculate here so moataz can get the qty
+  }
+
+  checkedTeam(event, item ,i ) {
+    console.log(event, item ,i )
+    let flt = this.selectedLawyersTeamArr.filter(x=>x.user_id == item.id)
+    console.log(flt)
+    if(event.target.checked == true ){
+      this.usersArr[i].checked = true
+      if(flt.length == 0){
+      this.selectedLawyersTeamArr.push({
+        user_id:item.id ,
+        case_id :this.newSession.case_id ,
+        session_id:this.newSession.id,
+        full_name : this.usersArr[i].full_name 
+      })
+      }
+    }else{
+      this.usersArr[i].checked = false
+      this.selectedLawyersTeamArr.splice(this.selectedLawyersTeamArr.indexOf(item),1)
+    } 
+    console.log(this.selectedLawyersTeamArr)
+  }
+
 
   checkIfCase(){
-    if(!this.newCase.id){
+    if( !this.newCase.id ){
       this.getTopCases() 
-      console.log('im')
-      
-     
+      console.log('im') 
     } 
   }
 
@@ -239,10 +333,7 @@ export class EditSessionPage implements OnInit {
         this.CasesArray = data['data']
       let flt :Array<any> = []  
       flt =  this.CasesArray.filter(x=>x.id == this.newSession.case_id)
-      this.newCase = flt[0]
-      this.usersArr = this.newCase['team']
-      let flt2 = this.usersArr.filter(x=>x.id == this.newSession.lawyer_id)
-      this.selectedUser.full_name = flt2[0].name
+      this.newCase = flt[0] 
       } else {
        
       }
@@ -265,7 +356,8 @@ export class EditSessionPage implements OnInit {
   selectFromPopCase2(item){
     console.log(item)
      this.newCase = item
-     this.selectedLawyersTeamArr = item.team
+     this.newSession.case_id = item.id
+     this.newSession.cust_id = item.client_id
      this.didDissmisCase2()  
   }
    
@@ -273,9 +365,24 @@ export class EditSessionPage implements OnInit {
     this.isOpenCase2 = false 
   }
 
+  
+  segmentCHange(event){
+    console.log(event.detail.value)
+    this.segVal = event.detail.value
+    if(this.segVal == 'files'){
+      if(this.newCase.id){ 
+        //this.getSessionsByCaseId() 
+      }else{
+       // this.showEmpty = true
+      }
+    } 
+   }
+
+
 
   saveBasics() { 
-    if (this.validate() == true) {
+    this.newSession.session_title = this.newSession.session_type + ' - ' + this.newCase.case_title
+    if (this.validate() == true) { 
       this.presentLoadingWithOptions('جاري حفظ البيانات ...')
       console.log(this.newSession) 
       this.saveInvo() 
@@ -286,10 +393,71 @@ export class EditSessionPage implements OnInit {
     console.log('saveInvo')
     this.api.updateSession(this.newSession).subscribe(data => {
       console.log('save',data)
-     if(data['message'] != 'Case Not Created') { 
-      this.presentToast('تم حفظ البيانات بنجاح', 'success')
-      this.prepareCace() 
-      this._location.back();
+      if(data['message'] != 'Case Not Updated') { 
+        this.deleteSessionLawers() 
+        }else{
+        this.presentToast('1لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+        }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+
+  deleteSessionLawers() {
+    console.log('deleteCaseLawers')
+    this.api.deleteSessionLawers(this.newSession.id).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Post Not Deleted') {
+      this.prepareLawyers()
+      if (this.selectedLawyersTeamArr.length > 0) {
+        this.selectedLawyersTeamArr.forEach(element => {
+          element.case_id = this.newSession.case_id
+          element.session_id = this.newSession.id
+         }); 
+         this.savesessionLawers()
+       }else{
+        this.presentToast('تم حفظ البيانات بنجاح', 'success')
+        //this.prepareCace()
+        // this._location.back();
+       } 
+      }else{
+      this.presentToast('3لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('4لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+
+  prepareLawyers(){
+    let arr : any =[]
+    for (let index = 0; index < this.usersArr.length; index++) {
+      const element = this.usersArr[index];
+      if (element.checked == true) {
+        arr.push(
+          {
+          user_id:element.id ,
+          case_id :this.newCase.id ,
+          session_id :this.newSession.id
+          }  
+        )
+      }  
+     }
+    this.selectedLawyersTeamArr  = arr
+  }
+
+  savesessionLawers() {
+    console.log('saveInvo')
+    this.api.saveSessionLawyer(this.selectedLawyersTeamArr).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Post Not Created') {
+     //this.newCase.id = data['message']
+     this.presentToast('تم حفظ البيانات بنجاح', 'success')
+     this.newSession['team'] = this.selectedLawyersTeamArr 
+     this.segVal = "files"  
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }
@@ -297,6 +465,14 @@ export class EditSessionPage implements OnInit {
       //console.log(err);
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
     })
+  }
+
+  formatTime(time: string): string {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
   }
  
 
@@ -375,7 +551,8 @@ export class EditSessionPage implements OnInit {
       let res = data
       if(data['message'] != 'No courts Found'){ 
         this.courtArr = res['data']
-        this.selectedCourt.name = this.courtArr.filter(x=>x.id == this.newSession.court_id)[0].court_name
+        this.selectedCourt.name = this.courtArr?.filter(x=>x.id == this.newSession.court_id)[0].court_name
+        this.selectedCourt.id = this.courtArr?.filter(x=>x.id == this.newSession.court_id)[0].court_id
 
       }   
     }, (err) => {
@@ -417,8 +594,6 @@ export class EditSessionPage implements OnInit {
         console.log('validate' , this.isSubmitted , this.newSession.session_title)
         if (this.newSession.session_title == "") { 
           return false
-        } else if(this.newSession.lawyer_id == 0){
-          return false
         } else if(this.newSession.session_type == ""){
           return false
         }else if(this.newSession.cust_id == 0 ){
@@ -434,7 +609,8 @@ export class EditSessionPage implements OnInit {
           console.log("'úsers'", data)
           let res = data
           this.usersArr = res['data'] 
-          this.selectedUser.full_name = this.usersArr.filter(x=>x.id == this.newSession.lawyer_id)[0].full_name
+          this.prepareTeam()
+          // this.selectedUser.full_name = this.usersArr.filter(x=>x.id == this.newSession.lawyer_id)[0].full_name
           //  for (let index = 0; index < this.usersArr.length; index++) {
           //   const element = this.usersArr[index];
           //   let fltr = this.selectedLawyersTeamArr.filter(el => el.id == +element.id)

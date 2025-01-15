@@ -12,8 +12,8 @@ import { Storage } from '@ionic/storage';
 
 
  export class ServicesService {
-     api = 'http://localhost/lawyerapi/myapi/api/'
- //api :any =  'https://hossam.gvstech.net/lawyerapi/myapi/api/'
+    // api = 'http://localhost/lawyerapi/myapi/api/'
+  api :any =  'https://hossam.gvstech.net/lawyerapi/myapi/api/'
   year : {id:any ,yearDesc:any ,yearStart :any,yearEnd:any}
   folderNo:any=''
   public Notifications: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
@@ -22,6 +22,65 @@ import { Storage } from '@ionic/storage';
     //  this.api = 'https://erp.hosamdev.com/myapi'+ this.folderNo +'/api/'
      // this.setCurrentYear()
    }
+
+
+
+
+   login(user){ 
+    //console.log(user)
+    let params = new HttpParams() 
+    params= params.append('email' , user.email )
+    params= params.append('password' , user.password)  
+    return this.http.get(this.api+'users/login.php',{params: params})
+  } 
+
+  
+  sendMailForgetPass(email ){ 
+    //console.log(user)
+    let params = new HttpParams() 
+    params= params.append('emailTo' , email )   
+    return this.http.get(this.api+'mailing/forgetMail.php',{params: params})
+  } 
+
+  reSendMailForgetPass(user ){ 
+    //console.log(user)
+    let params = new HttpParams() 
+    params= params.append('emailTo' , user.email )  
+  //  params=params.append('level' , 'user')
+    return this.http.get(this.api+'mailing/forgetMail.php',{params: params})
+  } 
+
+  updateUser(user){ 
+    console.log(user)
+   return this.http.post(this.api+'users/update.php', 
+     user
+     )
+   } 
+   
+  updatePass(user){ 
+     console.log(user)
+    return this.http.post(this.api+'users/updatePass.php', 
+      user
+      )
+    } 
+
+    saveUser(user){
+      return this.http.post(this.api+'users/create.php', 
+        user
+       )
+    }
+
+    getTopUsers( ){ 
+      // let params = new HttpParams() 
+      // params=params.append('store_id' , store_id)
+      // params=params.append('yearId' , yearId)
+      // ,{params: params}
+      return this.http.get(this.api+'users/read.php')
+    }
+
+
+
+
 
 //laywer api 
 
@@ -39,6 +98,14 @@ saveCaseLawyer( caseLawyer){
     caseLawyer
   )
 }
+
+saveSessionLawyer( caseLawyer){  
+  caseLawyer = JSON.stringify(caseLawyer) 
+  return this.http.post(this.api+'sessionlawyers/createMulti.php',
+    caseLawyer
+  )
+}
+
 
 
 saveTaskLawyer( caseLawyer){  
@@ -98,13 +165,13 @@ saveNotifications( arr){
 }
 
 
-getTopUsers( ){ 
-  // let params = new HttpParams() 
-  // params=params.append('store_id' , store_id)
-  // params=params.append('yearId' , yearId)
-  // ,{params: params}
-  return this.http.get(this.api+'users/read.php')
-}
+// getTopUsers( ){ 
+//   // let params = new HttpParams() 
+//   // params=params.append('store_id' , store_id)
+//   // params=params.append('yearId' , yearId)
+//   // ,{params: params}
+//   return this.http.get(this.api+'users/read.php')
+// }
 
   getTopCustomers( ){ 
     
@@ -192,6 +259,13 @@ getTopUsers( ){
      )
   }
 
+  getUsersBySubiscriberId(id ){
+    //console.log(user)
+    let params = new HttpParams()
+    params= params.append('subiscriber_id' , id ) 
+    return this.http.get(this.api+'users/getUsersBySubiscriberId.php',{params: params})
+  }
+
   saveContractFile(contractFile){
     return this.http.post(this.api+'ContractFiles/create.php', 
       contractFile
@@ -266,16 +340,22 @@ getTopUsers( ){
      )
   }
 
-  saveUser(user){
-    return this.http.post(this.api+'users/create.php', 
-      user
-     )
-  }
+  // saveUser(user){
+  //   return this.http.post(this.api+'users/create.php', 
+  //     user
+  //    )
+  // }
 
   deleteCaseLawers(case_id){
     let params = new HttpParams()
     params= params.append('case_id' , case_id )
       return this.http.delete(this.api+'caselawyers/deleteMulti.php', {params: params})
+  }
+
+  deleteSessionLawers(session_id){
+    let params = new HttpParams()
+    params= params.append('session_id' , session_id )
+      return this.http.delete(this.api+'sessionlawyers/deleteMulti.php', {params: params})
   }
 
     deleteTaskLawers(task_id){
@@ -296,11 +376,11 @@ getTopUsers( ){
         return this.http.delete(this.api+'customer/delete.php', {params: params})
     }
 
-    updateUser(cust){
-      return this.http.post(this.api+'users/update.php', 
-      cust
-      )
-    }
+    // updateUser(cust){
+    //   return this.http.post(this.api+'users/update.php', 
+    //   cust
+    //   )
+    // }
 
   // end of laywer api
 
@@ -866,21 +946,21 @@ getTswiaByDate(store_id,from ,yearId){
   }
 
 
-  login(user){ 
-    //console.log(user)
-    let params = new HttpParams() 
-    params= params.append('user_name' , user.user_name )
-    params= params.append('password' , user.password)
-    params=params.append('store_id' , user.store_id)
-  //  params=params.append('level' , 'user')
-    return this.http.get(this.api+'users/login.php',{params: params})
-  }
+  // login(user){ 
+  //   //console.log(user)
+  //   let params = new HttpParams() 
+  //   params= params.append('user_name' , user.user_name )
+  //   params= params.append('password' , user.password)
+  //   params=params.append('store_id' , user.store_id)
+  // //  params=params.append('level' , 'user')
+  //   return this.http.get(this.api+'users/login.php',{params: params})
+  // }
 
-  saveTswiaInvo(payInvo){
-    return this.http.post(this.api+'tswia/create.php', 
-     payInvo
-     )
-  }
+  // saveTswiaInvo(payInvo){
+  //   return this.http.post(this.api+'tswia/create.php', 
+  //    payInvo
+  //    )
+  // }
 
 
   saveSalesInvo(payInvo){

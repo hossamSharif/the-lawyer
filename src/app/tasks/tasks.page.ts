@@ -44,11 +44,12 @@ export class TasksPage implements OnInit {
 
 
 
- getTaskDetails(task){
+ getTaskDetails(task , segVal){
   console.log(task)
   let navigationExtras: NavigationExtras = {
     queryParams: {
-      task: JSON.stringify(task) 
+      task: JSON.stringify(task),
+      segVal:  JSON.stringify(segVal)
     }
   }; 
   this.rout.navigate(['edit-task'], navigationExtras);  

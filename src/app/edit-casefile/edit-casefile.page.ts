@@ -7,6 +7,7 @@ import { LoadingController, ToastButton, ToastController } from '@ionic/angular'
 import { ActivatedRoute } from '@angular/router';
 import { Case } from '../new-case/new-case.page';
 import { CaseFile } from '../new-casefile/new-casefile.page';
+import { NewSession } from '../new-session/new-session.page';
 var ls = window.localStorage;
 
 @Component({
@@ -56,16 +57,38 @@ export class EditCasefilePage implements OnInit {
     uploaded_at: new Date().toISOString(),
     category: 'case'
   }
+  newSession: NewSession = {
+    id: 1,
+    lawyer_id: 0,
+    case_id: 0,
+    court_id:0,
+    cust_id: 0,
+    session_title: '',
+    opponent_name: '',
+    opponent_representative: '',
+    session_date: new Date().toISOString(),
+    session_time:new Date().toISOString(),
+    session_type: '',
+    session_status: '',
+    session_result: '',
+    court_name :'',
+    session_requirements: ''
+  };
   isSubmitted = false;
   uploadedFiles
-
+  category:any=''
   constructor(private route: ActivatedRoute ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
     this.getAppInfo()
     this.route.queryParams.subscribe(params => {
-      if (params &&  params.case  &&  params.file) {
-        console.log('caseRoute',JSON.parse(params.case)) 
-        this.newCase = JSON.parse(params.case)
-        this.newCaseFile = JSON.parse(params.file)
+      if (params &&  params.case  &&  params.file) { 
+        console.log('caseRoute',JSON.parse(params.case),JSON.parse(params.category))  
+        this.category = JSON.parse(params.category)
+        if (this.category == 'case') {
+          this.newCase = JSON.parse(params.case)
+        }else if (this.category == 'session') {
+          this.newSession = JSON.parse(params.case)
+        } 
+        this.newCaseFile = JSON.parse(params.file) 
       }
     });
    }
@@ -77,19 +100,13 @@ export class EditCasefilePage implements OnInit {
     this.prepareCace()  
   }
 
-  prepareCace(){  
-     
-  //  this.ionicForm.reset() 
+  prepareCace(){   
     this.isSubmitted = false 
-
-    // if ( this.newCase['team'].lenght > 0) {
-    //   this.newCaseFile.user_id = this.newCase['team'][0].id
-    // } else {
-    //   this.newCaseFile.user_id = 0 
-    // }
-    
-    this.newCaseFile.case_id = this.newCase.id
-    
+    if(this.category == 'case') { 
+      this.newCaseFile.case_id = this.newCase.id
+    }else if (this.category == 'session') {
+      this.newCaseFile.case_id = this.newSession.id 
+    }   
   }
 
   validate(){ 

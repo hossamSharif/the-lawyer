@@ -153,7 +153,8 @@ const routes: Routes = [
   {
     path: 'edit-consultation',
     loadChildren: () => import('./edit-consultation/edit-consultation.module').then( m => m.EditConsultationPageModule)
-  },  {
+  },
+  {
     path: 'new-casefile',
     loadChildren: () => import('./new-casefile/new-casefile.module').then( m => m.NewCasefilePageModule)
   },
@@ -208,7 +209,20 @@ const routes: Routes = [
   {
     path: 'company-admin',
     loadChildren: () => import('./company-admin/company-admin.module').then( m => m.CompanyAdminPageModule)
+  },
+  {
+    path: 'folder/forget-password',
+    loadChildren: () => import('./forget-password/forget-password.module').then( m => m.ForgetPasswordPageModule)
+  },
+  {
+    path: 'virefy-rest',
+    loadChildren: () => import('./virefy-rest/virefy-rest.module').then( m => m.VirefyRestPageModule)
+  },
+  {
+    path: 'new-password',
+    loadChildren: () => import('./new-password/new-password.module').then( m => m.NewPasswordPageModule)
   }
+
 
 
 

@@ -37,7 +37,7 @@ export class NewConsultationPage implements OnInit {
   
   selectedCustTye : {id:any ,name:any};
 
-
+ segVal = 'basics'
   isOpenServ = false ;
   showServ = false 
   servArr :Array<any> =[]
@@ -127,7 +127,7 @@ export class NewConsultationPage implements OnInit {
   }
 
 
-
+  category =  'consultation'
    
  
  isSubmitted = false;
@@ -144,6 +144,19 @@ export class NewConsultationPage implements OnInit {
   close(){
     this._location.back();
   }
+
+
+  segmentCHange(event){
+    console.log(event.detail.value)
+    this.segVal = event.detail.value
+    if(this.segVal == 'files'){
+      if(this.newConsultation.id){ 
+        //this.getSessionsByCaseId() 
+      }else{
+       // this.showEmpty = true
+      }
+    } 
+   }
 
 
   saveBasics() {
@@ -163,9 +176,37 @@ export class NewConsultationPage implements OnInit {
     this.api.saveConsultaion(this.newConsultation).subscribe(data => {
       console.log('save',data)
      if(data['message'] != 'Case Not Created') { 
+      this.newConsultation.id = data['message']
       this.presentToast('تم حفظ البيانات بنجاح', 'success')
-      this.prepareCace() 
-      this._location.back();
+      this.segVal = 'files'
+      }else{
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      }
+    }, (err) => {
+      //console.log(err);
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+    })
+  }
+
+  updateBasics() {
+    // let d: Date = this.payInvo.pay_date
+    // this.payInvo.sub_name = this.selectedAccount.sub_name
+    // this.payInvo.pay_date = this.datePipe.transform(d, 'yyyy-MM-dd')
+   
+    if (this.validate() == true) {
+      this.presentLoadingWithOptions('جاري حفظ البيانات ...')
+      console.log(this.newConsultation) 
+      this.updateInvo() 
+    }
+  }
+
+  updateInvo() {
+    console.log('saveInvo')
+    this.api.updateConsultaion(this.newConsultation).subscribe(data => {
+      console.log('save',data)
+     if(data['message'] != 'Case Not Created') { 
+      this.presentToast('تم حفظ البيانات بنجاح', 'success')
+      this.segVal='files'
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }
@@ -189,7 +230,6 @@ export class NewConsultationPage implements OnInit {
     didDissmis(){
       this.isOpen = false
     }
-
 
     selectFromPopLawyer(item){
       //console.log(item)
@@ -253,7 +293,7 @@ export class NewConsultationPage implements OnInit {
     this.newConsultation.lawyer_id = 0
     this.newConsultation.case_id = 0
     this.newConsultation.duration = 0 
-    this.newConsultation.consultation_date = new Date().toISOString()
+    this.newConsultation.consultation_date = new Date().toISOString().split('T')[0]
     
 
   }

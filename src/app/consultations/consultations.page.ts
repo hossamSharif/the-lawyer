@@ -24,7 +24,7 @@ export class ConsultationsPage implements OnInit {
     case_id:0,
     title:"",
     duration: 0,
-    consultation_date:new Date().toISOString(), 
+    consultation_date:new Date().toISOString().split('T')[0], 
     consultation_notes:"",
     consultation_fee:0,
     consultation_type:"",
@@ -32,16 +32,18 @@ export class ConsultationsPage implements OnInit {
     created_at:null,
     updated_at:null 
   }
-
+  category ='consultation'
   selectedLawyersTeamArr : Array<any> = []
   constructor(private route: ActivatedRoute ,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private _location :Location ,private api:ServicesService ) {
      
    }
 
   ngOnInit() {
-    this.getConsultations()
   }
 
+  ionViewDidEnter() {
+    this.getConsultations()
+  }
 
   getConsultations() {
     this.loading = true 
@@ -74,10 +76,11 @@ export class ConsultationsPage implements OnInit {
    
 
 
-   getSessionDetails(session){
+   getSessionDetails(session , segVal){
     let navigationExtras: NavigationExtras = {
       queryParams: {
-        consultation: JSON.stringify(session)
+        consultation: JSON.stringify(session),
+        segVal : JSON.stringify(segVal)
       }
     }; 
     this.rout.navigate(['edit-consultation'], navigationExtras);  

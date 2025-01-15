@@ -26,6 +26,20 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 
+
+.date-time-container {
+  display: flex;
+  gap: 1rem;
+  // padding: 10px;
+}
+
+.native-date-picker,
+.native-time-picker {
+  padding: 8px;
+  border:none;
+  font-size: 16px;
+}
+
 .circleDev{
   width: 50px;
     height: 50px;

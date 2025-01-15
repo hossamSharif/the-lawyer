@@ -24,7 +24,7 @@
           <ion-label class="segLable">البيانات الأساسية</ion-label>
         </ion-segment-button>
         <!-- [disabled]="!this.newSession.id" -->
-        <ion-segment-button value="files" >
+        <ion-segment-button value="files"  [disabled]="!this.newSession.id">
           <ion-label class="segLable">الملفات </ion-label>
         </ion-segment-button>
      
@@ -63,15 +63,43 @@
             </ion-row>
             
             <ion-row>
-              <ion-col size="6" class="ion-margin-top">
+              <!-- <ion-col size="6" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong>عنوان الجلسة</strong></ion-label>
                 <ion-note style="float:left" *ngIf="isSubmitted == true && newSession.session_title == '' "> الحقل مطلوب</ion-note>
 
                 <ion-item class="custInput">
                   <ion-input [(ngModel)]="newSession.session_title" placeholder="عنوان الجلسة"></ion-input>
                 </ion-item>
+              </ion-col> -->
+              <ion-col size="6" class="ion-margin-top">
+                <ion-label class="ion-padding"><strong> نوع الجلسة </strong></ion-label>
+                <ion-note style="float:left" *ngIf="isSubmitted == true && newSession.session_type == '' "> الحقل مطلوب</ion-note>
+                <ion-item class="custInput"  (click)="presentPopoverNotif($event)" >  
+                  <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
+                  <ion-label> {{selectedType.name}} </ion-label>
+                </ion-item>
+                <ion-popover  #popoverNotif [isOpen]="isOpenNotif" (didDismiss)="didDissmisNotif()">
+                  <ng-template>
+                    <ion-content  dir="rtl">  
+                      <ion-list class="ion-text-center"  *ngIf="caseTypeArr.length>0">
+                       <ion-item button lines="none" *ngFor="let log of caseTypeArr" (click)="selectFromPopTypes(log)">
+                       <ion-grid>
+                         <ion-row class="ion-justify-content-center">
+                           <ion-col size="9"> 
+                               {{log.name}}    
+                           </ion-col>
+                           <!-- <ion-col size="3">
+                             <ion-text color = "primary">{{log.datee | dateAgo}}</ion-text>
+                           </ion-col> -->
+                         </ion-row>
+                       </ion-grid>
+                     </ion-item> 
+                      </ion-list> 
+                    </ion-content>
+                  </ng-template>
+                </ion-popover>
               </ion-col>
-
+              
               <ion-col size="6">
                 <ion-grid class="ion-no-padding">
                   <ion-row>
@@ -128,57 +156,60 @@
 
               <ion-col size="6" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong>تاريخ الجلسة</strong></ion-label>
-                <ion-item class="custInput"> 
+                <!-- <ion-item class="custInput"> 
                   <ion-datetime-button  datetime="date"></ion-datetime-button>
+
+                  
                 </ion-item>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
-                    <ion-datetime [(ngModel)]="newSession.session_date" presentation="date" id="date"></ion-datetime>
+                    <ion-datetime  [(ngModel)]="newSession.session_date" presentation="date" id="date"></ion-datetime>
                   </ng-template>
-                </ion-modal> 
+                </ion-modal>  -->
+                <ion-item class="custInput">
+                  <div class="date-time-container">
+                    <!-- Date Picker -->
+                    <input 
+                      type="date" 
+                      [(ngModel)]="newSession.session_date"
+                      class="native-date-picker"
+                    >
+                  
+                    <!-- Time Picker -->
+                    <input 
+                      type="time" 
+                      [(ngModel)]="newSession.session_time"
+                      class="native-time-picker"
+                    >
+                  </div>
+                </ion-item>
+               
               </ion-col>
 
               <ion-col size="6" class="ion-margin-top">
-                <ion-label class="ion-padding"><strong>وقت الجلسة</strong></ion-label>
-                <ion-item class="custInput"> 
-                  <ion-datetime-button  datetime="datetime"></ion-datetime-button>
+                <ion-label class="ion-padding"><strong> فريق العمل </strong></ion-label>
+                <ion-item class="custInput" (click)="presentPopoverCustType($event)">
+                  <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon>
+                  <ion-label  *ngFor="let tm of selectedLawyersTeamArr" > 
+                    <ion-text>{{tm.full_name}}</ion-text>
+                  </ion-label>
                 </ion-item>
-                <ion-modal [keepContentsMounted]="true">
+                <ion-popover #popoverِCustomer [isOpen]="isOpenCustType" (didDismiss)="didDissmisCustType()">
                   <ng-template>
-                    <ion-datetime [(ngModel)]="newSession.session_time" presentation="time" id="datetime"></ion-datetime>
-                  </ng-template>
-                </ion-modal>
-                
-              </ion-col>
-
-              <ion-col size="6" class="ion-margin-top">
-                <ion-label class="ion-padding"><strong> نوع الجلسة </strong></ion-label>
-                <ion-note style="float:left" *ngIf="isSubmitted == true && newSession.session_type == '' "> الحقل مطلوب</ion-note>
-                <ion-item class="custInput"  (click)="presentPopoverNotif($event)" >  
-                  <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
-                  <ion-label> {{selectedType.name}} </ion-label>
-                </ion-item>
-                <ion-popover  #popoverNotif [isOpen]="isOpenNotif" (didDismiss)="didDissmisNotif()">
-                  <ng-template>
-                    <ion-content  dir="rtl">  
-                      <ion-list class="ion-text-center"  *ngIf="caseTypeArr.length>0">
-                       <ion-item button lines="none" *ngFor="let log of caseTypeArr" (click)="selectFromPopTypes(log)">
-                       <ion-grid>
-                         <ion-row class="ion-justify-content-center">
-                           <ion-col size="9"> 
-                               {{log.name}}    
-                           </ion-col>
-                           <!-- <ion-col size="3">
-                             <ion-text color = "primary">{{log.datee | dateAgo}}</ion-text>
-                           </ion-col> -->
-                         </ion-row>
-                       </ion-grid>
-                     </ion-item> 
-                      </ion-list> 
+                    <ion-content dir="rtl">
+                      <ion-list class="ion-text-center" *ngIf="usersArr.length>0">
+                        <ion-item button dir="rtl" lines="none" *ngFor="let log of usersArr ; let i = index"
+                          (ionChange)="checkedTeam2($event , log ,i)">
+                          <ion-label>{{log.full_name}} </ion-label>
+                          <ion-checkbox slot="start" [(ngModel)]="log.checked"> </ion-checkbox>
+                        </ion-item>
+                      </ion-list>
                     </ion-content>
                   </ng-template>
                 </ion-popover>
               </ion-col>
+
+             
   
 
               <ion-col size="6" class="ion-margin-top">
@@ -205,15 +236,25 @@
                   </ng-template>
                 </ion-popover>
               </ion-col>
-              <ion-col size="6" class="ion-margin-top">
+ 
+             
+              <ion-col size="12" class="ion-margin-top">
+                <ion-label class="ion-padding"><strong>متطلبات الجلسة</strong></ion-label>
+                <ion-item class="custInput">
+                  
+                  <ion-textarea [(ngModel)]="newSession.session_requirements" placeholder="ملخص الجلسة" [autoGrow]="true"></ion-textarea>
+                </ion-item>
+              </ion-col>
+
+           
+              <ion-item-divider></ion-item-divider>
+                 <!-- <ion-col size="6" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong> المحامي </strong></ion-label>
                 <ion-note style="float:left" *ngIf="isSubmitted == true && newSession.lawyer_id == 0 "> الحقل مطلوب</ion-note>
                 <ion-item class="custInput" (click)="presentPopover($event)">
                   <ion-icon name="chevron-down" color="medium" slot="end"></ion-icon> 
                   <ion-label> {{selectedUser.full_name}}     </ion-label>
-                  <!-- <ion-button fill="clear" (click)="refresh('item')" slot="end">
-                    <ion-icon name="refresh" color="success"></ion-icon>
-                  </ion-button> -->
+                  
                 </ion-item>
                 <ion-popover  #popover [isOpen]="isOpen" (didDismiss)="didDissmis()" >
                   <ng-template>
@@ -229,8 +270,7 @@
                     </ion-content>
                   </ng-template>
                 </ion-popover>
-              </ion-col>
-
+              </ion-col> -->
               <ion-col size="12" class="ion-margin-top">
                 <ion-label class="ion-padding"><strong>ملخص الجلسة</strong></ion-label>
                 <ion-item class="custInput">
@@ -242,9 +282,13 @@
         </ion-card-content>
 
         <ion-card-header class="listHed">
-          <ion-button fill="outline" (click)="saveBasics()" color="medium" class="custButton rad10">
+          <ion-button *ngIf="!newSession.id"  fill="outline" (click)="saveBasics()" color="medium" class="custButton rad10">
             <ion-icon class="ico" color="dark" name="add-circle-outline"></ion-icon>
-            <ion-text color="dark">حفــظ</ion-text>
+            <ion-text color="dark"> حفــظ ومتابعة </ion-text>
+          </ion-button>
+          <ion-button *ngIf="newSession.id" fill="outline" (click)="updateBasics()" color="medium" class="custButton rad10"> 
+            <ion-icon class="ico" color="dark" name="add-circle-outline"></ion-icon>
+            <ion-text color="dark"> حفــظ ومتابعة </ion-text>
           </ion-button>
         </ion-card-header>
       </ion-card>

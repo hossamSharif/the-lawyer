@@ -13,6 +13,8 @@ import * as moment from 'moment';
 import { id, tr } from 'date-fns/locale';
 var ls = window.localStorage;
 
+import { Storage } from '@ionic/storage';
+import { PortalserviceService } from '../portal/portalservice.service';
 export interface Case {
   id: number;
   case_title: string;
@@ -605,8 +607,8 @@ export class NewCasePage implements OnInit {
     opponent_name: '',
     opponent_id: 0,
     opponent_representative: '',
-    case_open_date: new Date().toISOString(),
-    deadline: new Date().toISOString() ,
+    case_open_date: new Date().toISOString().split('T')[0],
+    deadline: new Date().toISOString().split('T')[0] ,
     billing_type: '',
     claim_type: '',
     work_hour_value: 0,
@@ -616,7 +618,7 @@ export class NewCasePage implements OnInit {
     archive_id_najz: '',
     caseId_najz: '',
     case_classification_najz: '',
-    case_open_date_najz: new Date().toISOString(),
+    case_open_date_najz: new Date().toISOString().split('T')[0],
     case_docs: '',
     Plaintiff_Requests: '',
     case_status_najz: '',
@@ -624,16 +626,54 @@ export class NewCasePage implements OnInit {
     court_id: 0 ,
     amount_intial: 100000,	
   }
+  USER_INFO :  {
+    id: number;
+    user_name: string;
+    store_id: number;
+    full_name: string;
+    password: string;
+    job_title: string;
+    email: string;
+    phone: string;
+    level: number;
+    subiscriber_id: number;
+    company_email2: string;
+    company_email: string;
+    company_phone1: string;
+    company_phone2: string;
+    region: string;
+    city: string;
+    country: string;
+    full_address: string;
+    company_name: string;
+    short_desc: string;
+    full_desc: string;
+    logo_url: string;
+    subscriptions: Array<{
+      package_id: number;
+      status: string;
+      start_date: string;
+      end_date: string;
+    }>;
+  }
   savedDone : boolean = false
 
   ionicForm: FormGroup;
   isSubmitted = false;
   isSubmittedFinance = false;
-  constructor( private modalController : ModalController,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
+  constructor(private apiPortal:PortalserviceService  ,private storage: Storage, private modalController : ModalController,private rout: Router ,private toast :ToastController,private loadingController :LoadingController,private formBuilder: FormBuilder,private _location :Location ,private api:ServicesService ) {
     this.ionicForm = this.formBuilder.group({
     case_title: ['' , Validators.required]
     })
-    this.getAppInfo()
+    
+    this.storage.get('USER_INFO').then((response) => {
+      if (response) {
+        this.USER_INFO = response  
+        console.log('USER_INFO',this.USER_INFO) 
+        this.getLawyers()
+      }  
+      })
+      this.getAppInfo()
      
   }
 
@@ -994,14 +1034,10 @@ export class NewCasePage implements OnInit {
     console.log('saveInvo')
     this.api.saveCaseLawyer(this.selectedLawyersTeamArr).subscribe(data => {
       console.log('save',data)
-     if(data['message'] != 'Post Not Created') {
-     //this.newCase.id = data['message']
+     if(data['message'] != 'Post Not Created') { 
      this.presentToast('تم حفظ البيانات بنجاح', 'success')
-     this.newCase['team'] = this.selectedLawyersTeamArr
-   
-     this.segVal = "financial" 
-    // this.prepareCace() 
-    // this._location.back();
+     this.newCase['team'] = this.selectedLawyersTeamArr 
+     this.segVal = "files"  
       }else{
       this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
       }
@@ -1039,7 +1075,7 @@ export class NewCasePage implements OnInit {
       }
     }, (err) => {
       //console.log(err);
-      this.presentToast('2لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
+      this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
     })
   }
 
@@ -1070,9 +1106,7 @@ export class NewCasePage implements OnInit {
 
 
 
-  prepareCace(){  
-   
-
+  prepareCace(){   
     this.caseTypeArrNagz.push(
       {id:1,name:"احوال شخصية"},
       {id:2,name:"تنفيذ"},
@@ -1218,7 +1252,8 @@ export class NewCasePage implements OnInit {
 
 
  getLawyers(){ 
-        this.api.getTopUsers().subscribe(data =>{
+//  get from portal by subiscricer id  this.USER_INFO.subiscriber_id
+  this.api.getTopUsers().subscribe(data =>{
           console.log(data)
           let res = data
           this.usersArr = res['data']   
@@ -1226,7 +1261,9 @@ export class NewCasePage implements OnInit {
         ()=>{ 
       }
       )  
-    }
+  }
+
+   
 
 
 
@@ -1400,7 +1437,7 @@ export class NewCasePage implements OnInit {
       getAppInfo(){ 
         this.prepareCace() 
         this.getTopCustomers()
-        this.getLawyers()
+       
         this.getCourts() 
         this.getCaseStatus() 
       }
@@ -1439,18 +1476,18 @@ export class NewCasePage implements OnInit {
         //console.log('dismissOver') 
       }
 
-      selectFromPopCustTypes(item , index){
-        console.log(item ,index)
-        // push and pop
-        this.selectedCustTye = {
-          id:item.id,
-          name:item.name
-        } 
+      // selectFromPopCustTypes(item , index){
+      //   console.log(item ,index)
+      //   // push and pop
+      //   this.selectedCustTye = {
+      //     id:item.id,
+      //     name:item.name
+      //   } 
         
-          //console.log( this.selectedItem); 
-        //  this.didDissmisCustType()
-          //perform calculate here so moataz can get the qty
-        }
+      //     //console.log( this.selectedItem); 
+      //   //  this.didDissmisCustType()
+      //     //perform calculate here so moataz can get the qty
+      //   }
    
 
       checkedTeam(event, item ,i ) {

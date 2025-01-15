@@ -8,7 +8,8 @@ import { Storage } from '@ionic/storage';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { StockServiceService } from '../syncService/stock-service.service';
-
+import { PortalserviceService } from '../portal/portalservice.service';
+ 
 
 
 
@@ -17,7 +18,37 @@ import { StockServiceService } from '../syncService/stock-service.service';
   templateUrl: './edit-user.page.html',
   styleUrls: ['./edit-user.page.scss'],
 })
-export class EditUserPage implements OnInit {
+export class EditUserPage implements OnInit  {
+  USER_INFO :  {
+    id: number;
+    user_name: string;
+    store_id: number;
+    full_name: string;
+    password: string;
+    job_title: string;
+    email: string;
+    phone: string;
+    level: number;
+    subiscriber_id: number;
+    company_email2: string;
+    company_email: string;
+    company_phone1: string;
+    company_phone2: string;
+    region: string;
+    city: string;
+    country: string;
+    full_address: string;
+    company_name: string;
+    short_desc: string;
+    full_desc: string;
+    logo_url: string;
+    subscriptions: Array<{
+      package_id: number;
+      status: string;
+      start_date: string;
+      end_date: string;
+    }>;
+  }
   @ViewChild('popoverNotif') popoverNotif;
   isOpenCustType = false ;
   showCustType = false ;  
@@ -29,38 +60,43 @@ export class EditUserPage implements OnInit {
   ionicForm: FormGroup; 
   isSubmitted = false; 
   constructor(private formBuilder: FormBuilder,private _location : Location ,private menuCtrl :MenuController,  private rout : Router ,private platform:Platform,private behavApi:StockServiceService, private route: ActivatedRoute,private modalController: ModalController,private storage: Storage,private loadingController:LoadingController,private api:ServicesService,private toast :ToastController) { 
-
+    
     this.userTypeArr.push(
       {id:2,name:"super Admin"}, 
       {id:1,name:"admin"},
       {id:0,name:"user"}
-    )
+    ) 
+    this.selectedUserType = {id:0,name:"user"} 
+    this.ionicForm = this.formBuilder.group({
+      job_title: [''], 
+      user_name: ['' , Validators.required],  
+      full_name: ['', [Validators.required,Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
+      email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]], 
+      phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]]
+    })
+
+    this.prepareInvo()
 
     this.route.queryParams.subscribe(params => {
+      console.log('params',params)
       if (params && params.user) {
-        this.seledctedUser = JSON.parse(params.User);
+        this.seledctedUser = JSON.parse(params.user);
         console.log('seledctedUser',this.seledctedUser)
       }
     });
-
-
-    this.selectedUserType = {id:0,name:"user"} 
-    this.ionicForm = this.formBuilder.group({
-      job_title: ['' , Validators.required], 
-      user_name: ['' , Validators.required], 
-      password: ['' , Validators.required], 
-      level: ['' , Validators.required], 
-      full_name: ['', [Validators.required, Validators.minLength(4),Validators.pattern('[a-zA-Z][a-zA-Z ]+')]],
-      email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]], 
-      phone:['', [Validators.required, Validators.minLength(9),Validators.maxLength(9),Validators.pattern('^[0-9]+$')]]
-      
-    })
     
   }
 
   ngOnInit() {
-
+    this.storage.get('USER_INFO').then((response) => {
+      console.log('response',response)
+      if (response) {
+        this.USER_INFO = response  
+        console.log('USER_INFO',this.USER_INFO) 
+      }
+    }); 
   }
+ 
 
   prepareInvo(){  
     this.seledctedUser = {id:"" ,user_name :"" ,full_name:"",phone:"",email:"",job_title:"",level:0 , password:""};
@@ -68,7 +104,7 @@ export class EditUserPage implements OnInit {
     this.isSubmitted = false 
   }
 
-save() {
+save() { 
     if (this.validate() == true) {
       this.presentLoadingWithOptions('جاري حفظ البيانات ...')
       console.log(this.seledctedUser) 
@@ -77,13 +113,31 @@ save() {
 }
 
 
+prepareUser(selectedUser){ 
+  let user = { 
+      id: +selectedUser.id,
+      user_name: selectedUser.user_name, 
+      password: selectedUser.password,
+      full_name:  selectedUser.full_name, 
+      level:  +selectedUser.level,
+      email:  selectedUser.email,
+      subiscriber_id:   +selectedUser.subiscriber_id ,
+      phone:  selectedUser.phone, 
+      job_title:  selectedUser.job_title
+  }
+  return user
+  }
+
+
+
 saveInvo() {
-  console.log('saveInvo')
-  this.api.updateUser(this.seledctedUser).subscribe(data => {
+  //console.log(this.prepareUser(this.seledctedUser))
+  this.api.updateUser(this.prepareUser(this.seledctedUser)).subscribe(data => {
     console.log('save',data)
    if(data['message'] != 'Post Not Created') {
    // this.selectedِCustmer.id = data['message']
    this.presentToast('تم حفظ البيانات بنجاح', 'success')
+   this._location.back();	
    this.prepareInvo()
     }else{
     this.presentToast('لم يتم حفظ البيانات , خطا في الإتصال حاول مرة اخري', 'danger')
@@ -100,9 +154,13 @@ get errorControl() {
 }
  
 validate(){
+  console.log(this.prepareUser(this.seledctedUser)) 
+    console.log('Form Valid:', this.ionicForm.valid);
+    console.log('Form Values:', this.ionicForm.value);
+    console.log('Form Errors:', this.ionicForm.errors);
   this.isSubmitted = true;
   if (this.ionicForm.valid == false) {
-    //console.log('Please provide all the required values! 1') 
+    console.log('Please provide all the required values!') 
     return false
   }  else {
      return true

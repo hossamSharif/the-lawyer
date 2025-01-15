@@ -74,13 +74,15 @@
                    </th>
                    <th>    المحامي
                    </th> 
+                   <th>    الملفات المرفقة 
+                  </th> 
                  
                      
                    <th><strong>تعديل</strong>  </th> 
                    
                   </tr>
                    
-                  <tr *ngFor="let session of consultationArray"   (click)="getSessionDetails(session)">
+                  <tr *ngFor="let session of consultationArray"   >
                      <td>
                        <ion-text> {{session.title}} </ion-text> 
                      </td>
@@ -105,9 +107,12 @@
                       <ion-text> {{session.lawyer_name}}    </ion-text>
                     </td>
                    
+                    <td> 
+                      <ion-button fill="clear" (click)="getSessionDetails(session , 'files')"><ion-icon name="folder-open-outline" color="meduim"  ></ion-icon></ion-button>
+                    </td>
                     
                      <td>
-                       <ion-button fill="clear" ><ion-icon name="create-outline" color="meduim"></ion-icon></ion-button>
+                       <ion-button fill="clear" (click)="getSessionDetails(session , 'basics')"><ion-icon name="create-outline" color="meduim"></ion-icon></ion-button>
                      </td> 
                   </tr> 
                    

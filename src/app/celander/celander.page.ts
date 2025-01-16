@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, ModalController, NavController, ToastController } from '@ionic/angular'; 
-import { CalendarMode } from 'ionic2-calendar/calendar';
+// import { CalendarMode } from 'ionic2-calendar/calendar';
 import * as moment from 'moment';
 import { ServicesService } from '../stockService/services.service';
 import { NavigationExtras, Router } from '@angular/router';
@@ -14,7 +14,7 @@ export class CelanderPage implements OnInit {
   viewTitle: string;
   selectedDay = new Date();
   calendar = {
-    mode: 'month' as CalendarMode ,
+    // mode: 'month' as CalendarMode ,
     currentDate: new Date()
   };
    
@@ -192,10 +192,10 @@ export class CelanderPage implements OnInit {
      swiper.slideNext(); 
   }
 
-  changeMode(mode: CalendarMode) { 
-    this.calendar.mode = mode; 
-    console.log(mode) 
-  }
+  // changeMode(mode: CalendarMode) { 
+  //   this.calendar.mode = mode; 
+  //   console.log(mode) 
+  // }
 
   onViewTitleChanged(title: string) { 
     this.viewTitle = title; 

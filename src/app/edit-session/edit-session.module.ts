@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import {  NgModule } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; 
@@ -17,7 +17,6 @@ import { FilesPageModule } from '../files/files.module';
     EditSessionPageRoutingModule,
     FilesPageModule
   ],
-  declarations: [EditSessionPage],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  declarations: [EditSessionPage]
 })
 export class EditSessionPageModule {}

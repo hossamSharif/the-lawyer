@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { CelanderPageRoutingModule } from './celander-routing.module';
-import { NgCalendarModule  } from 'ionic2-calendar';
+ 
 import { CelanderPage } from './celander.page';
 
 @NgModule({
@@ -13,7 +13,7 @@ import { CelanderPage } from './celander.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    NgCalendarModule,
+    
     CelanderPageRoutingModule
   ],
   declarations: [CelanderPage]
